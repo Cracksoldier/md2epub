@@ -3,25 +3,26 @@
 :host {
   display: block;
   height: 100dvh;
-  overflow: hidden;
+  overflow: clip;
 }
 
 .app-shell {
   display: flex;
   flex-direction: column;
   height: 100%;
-  overflow: hidden;
+  overflow: clip;
 }
 
 .workspace {
   display: grid;
   grid-template-columns: 1fr #{$divider-width} 1fr;
+  grid-template-rows: minmax(0, 1fr);
   flex: 1;
-  overflow: hidden;
+  overflow: clip;
   min-height: 0;
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr !important;
-    grid-template-rows: 1fr $divider-width 45vh;
+    grid-template-rows: minmax(0, 1fr) #{$divider-width} 45vh;
   }
 }

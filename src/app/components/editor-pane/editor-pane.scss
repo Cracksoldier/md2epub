@@ -9,7 +9,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  overflow: hidden;
+  overflow: clip;
   position: relative;
 
   &--editor {
@@ -58,8 +58,9 @@
 
 .editor {
   flex: 1;
+  min-height: 0;
+  overflow-y: auto;
   width: 100%;
-  height: 100%;
   background: $bg-base;
   color: $text-primary;
   border: none;
