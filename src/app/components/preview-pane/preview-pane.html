@@ -5,11 +5,11 @@
         <path d="M1 7s2.5-4.5 6-4.5S13 7 13 7s-2.5 4.5-6 4.5S1 7 1 7z" stroke="currentColor" stroke-width="1.3"/>
         <circle cx="7" cy="7" r="1.5" stroke="currentColor" stroke-width="1.3"/>
       </svg>
-      Preview
+      {{ i18n.t('preview.label') }}
     </span>
     @if (chapterCount() > 0) {
       <span class="chapter-badge">
-        {{ chapterCount() }} chapter{{ chapterCount() !== 1 ? 's' : '' }}
+        {{ chapterCount() }} {{ chapterCount() !== 1 ? i18n.t('preview.chapters') : i18n.t('preview.chapter') }}
       </span>
     }
   </div>

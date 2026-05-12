@@ -3,6 +3,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EditorStateService } from '../../services/editor-state.service';
+import { I18nService } from '../../services/i18n.service';
 
 @Component({
   selector: 'app-editor-pane',
@@ -12,6 +13,7 @@ import { EditorStateService } from '../../services/editor-state.service';
 })
 export class EditorPane {
   protected readonly editorState = inject(EditorStateService);
+  protected readonly i18n = inject(I18nService);
 
   @ViewChild('fileInput') fileInputRef!: ElementRef<HTMLInputElement>;
   @ViewChild('textarea') textareaRef!: ElementRef<HTMLTextAreaElement>;
@@ -36,7 +38,6 @@ export class EditorPane {
       const value = ta.value;
       const newValue = value.slice(0, start) + '  ' + value.slice(end);
       this.editorState.setContent(newValue);
-      // Restore cursor after signal update (next microtask)
       setTimeout(() => {
         ta.selectionStart = ta.selectionEnd = start + 2;
       });

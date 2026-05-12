@@ -4,9 +4,9 @@
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <path d="M2 4h12M2 8h12M2 12h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
       </svg>
-      Book Settings
+      {{ i18n.t('settings.title') }}
     </span>
-    <button class="btn btn--icon" (click)="closePanel.emit()" title="Close settings">
+    <button class="btn btn--icon" (click)="closePanel.emit()" [title]="i18n.t('settings.closeTitle')">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
       </svg>
@@ -16,33 +16,33 @@
   <div class="settings-panel__body">
     <!-- Title -->
     <div class="form-group">
-      <label for="meta-title">Book Title</label>
+      <label for="meta-title">{{ i18n.t('settings.bookTitle') }}</label>
       <input
         id="meta-title"
         class="form-input"
         type="text"
         [value]="settings.metadata().title"
         (input)="onTitleChange($event)"
-        placeholder="My Book"
+        [placeholder]="i18n.t('settings.bookTitlePlaceholder')"
       />
     </div>
 
     <!-- Author -->
     <div class="form-group">
-      <label for="meta-author">Author</label>
+      <label for="meta-author">{{ i18n.t('settings.author') }}</label>
       <input
         id="meta-author"
         class="form-input"
         type="text"
         [value]="settings.metadata().author"
         (input)="onAuthorChange($event)"
-        placeholder="Jane Doe"
+        [placeholder]="i18n.t('settings.authorPlaceholder')"
       />
     </div>
 
     <!-- Language -->
     <div class="form-group">
-      <label for="meta-lang">Language</label>
+      <label for="meta-lang">{{ i18n.t('settings.language') }}</label>
       <select
         id="meta-lang"
         class="form-input"
@@ -59,12 +59,12 @@
 
     <!-- Cover image -->
     <div class="form-group">
-      <label>Cover Image</label>
+      <label>{{ i18n.t('settings.coverImage') }}</label>
       @if (settings.metadata().coverDataUrl) {
         <div class="cover-preview">
           <img [src]="settings.metadata().coverDataUrl" alt="Cover preview" class="cover-thumb" />
           <button class="btn btn--ghost btn--sm cover-remove" (click)="clearCover()">
-            Remove cover
+            {{ i18n.t('settings.removeCover') }}
           </button>
         </div>
       } @else {
@@ -74,8 +74,8 @@
             <circle cx="7" cy="7.5" r="1.5" stroke="currentColor" stroke-width="1.3"/>
             <path d="M2 13l4-4 3 3 3-3 4 4" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
           </svg>
-          <span>Upload cover image</span>
-          <span class="cover-upload__hint">JPG or PNG recommended</span>
+          <span>{{ i18n.t('settings.uploadCover') }}</span>
+          <span class="cover-upload__hint">{{ i18n.t('settings.uploadCoverHint') }}</span>
           <input
             id="cover-input"
             type="file"
@@ -92,8 +92,8 @@
     <!-- Chapter splitting -->
     <label class="toggle-row">
       <div class="toggle-row__text">
-        <span class="toggle-row__label">Split into chapters</span>
-        <span class="toggle-row__desc">Split content at each H1 and H2 heading into separate EPUB chapters.</span>
+        <span class="toggle-row__label">{{ i18n.t('settings.splitChapters') }}</span>
+        <span class="toggle-row__desc">{{ i18n.t('settings.splitChaptersDesc') }}</span>
       </div>
       <label class="toggle" for="split-chapters">
         <input

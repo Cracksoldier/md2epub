@@ -2,6 +2,7 @@ import { Component, inject, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SettingsService } from '../../services/settings.service';
 import { ToastService } from '../../services/toast.service';
+import { I18nService } from '../../services/i18n.service';
 
 @Component({
   selector: 'app-settings-panel',
@@ -15,6 +16,7 @@ export class SettingsPanel {
 
   protected readonly settings = inject(SettingsService);
   private readonly toast = inject(ToastService);
+  protected readonly i18n = inject(I18nService);
 
   readonly languages = [
     { code: 'en', label: 'English' },
@@ -53,7 +55,7 @@ export class SettingsPanel {
     try {
       await this.settings.loadCoverFromFile(file);
     } catch {
-      this.toast.show('Could not load image. Please use a JPEG or PNG.', 'error');
+      this.toast.show(this.i18n.t('toast.coverLoadError'), 'error');
     }
     (event.target as HTMLInputElement).value = '';
   }

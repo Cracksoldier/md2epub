@@ -10,6 +10,7 @@ import { EditorStateService } from './services/editor-state.service';
 import { SettingsService } from './services/settings.service';
 import { EpubService } from './services/epub.service';
 import { ToastService } from './services/toast.service';
+import { I18nService } from './services/i18n.service';
 
 @Component({
   selector: 'app-root',
@@ -22,6 +23,7 @@ export class App {
   private readonly settings = inject(SettingsService);
   private readonly epub = inject(EpubService);
   private readonly toast = inject(ToastService);
+  private readonly i18n = inject(I18nService);
 
   readonly settingsOpen = signal(false);
   readonly exportLoading = signal(false);
@@ -47,7 +49,7 @@ export class App {
   async onExport(): Promise<void> {
     const content = this.editorState.content();
     if (!content.trim()) {
-      this.toast.show('Nothing to export — add some content first.', 'error');
+      this.toast.show(this.i18n.t('toast.nothingToExport'), 'error');
       return;
     }
     this.exportLoading.set(true);
@@ -61,10 +63,10 @@ export class App {
       anchor.download = filename;
       anchor.click();
       setTimeout(() => URL.revokeObjectURL(url), 1500);
-      this.toast.show(`"${filename}" downloaded!`, 'success');
+      this.toast.show(this.i18n.t('toast.downloaded', filename), 'success');
     } catch (err) {
       console.error('EPUB build failed', err);
-      this.toast.show('Export failed — see console for details.', 'error');
+      this.toast.show(this.i18n.t('toast.exportFailed'), 'error');
     } finally {
       this.exportLoading.set(false);
     }

@@ -6,6 +6,7 @@ import { debounceTime, map } from 'rxjs';
 import { EditorStateService } from '../../services/editor-state.service';
 import { MarkdownService } from '../../services/markdown.service';
 import { SettingsService } from '../../services/settings.service';
+import { I18nService } from '../../services/i18n.service';
 
 @Component({
   selector: 'app-preview-pane',
@@ -18,6 +19,7 @@ export class PreviewPane {
   private readonly markdownService = inject(MarkdownService);
   private readonly settingsService = inject(SettingsService);
   private readonly sanitizer = inject(DomSanitizer);
+  protected readonly i18n = inject(I18nService);
 
   readonly safeHtml = toSignal(
     toObservable(this.editorState.content).pipe(
