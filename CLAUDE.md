@@ -38,6 +38,10 @@ SettingsService.metadata (Signal<BookMetadata>)
 ToastService.toasts (Signal<Toast[]>)
   ← show() called from App (export errors/success), SettingsPanel (cover load error)
   → Toast component renders them, auto-dismisses after 3.5s
+
+I18nService.locale (Signal<Locale>)
+  ← WelcomeModal language picker (first visit), Toolbar language switcher
+  → all components via i18n.t(key) — reactive because t() reads the locale signal
 ```
 
 ### Key services
@@ -46,10 +50,33 @@ ToastService.toasts (Signal<Toast[]>)
 - **`SettingsService`** — signal holding `BookMetadata`; `loadCoverFromFile(File)` reads the image as a base64 data URL.
 - **`MarkdownService`** — wraps `marked.parse()`; `splitIntoChapters(html)` uses `DOMParser` to walk `body.children` and split at `H1`/`H2` boundaries.
 - **`EpubService`** — assembles a valid EPUB 3 ZIP using `jszip`. The `mimetype` file **must** be the first entry and stored uncompressed (`{ compression: 'STORE' }`). Generates `container.xml`, `package.opf`, `nav.xhtml`, per-chapter XHTML files, and optionally a cover page.
+- **`I18nService`** — signal-based UI localisation. `locale` signal holds the active `Locale` code; `t(key, ...args)` looks up dot-notation keys (e.g. `'toolbar.import'`) with `{0}` interpolation for dynamic values. Locale is persisted in `localStorage` under `epub-i18n-locale`.
+
+### Internationalisation (i18n)
+
+All user-visible strings live in `src/app/i18n/translations.ts` as a typed `TranslationMap`. Supported locales:
+
+| Code | Label |
+|------|-------|
+| `en` | English (default) |
+| `de` | Deutsch |
+| `de-styr` | Steirisch |
+| `es` | Español |
+| `da` | Dansk |
+| `ja` | 日本語 |
+| `zh-TW` | 繁體中文 |
+
+**Adding a new locale:** add the code to the `Locale` union, add an entry to `LOCALES`, and add a full `TranslationMap` block to `TRANSLATIONS` in `translations.ts`. No other files need to change.
+
+**Adding a new string:** add the key to the `TranslationMap` interface and to every locale block, then call `i18n.t('section.key')` in the template or `this.i18n.t('section.key')` in TypeScript. For strings with runtime values use `{0}` placeholders: `i18n.t('toast.downloaded', filename)`.
 
 ### AppComponent (app.ts)
 
-Owns `exportLoading`, `settingsOpen`, and `gridColumns` signals. Handles `Ctrl+E` (export) and `Ctrl+,` (toggle settings) via `@HostListener`. Calls `PaneDivider.saveRatio()` / `loadSavedRatio()` (static helpers) to persist the pane split in `localStorage`.
+Owns `exportLoading`, `settingsOpen`, `gridColumns`, and `showWelcome` signals. Handles `Ctrl+E` (export) and `Ctrl+,` (toggle settings) via `@HostListener`. Calls `PaneDivider.saveRatio()` / `loadSavedRatio()` (static helpers) to persist the pane split in `localStorage`. `showWelcome` is `true` on first visit (no `epub-welcomed` key in `localStorage`); `onWelcomeClosed()` sets the flag and hides the modal.
+
+### WelcomeModal component
+
+Shown on first visit only. Displays a client-side privacy notice and a language picker so users can set their locale before starting. Dismisses on button click, backdrop click, or Escape. Dismissed state stored in `localStorage` key `epub-welcomed`.
 
 ### SCSS design system
 
