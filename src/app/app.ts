@@ -6,6 +6,7 @@ import { PreviewPane } from './components/preview-pane/preview-pane';
 import { PaneDivider } from './components/pane-divider/pane-divider';
 import { SettingsPanel } from './components/settings-panel/settings-panel';
 import { Toast } from './components/toast/toast';
+import { WelcomeModal } from './components/welcome-modal/welcome-modal';
 import { EditorStateService } from './services/editor-state.service';
 import { SettingsService } from './services/settings.service';
 import { EpubService } from './services/epub.service';
@@ -14,7 +15,7 @@ import { I18nService } from './services/i18n.service';
 
 @Component({
   selector: 'app-root',
-  imports: [CommonModule, Toolbar, EditorPane, PreviewPane, PaneDivider, SettingsPanel, Toast],
+  imports: [CommonModule, Toolbar, EditorPane, PreviewPane, PaneDivider, SettingsPanel, Toast, WelcomeModal],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
@@ -28,6 +29,7 @@ export class App {
   readonly settingsOpen = signal(false);
   readonly exportLoading = signal(false);
   readonly gridColumns = signal(this.initColumns());
+  readonly showWelcome = signal(!localStorage.getItem('epub-welcomed'));
 
   @HostListener('window:keydown', ['$event'])
   onKeyDown(e: KeyboardEvent): void {
@@ -44,6 +46,11 @@ export class App {
 
   toggleSettings(): void {
     this.settingsOpen.update(v => !v);
+  }
+
+  onWelcomeClosed(): void {
+    localStorage.setItem('epub-welcomed', '1');
+    this.showWelcome.set(false);
   }
 
   async onExport(): Promise<void> {

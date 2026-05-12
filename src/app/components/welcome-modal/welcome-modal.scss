@@ -1,0 +1,98 @@
+@use '../../../styles/variables' as *;
+
+.welcome-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(5, 13, 26, 0.8);
+  backdrop-filter: blur(6px);
+}
+
+.welcome-card {
+  width: 100%;
+  max-width: 440px;
+  background: $bg-elevated;
+  border: 1px solid $border-subtle;
+  border-radius: $border-radius-lg;
+  padding: 32px;
+  box-shadow: 0 0 0 1px $accent-glow, 0 24px 48px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.welcome-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.welcome-logo {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.welcome-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: $text-primary;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.welcome-section {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+
+  &__icon {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: $accent-glow;
+    border: 1px solid rgba(37, 99, 235, 0.3);
+    border-radius: $border-radius;
+    color: $accent-light;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__heading {
+    font-size: 13px;
+    font-weight: 600;
+    color: $text-primary;
+    margin: 0;
+  }
+
+  &__text {
+    font-size: 13px;
+    color: $text-secondary;
+    line-height: 1.6;
+    margin: 0;
+  }
+}
+
+.welcome-lang-select {
+  margin-top: 2px;
+}
+
+.welcome-continue {
+  width: 100%;
+  justify-content: center;
+  padding: 10px 16px;
+  font-size: 14px;
+}

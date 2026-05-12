@@ -55,6 +55,13 @@ export interface TranslationMap {
     exportFailed: string;
     coverLoadError: string;
   };
+  welcome: {
+    title: string;
+    privacyHeading: string;
+    privacyText: string;
+    languageLabel: string;
+    continueBtn: string;
+  };
 }
 
 export const TRANSLATIONS: Record<Locale, TranslationMap> = {
@@ -103,6 +110,13 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       exportFailed: 'Export failed — see console for details.',
       coverLoadError: 'Could not load image. Please use a JPEG or PNG.',
     },
+    welcome: {
+      title: 'Welcome to MD → EPUB',
+      privacyHeading: 'Your data stays on your device',
+      privacyText: 'Everything runs entirely in your browser. Your text, files, and metadata are never sent to any server.',
+      languageLabel: 'Choose your language',
+      continueBtn: 'Get Started',
+    },
   },
 
   de: {
@@ -149,6 +163,13 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       downloaded: '„{0}" heruntergeladen!',
       exportFailed: 'Export fehlgeschlagen – Details in der Konsole.',
       coverLoadError: 'Bild konnte nicht geladen werden. Bitte JPEG oder PNG verwenden.',
+    },
+    welcome: {
+      title: 'Willkommen bei MD → EPUB',
+      privacyHeading: 'Deine Daten bleiben bei dir',
+      privacyText: 'Alles läuft vollständig in deinem Browser. Dein Text, deine Dateien und Metadaten werden niemals an einen Server gesendet.',
+      languageLabel: 'Sprache wählen',
+      continueBtn: 'Loslegen',
     },
   },
 
@@ -197,6 +218,13 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       exportFailed: 'Export hob ned funktioniert – schau in d Konsol nei.',
       coverLoadError: 'Biid hot si ned laden lossn. Nimm bitte a JPEG oder PNG.',
     },
+    welcome: {
+      title: 'Willkumm bei MD → EPUB',
+      privacyHeading: 'Deine Daten bleibn bei dir',
+      privacyText: 'Ois lauft direkt in deim Browser. Dei Text, dei Dateien und Metadaten wern nie an kan Server gschickt.',
+      languageLabel: 'Sproch auswählen',
+      continueBtn: 'Los geht\'s',
+    },
   },
 
   es: {
@@ -243,6 +271,13 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       downloaded: '"{0}" descargado!',
       exportFailed: 'Error al exportar — ver consola para más detalles.',
       coverLoadError: 'No se pudo cargar la imagen. Por favor usa JPEG o PNG.',
+    },
+    welcome: {
+      title: 'Bienvenido a MD → EPUB',
+      privacyHeading: 'Tus datos permanecen en tu dispositivo',
+      privacyText: 'Todo se ejecuta completamente en tu navegador. Tu texto, archivos y metadatos nunca se envían a ningún servidor.',
+      languageLabel: 'Elige tu idioma',
+      continueBtn: 'Comenzar',
     },
   },
 
@@ -291,6 +326,13 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       exportFailed: 'Eksport fejlede — se konsollen for detaljer.',
       coverLoadError: 'Kunne ikke indlæse billede. Brug venligst JPEG eller PNG.',
     },
+    welcome: {
+      title: 'Velkommen til MD → EPUB',
+      privacyHeading: 'Dine data forbliver på din enhed',
+      privacyText: 'Alt kører udelukkende i din browser. Din tekst, filer og metadata sendes aldrig til nogen server.',
+      languageLabel: 'Vælg dit sprog',
+      continueBtn: 'Kom i gang',
+    },
   },
 
   ja: {
@@ -338,6 +380,13 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       exportFailed: '出力に失敗しました — 詳細はコンソールを確認してください。',
       coverLoadError: '画像を読み込めませんでした。JPEGまたはPNGを使用してください。',
     },
+    welcome: {
+      title: 'MD → EPUB へようこそ',
+      privacyHeading: 'データはお使いのデバイス上に保持されます',
+      privacyText: 'すべてブラウザ上で動作します。テキスト、ファイル、メタデータがサーバーに送信されることはありません。',
+      languageLabel: '言語を選択',
+      continueBtn: 'はじめる',
+    },
   },
 
   'zh-TW': {
@@ -384,6 +433,13 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       downloaded: '「{0}」已下載！',
       exportFailed: '匯出失敗 — 請查看控制台以了解詳情。',
       coverLoadError: '無法載入圖片，請使用 JPEG 或 PNG。',
+    },
+    welcome: {
+      title: '歡迎使用 MD → EPUB',
+      privacyHeading: '您的資料保留在裝置上',
+      privacyText: '所有處理完全在您的瀏覽器中進行。您的文字、檔案和中繼資料不會傳送至任何伺服器。',
+      languageLabel: '選擇語言',
+      continueBtn: '開始使用',
     },
   },
 };

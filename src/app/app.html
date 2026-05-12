@@ -26,3 +26,7 @@
 
   <app-toast></app-toast>
 </div>
+
+@if (showWelcome()) {
+  <app-welcome-modal (close)="onWelcomeClosed()"></app-welcome-modal>
+}
