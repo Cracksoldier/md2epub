@@ -1,0 +1,62 @@
+@use 'variables' as *;
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: $font-sans;
+  font-size: 14px;
+  color: $text-primary;
+  background: $bg-base;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+input, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+a {
+  color: $accent-light;
+  text-decoration: none;
+
+  &:hover { text-decoration: underline; }
+}
+
+:focus-visible {
+  outline: 2px solid $border-focus;
+  outline-offset: 2px;
+}
+
+// Custom scrollbars (Webkit)
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: $bg-base;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $border-subtle;
+  border-radius: 3px;
+
+  &:hover { background: $text-muted; }
+}

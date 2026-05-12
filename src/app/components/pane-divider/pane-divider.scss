@@ -1,0 +1,32 @@
+@use '../../../styles/variables' as *;
+
+.pane-divider {
+  width: $divider-width;
+  background: $border-subtle;
+  cursor: col-resize;
+  flex-shrink: 0;
+  transition: background $transition-fast;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 2px;
+    height: 32px;
+    background: $text-muted;
+    border-radius: 1px;
+    opacity: 0;
+    transition: opacity $transition-fast;
+  }
+
+  &:hover {
+    background: $border-focus;
+
+    &::after { opacity: 1; }
+  }
+
+  &:active { background: $accent; }
+}

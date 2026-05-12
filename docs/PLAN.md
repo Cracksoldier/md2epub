@@ -1,0 +1,120 @@
+# Markdown → EPUB Converter — Project Plan
+
+## Overview
+A fully client-side Markdown-to-EPUB 3 converter built with Angular 21 (standalone components + signals). No backend required. Deployable to GitHub Pages as a static site.
+
+## Goals
+- Accept Markdown input (type, paste, or drag-drop a `.md` file)
+- Render a live split-pane HTML preview
+- Generate a valid EPUB 3 file downloadable in the browser
+- Support book metadata: title, author, language, cover image
+- Support automatic chapter splitting at H1/H2 headings
+
+## Technology Choices
+
+| Concern | Choice | Reason |
+|---------|--------|--------|
+| Framework | Angular 21 (standalone) | Requested by user; signals = reactive state |
+| State | Angular Signals | Built-in, no NgRx needed for this scope |
+| Markdown parsing | `marked` (npm) | Lightweight, fast, no dependencies |
+| ZIP/EPUB assembly | `jszip` (npm) | Mature, browser-compatible, Promise-based |
+| Styling | Custom SCSS | Full control over cold blue design |
+| Package manager | yarn (auto-detected by Angular CLI) | |
+
+## Architecture
+
+```
+src/app/
+├── models/           — interfaces only, no logic
+├── services/         — business logic, all providedIn root
+└── components/       — standalone UI components
+    ├── toolbar/
+    ├── editor-pane/
+    ├── preview-pane/
+    ├── pane-divider/
+    ├── settings-panel/
+    └── toast/
+```
+
+## Implementation Phases
+
+### Phase 1 — Scaffold ✓
+- `ng new epub-converter --standalone --style=scss`
+- Install `marked`, `jszip`, `angular-cli-ghpages`
+
+### Phase 2 — Models & Services ✓
+- `BookMetadata`, `Chapter`, `Toast` interfaces
+- `EditorStateService`, `SettingsService`, `MarkdownService`, `EpubService`, `ToastService`
+
+### Phase 3 — Components ✓
+- `Toolbar`, `EditorPane`, `PreviewPane`, `PaneDivider`, `SettingsPanel`, `Toast`
+
+### Phase 4 — App Shell & Design System ✓
+- Root `App` component wiring everything together
+- SCSS design tokens, reset, typography
+
+### Phase 5 — Docs & Deployment Config ✓
+- This file + `SPEC.md`
+- GitHub Pages deployment instructions
+
+## Deployment to GitHub Pages
+
+### Option A — Manual (single command)
+```bash
+# Build with your repo's base href
+ng build --base-href /epub-converter/
+
+# Deploy dist/epub-converter/browser/ to gh-pages branch
+npx angular-cli-ghpages --dir=dist/epub-converter/browser
+```
+
+### Option B — GitHub Actions (automated)
+Create `.github/workflows/deploy.yml`:
+```yaml
+name: Deploy to GitHub Pages
+on:
+  push:
+    branches: [main]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: yarn install --frozen-lockfile
+      - run: yarn ng build --base-href /epub-converter/
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: dist/epub-converter/browser
+```
+
+### Important
+- Replace `/epub-converter/` with your actual repository name
+- Enable GitHub Pages in repo Settings → Pages → Source: `gh-pages` branch
+
+## Running Locally
+
+```bash
+# Install dependencies
+yarn install
+
+# Start dev server
+yarn ng serve
+# → http://localhost:4200
+
+# Production build
+yarn ng build
+
+# Run unit tests
+yarn ng test
+```
+
+## Validating EPUB Output
+- **EPUBCheck**: https://www.w3.org/publishing/epubcheck/ (online validator)
+- **Calibre**: Open `.epub` file to inspect content, TOC, and metadata
+- **Apple Books**: Drag-drop `.epub` to import and verify on macOS/iOS

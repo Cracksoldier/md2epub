@@ -1,0 +1,44 @@
+@use '../../../styles/variables' as *;
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: $toolbar-height;
+  padding: 0 16px;
+  background: $bg-surface;
+  border-bottom: 1px solid $border-subtle;
+  position: relative;
+  z-index: 5;
+  flex-shrink: 0;
+
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    user-select: none;
+  }
+
+  &__logo {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+  }
+
+  &__title {
+    font-size: 15px;
+    font-weight: 600;
+    color: $text-primary;
+    letter-spacing: -0.01em;
+  }
+
+  &__arrow {
+    color: $accent-light;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}

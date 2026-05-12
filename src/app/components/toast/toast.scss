@@ -1,0 +1,78 @@
+@use 'sass:color';
+@use '../../../styles/variables' as *;
+
+.toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+  max-width: 360px;
+}
+
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: $border-radius;
+  background: $bg-elevated;
+  border: 1px solid $border-subtle;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  font-size: 13px;
+  line-height: 1.4;
+  pointer-events: all;
+  animation: toast-in 0.2s ease;
+
+  &--success {
+    border-color: rgba($success, 0.4);
+    background: color.mix($bg-elevated, $success, 90%);
+    .toast__icon { color: $success; }
+  }
+
+  &--error {
+    border-color: rgba($danger, 0.4);
+    background: color.mix($bg-elevated, $danger, 90%);
+    .toast__icon { color: $danger; }
+  }
+
+  &--info {
+    border-color: rgba($accent, 0.3);
+    .toast__icon { color: $accent-light; }
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  &__message {
+    flex: 1;
+    color: $text-primary;
+  }
+
+  &__close {
+    flex-shrink: 0;
+    color: $text-muted;
+    border-radius: 4px;
+    padding: 2px;
+    margin: -2px -2px 0 0;
+    transition: color $transition-fast;
+
+    &:hover { color: $text-primary; }
+  }
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

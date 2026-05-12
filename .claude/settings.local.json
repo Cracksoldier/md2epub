@@ -7,7 +7,11 @@
       "Bash(npm --version)",
       "PowerShell(Get-ChildItem *)",
       "Read(//e/Projects/**)",
-      "Bash(ng new *)"
+      "Bash(ng new *)",
+      "Bash(yarn add *)",
+      "Bash(yarn ng *)",
+      "Bash(npm install *)",
+      "Bash(Test-Path *)"
     ]
   }
 }

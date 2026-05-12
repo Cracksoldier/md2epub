@@ -1,0 +1,93 @@
+@use 'variables' as *;
+
+// Shared preview/pane typography
+.prose {
+  color: $text-primary;
+  line-height: 1.7;
+
+  h1 { font-size: 1.875rem; font-weight: 700; margin: 1.5rem 0 0.75rem; color: $text-primary; border-bottom: 1px solid $border-subtle; padding-bottom: 0.4rem; }
+  h2 { font-size: 1.5rem; font-weight: 600; margin: 1.25rem 0 0.5rem; color: $text-primary; }
+  h3 { font-size: 1.25rem; font-weight: 600; margin: 1rem 0 0.4rem; color: $text-secondary; }
+  h4 { font-size: 1.1rem; font-weight: 600; margin: 0.8rem 0 0.3rem; color: $text-secondary; }
+
+  p { margin: 0.75rem 0; }
+
+  ul, ol { margin: 0.75rem 0; padding-left: 1.5rem; }
+  li { margin: 0.25rem 0; }
+
+  blockquote {
+    border-left: 3px solid $accent;
+    margin: 1rem 0;
+    padding: 0.5rem 1rem;
+    background: $bg-elevated;
+    border-radius: 0 $border-radius $border-radius 0;
+    color: $text-secondary;
+  }
+
+  code {
+    font-family: $font-mono;
+    font-size: 0.875em;
+    background: $bg-elevated;
+    color: $accent-light;
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+    border: 1px solid $border-subtle;
+  }
+
+  pre {
+    background: $bg-elevated;
+    border: 1px solid $border-subtle;
+    border-radius: $border-radius;
+    padding: 1rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+
+    code {
+      background: none;
+      border: none;
+      padding: 0;
+      color: $text-primary;
+      font-size: 0.875rem;
+    }
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+  }
+
+  th {
+    background: $bg-elevated;
+    color: $text-secondary;
+    font-weight: 600;
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid $border-subtle;
+  }
+
+  td {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid $border-subtle;
+  }
+
+  tr:nth-child(even) td { background: rgba(255, 255, 255, 0.02); }
+
+  img {
+    max-width: 100%;
+    height: auto;
+    border-radius: $border-radius;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid $border-subtle;
+    margin: 1.5rem 0;
+  }
+
+  a { color: $accent-light; }
+
+  strong { color: $text-primary; }
+  em { color: $text-secondary; }
+}
