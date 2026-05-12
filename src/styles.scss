@@ -35,6 +35,23 @@
     }
   }
 
+  &--coffee {
+    background: rgba(251, 191, 36, 0.1);
+    color: #fbbf24;
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    text-decoration: none;
+
+    &:hover {
+      background: rgba(251, 191, 36, 0.18);
+      border-color: rgba(251, 191, 36, 0.55);
+      color: #fcd34d;
+    }
+
+    &:active {
+      background: rgba(251, 191, 36, 0.25);
+    }
+  }
+
   &--icon {
     padding: 7px;
     border-radius: $border-radius;

@@ -78,9 +78,19 @@ Owns `exportLoading`, `settingsOpen`, `gridColumns`, and `showWelcome` signals. 
 
 Shown on first visit only. Displays a client-side privacy notice and a language picker so users can set their locale before starting. Dismisses on button click, backdrop click, or Escape. Dismissed state stored in `localStorage` key `epub-welcomed`.
 
+### Toolbar component
+
+`src/app/components/toolbar/toolbar.html` — contains the brand logo (inline SVG, 32×32 viewBox), action buttons (import, settings, export), locale switcher, and a **Buy Me a Coffee** `<a class="btn btn--coffee">` placeholder. Update its `href` when a real donation link is available.
+
+### Favicon
+
+`public/favicon.svg` — matches the toolbar logo exactly (dark book with blue text lines and arrow, `#050d1a` rounded background). Referenced in `src/index.html` as `<link rel="icon" type="image/svg+xml">` with the existing `favicon.ico` as fallback for older browsers.
+
 ### SCSS design system
 
 All color tokens and layout constants live in `src/styles/_variables.scss` and are imported with `@use 'variables' as *` in component stylesheets (path is relative, e.g. `../../../styles/variables`). Shared button (`.btn`) and form input (`.form-input`) classes are defined in `src/styles.scss`. Use `@use 'sass:color'` for color functions — the deprecated global `darken()`/`mix()` functions will error.
+
+Button variants: `btn--primary` (blue), `btn--ghost` (bordered), `btn--icon` (icon-only), `btn--coffee` (amber/gold, used for the donation link).
 
 ### EPUB output structure
 
