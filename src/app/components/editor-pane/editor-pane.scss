@@ -1,8 +1,14 @@
 @use '../../../styles/variables' as *;
 
+:host {
+  display: block;
+  height: 100%;
+}
+
 .pane {
   display: flex;
   flex-direction: column;
+  height: 100%;
   overflow: hidden;
   position: relative;
 
