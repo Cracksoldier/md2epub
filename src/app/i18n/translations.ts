@@ -1,8 +1,9 @@
-export type Locale = 'en' | 'de' | 'es' | 'da' | 'ja' | 'zh-TW';
+export type Locale = 'en' | 'de' | 'de-styr' | 'es' | 'da' | 'ja' | 'zh-TW';
 
 export const LOCALES: { code: Locale; label: string }[] = [
   { code: 'en', label: 'English' },
   { code: 'de', label: 'Deutsch' },
+  { code: 'de-styr', label: 'Steirisch' },
   { code: 'es', label: 'Español' },
   { code: 'da', label: 'Dansk' },
   { code: 'ja', label: '日本語' },
@@ -148,6 +149,53 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       downloaded: '„{0}" heruntergeladen!',
       exportFailed: 'Export fehlgeschlagen – Details in der Konsole.',
       coverLoadError: 'Bild konnte nicht geladen werden. Bitte JPEG oder PNG verwenden.',
+    },
+  },
+
+  'de-styr': {
+    toolbar: {
+      import: 'Einlesen',
+      settings: 'Einstellungen',
+      exportEpub: 'EPUB exportiern',
+      generating: 'Wiad gmocht…',
+      importTitle: '.md-Datei einlesen (oder drogn und lossn)',
+      settingsTitle: 'Buacheinstellungen (Strg+,)',
+      exportTitle: 'EPUB runterladen (Strg+E)',
+      languageLabel: 'Oberflächen-Sproch',
+    },
+    editor: {
+      label: 'Markdown',
+      words: 'Wörter',
+      importTitle: 'Datei einlesen',
+      clearTitle: 'Editor ausleern',
+      dropHint: '.md-Datei hinlegn zum Einlesen',
+      placeholder: '# Mei Buachtitel\n\nDo kumm i zum Schreim on...\n\nA .md-Datei irgendwo hinlegn zum Einlesen.',
+    },
+    preview: {
+      label: 'Vorschau',
+      chapter: 'Kapitel',
+      chapters: 'Kapitel',
+    },
+    settings: {
+      title: 'Buacheinstellungen',
+      closeTitle: 'Einstellungen zumachen',
+      bookTitle: 'Buachtitel',
+      bookTitlePlaceholder: 'Mei Buach',
+      author: 'Autor',
+      authorPlaceholder: 'Franz Gruber',
+      language: 'Sproch',
+      coverImage: 'Titelbiid',
+      removeCover: 'Titelbiid wegschmeißn',
+      uploadCover: 'Titelbiid hochladen',
+      uploadCoverHint: 'JPG oder PNG empfohlen',
+      splitChapters: 'In Kapitel aufteilen',
+      splitChaptersDesc: 'Den Inhalt bei jedn H1- und H2-Überschrift in eigane EPUB-Kapitel aufteilen.',
+    },
+    toast: {
+      nothingToExport: 'Nix zum Exportiern – schreib zerscht wos.',
+      downloaded: '„{0}" runtergladen!',
+      exportFailed: 'Export hob ned funktioniert – schau in d Konsol nei.',
+      coverLoadError: 'Biid hot si ned laden lossn. Nimm bitte a JPEG oder PNG.',
     },
   },
 
