@@ -86,3 +86,16 @@
     option { background: $bg-surface; }
   }
 }
+
+@media (max-width: $breakpoint-mobile) {
+  .toolbar {
+    padding: 0 10px;
+    gap: 6px;
+  }
+
+  .btn__label { display: none; }
+
+  .toolbar__locale-wrap {
+    padding: 0 8px;
+  }
+}

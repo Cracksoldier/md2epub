@@ -30,6 +30,9 @@ $border-radius-lg: 10px;
 $font-mono: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
 $font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
+// Breakpoints
+$breakpoint-mobile: 640px;
+
 // Transitions
 $transition-fast:   0.15s ease;
 $transition-normal: 0.25s ease;

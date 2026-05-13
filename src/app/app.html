@@ -7,10 +7,27 @@
   ></app-toolbar>
 
   <main class="workspace" [style.grid-template-columns]="gridColumns()">
-    <app-editor-pane #editorPaneRef></app-editor-pane>
+    <app-editor-pane #editorPaneRef [class.mobile-hidden]="mobileView() !== 'editor'"></app-editor-pane>
     <app-pane-divider (ratioChange)="onPaneRatio($event)"></app-pane-divider>
-    <app-preview-pane></app-preview-pane>
+    <app-preview-pane [class.mobile-hidden]="mobileView() !== 'preview'"></app-preview-pane>
   </main>
+
+  <nav class="mobile-tabs" aria-label="View switcher">
+    <button class="mobile-tab" [class.is-active]="mobileView() === 'editor'" (click)="mobileView.set('editor')">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="1" y="1" width="12" height="12" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
+        <path d="M4 4h6M4 7h6M4 10h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+      </svg>
+      {{ i18n.t('editor.label') }}
+    </button>
+    <button class="mobile-tab" [class.is-active]="mobileView() === 'preview'" (click)="mobileView.set('preview')">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M1 7s2.5-4.5 6-4.5S13 7 13 7s-2.5 4.5-6 4.5S1 7 1 7z" stroke="currentColor" stroke-width="1.3"/>
+        <circle cx="7" cy="7" r="1.5" stroke="currentColor" stroke-width="1.3"/>
+      </svg>
+      {{ i18n.t('preview.label') }}
+    </button>
+  </nav>
 
   <div
     class="backdrop"

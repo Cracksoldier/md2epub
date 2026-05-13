@@ -24,10 +24,11 @@ export class App {
   private readonly settings = inject(SettingsService);
   private readonly epub = inject(EpubService);
   private readonly toast = inject(ToastService);
-  private readonly i18n = inject(I18nService);
+  protected readonly i18n = inject(I18nService);
 
   readonly settingsOpen = signal(false);
   readonly exportLoading = signal(false);
+  readonly mobileView = signal<'editor' | 'preview'>('editor');
   readonly gridColumns = signal(this.initColumns());
   readonly showWelcome = signal(!localStorage.getItem('epub-welcomed'));
 
