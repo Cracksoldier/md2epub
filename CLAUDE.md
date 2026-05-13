@@ -9,11 +9,9 @@ npm start              # dev server at http://localhost:4200
 npm run build          # production build → dist/epub-converter/browser/
 npm run watch          # incremental dev build
 npm test               # run all unit tests (Vitest via @angular/build:unit-test)
-
-# GitHub Pages deployment
-npx ng build --base-href /md2epub/
-npx angular-cli-ghpages --dir=dist/epub-converter/browser
 ```
+
+**Deployment:** Pushing to `main` triggers the GitHub Actions workflow (`.github/workflows/deploy.yml`), which builds with `--base-href /md2epub/` and deploys to GitHub Pages automatically. Live site: https://cracksoldier.github.io/md2epub/
 
 **Package manager:** npm. Lockfile is `package-lock.json`.
 
