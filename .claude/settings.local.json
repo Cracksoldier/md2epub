@@ -11,7 +11,24 @@
       "Bash(yarn add *)",
       "Bash(yarn ng *)",
       "Bash(npm install *)",
-      "Bash(Test-Path *)"
+      "Bash(Test-Path *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(npm start *)",
+      "WebFetch(domain:localhost)",
+      "Bash(node -e \"const puppeteer = require\\('puppeteer'\\); console.log\\('ok'\\)\")",
+      "Bash(npx playwright *)",
+      "Bash(node *)",
+      "Bash(npx --prefix /tmp/pw playwright install chromium)",
+      "Read(//c/Program Files/Google/Chrome/Application/**)",
+      "Read(//c/Program Files \\(x86\\)/Microsoft/Edge/Application/**)",
+      "Bash(\"C:\\\\Program Files\\\\Google\\\\Chrome\\\\Application\\\\chrome.exe\" --headless=new --disable-gpu --remote-debugging-port=9222 \"http://localhost:4200\")",
+      "Bash(git -C \"E:/Projects/epub-converter\" status)",
+      "Bash(git -C \"E:/Projects/epub-converter\" diff)",
+      "Bash(git *)",
+      "Bash(npx ng *)",
+      "Bash(npm test *)",
+      "Bash(python3 *)"
     ]
   }
 }
