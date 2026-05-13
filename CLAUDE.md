@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 npm start              # dev server at http://localhost:4200
 npm run build          # production build → dist/epub-converter/browser/
 npm run watch          # incremental dev build
-npm test               # unit tests with Vitest
+npm test               # run all unit tests (Vitest via @angular/build:unit-test)
 
 # GitHub Pages deployment (replace repo name)
 ng build --base-href /epub-converter/
@@ -126,3 +126,25 @@ EPUB/images/cover.{jpg|png}
 ```
 
 Validate generated EPUBs at https://www.w3.org/publishing/epubcheck/
+
+### Unit tests
+
+Test runner: **Vitest** via `@angular/build:unit-test` (jsdom environment). Run with `npm test`. All spec files sit next to the file they test (`.spec.ts` suffix).
+
+| Spec file | Coverage |
+|---|---|
+| `services/markdown.service.spec.ts` | `parse()`, `getFirstHeading()`, `splitIntoChapters()` edge cases |
+| `services/epub.service.spec.ts` | ZIP structure, mimetype STORE + first-entry, container namespace, opf metadata, chapters, cover, XML escaping |
+| `services/i18n.service.spec.ts` | Key lookup, `{0}` interpolation, `setLocale()`, localStorage persistence, fallbacks |
+| `services/settings.service.spec.ts` | Defaults, `update()` merge, `loadCoverFromFile()` (PNG/JPEG/reject), `clearCover()` |
+| `services/toast.service.spec.ts` | `show()`, `dismiss()`, auto-dismiss via fake timers (`vi.useFakeTimers`), unique IDs |
+| `services/editor-state.service.spec.ts` | Initial sample content, `setContent()` |
+| `components/pane-divider/pane-divider.spec.ts` | Static `loadSavedRatio()`/`saveRatio()`, clamping, ArrowLeft/ArrowRight keyboard resize |
+| `components/toolbar/toolbar.spec.ts` | Dropdown open/close, `selectLocale()`, `currentLocaleLabel()`, Escape/outside-click |
+
+**Testing patterns:**
+- Services are obtained via `TestBed.inject()` after `TestBed.configureTestingModule({})`.
+- Clear `localStorage` in `beforeEach` for any service that reads it on init (`I18nService`, `PaneDivider`).
+- Mock `window.FileReader` by replacing it with a class: `(window as any).FileReader = class FakeReader { ... }`. Arrow-function implementations don't work as constructors.
+- Use `vi.useFakeTimers()` / `vi.useRealTimers()` from `'vitest'` to control `setTimeout`-based behaviour (toast auto-dismiss).
+- `splitIntoChapters()` discards content that appears before the first `H1`/`H2` heading; this is by design and is tested explicitly.
