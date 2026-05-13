@@ -42,9 +42,10 @@
       </button>
 
       @if (localeOpen()) {
-        <div class="locale-dropdown" role="listbox" [attr.aria-label]="i18n.t('toolbar.languageLabel')">
+        <div class="locale-dropdown" role="listbox" [attr.aria-label]="i18n.t('toolbar.languageLabel')" (keydown)="onDropdownKeydown($event)">
           @for (loc of i18n.locales; track loc.code) {
             <button
+              #localeOption
               class="locale-option"
               role="option"
               [class.is-active]="i18n.locale() === loc.code"
@@ -77,7 +78,7 @@
       }
     </button>
 
-    <a class="btn btn--coffee" href="#" title="Buy me a coffee">
+    <a class="btn btn--coffee" href="#" title="Buy me a coffee" (click)="$event.preventDefault()">
       <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <path d="M3 5h9v5a4 4 0 01-4 4H7a4 4 0 01-4-4V5z" stroke="currentColor" stroke-width="1.4"/>
         <path d="M12 6h1a2 2 0 010 4h-1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>

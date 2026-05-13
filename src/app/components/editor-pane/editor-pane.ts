@@ -1,13 +1,12 @@
 import {
   Component, inject, computed, ElementRef, ViewChild, HostListener,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { EditorStateService } from '../../services/editor-state.service';
 import { I18nService } from '../../services/i18n.service';
 
 @Component({
   selector: 'app-editor-pane',
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './editor-pane.html',
   styleUrl: './editor-pane.scss',
 })

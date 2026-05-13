@@ -1,12 +1,11 @@
 import { Component, inject, input, output } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { SettingsService } from '../../services/settings.service';
 import { ToastService } from '../../services/toast.service';
 import { I18nService } from '../../services/i18n.service';
 
 @Component({
   selector: 'app-settings-panel',
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './settings-panel.html',
   styleUrl: './settings-panel.scss',
 })

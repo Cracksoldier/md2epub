@@ -1,5 +1,4 @@
 import { Component, HostListener, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { Toolbar } from './components/toolbar/toolbar';
 import { EditorPane } from './components/editor-pane/editor-pane';
 import { PreviewPane } from './components/preview-pane/preview-pane';
@@ -15,7 +14,7 @@ import { I18nService } from './services/i18n.service';
 
 @Component({
   selector: 'app-root',
-  imports: [CommonModule, Toolbar, EditorPane, PreviewPane, PaneDivider, SettingsPanel, Toast, WelcomeModal],
+  imports: [Toolbar, EditorPane, PreviewPane, PaneDivider, SettingsPanel, Toast, WelcomeModal],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
@@ -41,7 +40,7 @@ export class App {
   }
 
   onPaneRatio(ratio: number): void {
-    this.gridColumns.set(`${ratio}fr ${4 / window.innerWidth * 100}% ${1 - ratio}fr`);
+    this.gridColumns.set(`${ratio}fr 4px ${1 - ratio}fr`);
     PaneDivider.saveRatio(ratio);
   }
 

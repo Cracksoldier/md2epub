@@ -40,8 +40,6 @@ export class MarkdownService {
         currentTitle = el.textContent?.trim() || `Chapter ${idx}`;
         currentContent = el.outerHTML;
         started = true;
-      } else if (started) {
-        currentContent += el.outerHTML;
       } else {
         currentContent += el.outerHTML;
       }

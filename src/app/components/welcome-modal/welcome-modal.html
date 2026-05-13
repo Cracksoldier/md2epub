@@ -1,5 +1,5 @@
 <div class="welcome-backdrop" (click)="close.emit()" role="dialog" aria-modal="true" [attr.aria-label]="i18n.t('welcome.title')">
-  <div class="welcome-card" (click)="$event.stopPropagation()">
+  <div #card class="welcome-card" (click)="$event.stopPropagation()">
 
     <div class="welcome-header">
       <svg class="welcome-logo" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">

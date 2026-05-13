@@ -1,8 +1,8 @@
-import { Component, inject, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, computed, inject } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { debounceTime, map } from 'rxjs';
+import DOMPurify from 'dompurify';
 import { EditorStateService } from '../../services/editor-state.service';
 import { MarkdownService } from '../../services/markdown.service';
 import { SettingsService } from '../../services/settings.service';
@@ -10,7 +10,7 @@ import { I18nService } from '../../services/i18n.service';
 
 @Component({
   selector: 'app-preview-pane',
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './preview-pane.html',
   styleUrl: './preview-pane.scss',
 })
@@ -21,18 +21,24 @@ export class PreviewPane {
   private readonly sanitizer = inject(DomSanitizer);
   protected readonly i18n = inject(I18nService);
 
-  readonly safeHtml = toSignal(
+  // Single debounced parse — both safeHtml and chapterCount consume this
+  private readonly rawHtml = toSignal(
     toObservable(this.editorState.content).pipe(
       debounceTime(200),
-      map(md => this.sanitizer.bypassSecurityTrustHtml(this.markdownService.parse(md))),
+      map(md => this.markdownService.parse(md)),
     ),
-    { initialValue: this.sanitizer.bypassSecurityTrustHtml(this.markdownService.parse(this.editorState.content())) },
+    { initialValue: this.markdownService.parse(this.editorState.content()) },
+  );
+
+  readonly safeHtml = computed(() =>
+    this.sanitizer.bypassSecurityTrustHtml(
+      DOMPurify.sanitize(this.rawHtml(), { USE_PROFILES: { html: true } }),
+    )
   );
 
   readonly chapterCount = computed(() => {
     const meta = this.settingsService.metadata();
     if (!meta.splitChapters) return 0;
-    const html = this.markdownService.parse(this.editorState.content());
-    return this.markdownService.splitIntoChapters(html).length;
+    return this.markdownService.splitIntoChapters(this.rawHtml()).length;
   });
 }

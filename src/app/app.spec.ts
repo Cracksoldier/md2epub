@@ -10,14 +10,21 @@ describe('App', () => {
 
   it('should create the app', () => {
     const fixture = TestBed.createComponent(App);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
+    expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('should render title', async () => {
+  it('should render the toolbar', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, epub-converter');
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('app-toolbar')).toBeTruthy();
+  });
+
+  it('should render editor and preview panes', async () => {
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('app-editor-pane')).toBeTruthy();
+    expect(el.querySelector('app-preview-pane')).toBeTruthy();
   });
 });
