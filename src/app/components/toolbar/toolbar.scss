@@ -43,6 +43,11 @@
   }
 
   &__locale-wrap {
+    position: relative;
+    color: $text-secondary;
+  }
+
+  &__locale-trigger {
     display: flex;
     align-items: center;
     gap: 5px;
@@ -51,16 +56,15 @@
     background: transparent;
     border: 1px solid $border-subtle;
     border-radius: $border-radius;
-    color: $text-secondary;
+    color: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
     transition: border-color $transition-fast, color $transition-fast, background $transition-fast;
+    white-space: nowrap;
 
-    &:focus-within {
-      border-color: $border-focus;
-      background: $bg-elevated;
-      color: $text-primary;
-    }
-
-    &:hover {
+    &:hover,
+    .is-open & {
       background: $bg-elevated;
       color: $text-primary;
       border-color: $border-focus;
@@ -69,21 +73,60 @@
 
   &__locale-icon {
     flex-shrink: 0;
-    pointer-events: none;
   }
 
-  &__locale-select {
-    background: transparent;
-    border: none;
-    color: inherit;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    outline: none;
-    padding: 0;
-    appearance: none;
+  &__locale-label {
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
-    option { background: $bg-surface; }
+  &__locale-chevron {
+    flex-shrink: 0;
+    transition: transform $transition-fast;
+
+    .is-open & {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+.locale-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 140px;
+  background: $bg-elevated;
+  border: 1px solid $border-subtle;
+  border-radius: $border-radius;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  z-index: 50;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.locale-option {
+  display: block;
+  width: 100%;
+  padding: 8px 14px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 500;
+  color: $text-secondary;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background $transition-fast, color $transition-fast;
+
+  &:hover {
+    background: $bg-input;
+    color: $text-primary;
+  }
+
+  &.is-active {
+    color: $accent-light;
+    background: $accent-glow;
   }
 }
 

@@ -26,22 +26,40 @@
       <span class="btn__label">{{ i18n.t('toolbar.settings') }}</span>
     </button>
 
-    <div class="toolbar__locale-wrap" [title]="i18n.t('toolbar.languageLabel')">
-      <svg class="toolbar__locale-icon" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.3"/>
-        <ellipse cx="7" cy="7" rx="2.5" ry="6" stroke="currentColor" stroke-width="1.3"/>
-        <path d="M1.5 5h11M1.5 9h11" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-      </svg>
-      <select
-        class="toolbar__locale-select"
-        [value]="i18n.locale()"
-        (change)="onLocaleChange($event)"
+    <div class="toolbar__locale-wrap" [class.is-open]="localeOpen()">
+      <button
+        class="toolbar__locale-trigger"
+        (click)="toggleLocale($event)"
         [attr.aria-label]="i18n.t('toolbar.languageLabel')"
+        [attr.aria-expanded]="localeOpen()"
+        aria-haspopup="listbox"
       >
-        @for (loc of i18n.locales; track loc.code) {
-          <option [value]="loc.code">{{ loc.label }}</option>
-        }
-      </select>
+        <svg class="toolbar__locale-icon" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.3"/>
+          <ellipse cx="7" cy="7" rx="2.5" ry="6" stroke="currentColor" stroke-width="1.3"/>
+          <path d="M1.5 5h11M1.5 9h11" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+        </svg>
+        <span class="toolbar__locale-label">{{ currentLocaleLabel() }}</span>
+        <svg class="toolbar__locale-chevron" width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M2 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+
+      @if (localeOpen()) {
+        <div class="locale-dropdown" role="listbox" [attr.aria-label]="i18n.t('toolbar.languageLabel')">
+          @for (loc of i18n.locales; track loc.code) {
+            <button
+              class="locale-option"
+              role="option"
+              [class.is-active]="i18n.locale() === loc.code"
+              [attr.aria-selected]="i18n.locale() === loc.code"
+              (click)="selectLocale(loc.code)"
+            >
+              {{ loc.label }}
+            </button>
+          }
+        </div>
+      }
     </div>
 
     <button

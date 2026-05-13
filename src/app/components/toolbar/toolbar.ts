@@ -1,4 +1,4 @@
-import { Component, inject, input, output } from '@angular/core';
+import { Component, computed, ElementRef, HostListener, inject, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { I18nService } from '../../services/i18n.service';
 import type { Locale } from '../../i18n/translations';
@@ -11,6 +11,7 @@ import type { Locale } from '../../i18n/translations';
 })
 export class Toolbar {
   protected readonly i18n = inject(I18nService);
+  private readonly el = inject(ElementRef);
 
   readonly exportLoading = input(false);
 
@@ -18,7 +19,31 @@ export class Toolbar {
   readonly settingsClick = output<void>();
   readonly exportClick = output<void>();
 
-  onLocaleChange(event: Event): void {
-    this.i18n.setLocale((event.target as HTMLSelectElement).value as Locale);
+  readonly localeOpen = signal(false);
+
+  readonly currentLocaleLabel = computed(
+    () => this.i18n.locales.find(l => l.code === this.i18n.locale())?.label ?? this.i18n.locale()
+  );
+
+  @HostListener('document:click', ['$event'])
+  onDocClick(e: MouseEvent): void {
+    if (this.localeOpen() && !this.el.nativeElement.contains(e.target as Node)) {
+      this.localeOpen.set(false);
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    this.localeOpen.set(false);
+  }
+
+  toggleLocale(e: MouseEvent): void {
+    e.stopPropagation();
+    this.localeOpen.update(v => !v);
+  }
+
+  selectLocale(code: Locale): void {
+    this.i18n.setLocale(code);
+    this.localeOpen.set(false);
   }
 }
