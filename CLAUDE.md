@@ -10,8 +10,8 @@ npm run build          # production build → dist/epub-converter/browser/
 npm run watch          # incremental dev build
 npm test               # run all unit tests (Vitest via @angular/build:unit-test)
 
-# GitHub Pages deployment (replace repo name)
-ng build --base-href /epub-converter/
+# GitHub Pages deployment
+npx ng build --base-href /md2epub/
 npx angular-cli-ghpages --dir=dist/epub-converter/browser
 ```
 
