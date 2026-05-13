@@ -72,15 +72,31 @@ All user-visible strings live in `src/app/i18n/translations.ts` as a typed `Tran
 
 ### AppComponent (app.ts)
 
-Owns `exportLoading`, `settingsOpen`, `gridColumns`, and `showWelcome` signals. Handles `Ctrl+E` (export) and `Ctrl+,` (toggle settings) via `@HostListener`. Calls `PaneDivider.saveRatio()` / `loadSavedRatio()` (static helpers) to persist the pane split in `localStorage`. `showWelcome` is `true` on first visit (no `epub-welcomed` key in `localStorage`); `onWelcomeClosed()` sets the flag and hides the modal.
+Owns `exportLoading`, `settingsOpen`, `gridColumns`, `showWelcome`, and `mobileView` signals. Handles `Ctrl+E` (export) and `Ctrl+,` (toggle settings) via `@HostListener`. Calls `PaneDivider.saveRatio()` / `loadSavedRatio()` (static helpers) to persist the pane split in `localStorage`. `showWelcome` is `true` on first visit (no `epub-welcomed` key in `localStorage`); `onWelcomeClosed()` sets the flag and hides the modal.
+
+`mobileView` (`Signal<'editor' | 'preview'>`) tracks the active tab on phones; toggled by the mobile bottom tab bar in `app.html`. `i18n` is `protected` (not `private`) so the template can call `i18n.t()` directly for tab labels.
 
 ### WelcomeModal component
 
 Shown on first visit only. Displays a client-side privacy notice and a language picker so users can set their locale before starting. Dismisses on button click, backdrop click, or Escape. Dismissed state stored in `localStorage` key `epub-welcomed`.
 
+### Responsive layout
+
+Three layout tiers, all handled purely in CSS — no JS media queries:
+
+| Viewport | Layout |
+|---|---|
+| ≥ 769px | Split pane (editor left, preview right, draggable divider) |
+| 641–768px | Stacked (editor top, preview bottom 45 vh) |
+| ≤ 640px | Single pane + bottom tab bar (Editor / Preview tabs) |
+
+The mobile breakpoint is `$breakpoint-mobile: 640px` in `src/styles/_variables.scss`. On phones the inactive pane gets a `mobile-hidden` class (`display: none`) and the `.mobile-tabs` / `.mobile-tab` bar is shown via `@media (max-width: $breakpoint-mobile)` in `app.scss`. The `PaneDivider` is hidden on mobile via `app-pane-divider { display: none }`.
+
+Toolbar button text is wrapped in `<span class="btn__label">` so it can be hidden on mobile without hiding icons; `toolbar.scss` hides `.btn__label` at the same breakpoint.
+
 ### Toolbar component
 
-`src/app/components/toolbar/toolbar.html` — contains the brand logo (inline SVG, 32×32 viewBox), action buttons (import, settings, export), locale switcher, and a **Buy Me a Coffee** `<a class="btn btn--coffee">` placeholder. Update its `href` when a real donation link is available.
+`src/app/components/toolbar/toolbar.html` — contains the brand logo (inline SVG, 32×32 viewBox), action buttons (import, settings, export), locale switcher, and a **Buy Me a Coffee** `<a class="btn btn--coffee">` placeholder. Update its `href` when a real donation link is available. Button text is wrapped in `<span class="btn__label">` for mobile hiding.
 
 ### Favicon
 
@@ -90,7 +106,7 @@ Shown on first visit only. Displays a client-side privacy notice and a language 
 
 All color tokens and layout constants live in `src/styles/_variables.scss` and are imported with `@use 'variables' as *` in component stylesheets (path is relative, e.g. `../../../styles/variables`). Shared button (`.btn`) and form input (`.form-input`) classes are defined in `src/styles.scss`. Use `@use 'sass:color'` for color functions — the deprecated global `darken()`/`mix()` functions will error.
 
-Button variants: `btn--primary` (blue), `btn--ghost` (bordered), `btn--icon` (icon-only), `btn--coffee` (amber/gold, used for the donation link).
+Button variants: `btn--primary` (blue), `btn--ghost` (bordered), `btn--icon` (icon-only), `btn--coffee` (amber/gold, used for the donation link). Button text that should hide on mobile is wrapped in `<span class="btn__label">` and toggled via `toolbar.scss`.
 
 ### EPUB output structure
 
