@@ -71,10 +71,6 @@
     }
   }
 
-  &__locale-icon {
-    flex-shrink: 0;
-  }
-
   &__locale-label {
     max-width: 80px;
     overflow: hidden;
@@ -107,7 +103,9 @@
 }
 
 .locale-option {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 9px;
   width: 100%;
   padding: 8px 14px;
   text-align: left;

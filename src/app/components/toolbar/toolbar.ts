@@ -2,10 +2,11 @@ import { Component, computed, ElementRef, HostListener, inject, input, output, s
 import { CommonModule } from '@angular/common';
 import { I18nService } from '../../services/i18n.service';
 import type { Locale } from '../../i18n/translations';
+import { FlagIcon } from '../flag-icon/flag-icon';
 
 @Component({
   selector: 'app-toolbar',
-  imports: [CommonModule],
+  imports: [CommonModule, FlagIcon],
   templateUrl: './toolbar.html',
   styleUrl: './toolbar.scss',
 })

@@ -98,7 +98,9 @@ Toolbar button text is wrapped in `<span class="btn__label">` so it can be hidde
 
 `src/app/components/toolbar/toolbar.html` — contains the brand logo (inline SVG, 32×32 viewBox), action buttons (import, settings, export), a custom locale dropdown, and a **Buy Me a Coffee** `<a class="btn btn--coffee">` placeholder. Update its `href` when a real donation link is available. Button text is wrapped in `<span class="btn__label">` for mobile hiding.
 
-**Locale dropdown** — a fully custom dropdown replacing the native `<select>`. `Toolbar` owns a `localeOpen` signal and a `currentLocaleLabel` computed. A `@HostListener('document:click')` closes the panel on outside click; `@HostListener('document:keydown.escape')` closes it on Escape. The trigger (`.toolbar__locale-trigger`) shows the globe icon, current locale label, and a rotating chevron. The panel (`.locale-dropdown`) and its options (`.locale-option`) are styled with the app's dark palette — active locale gets `$accent-light` / `$accent-glow`. Styles live in `toolbar.scss`.
+**Locale dropdown** — a fully custom dropdown replacing the native `<select>`. `Toolbar` owns a `localeOpen` signal and a `currentLocaleLabel` computed. A `@HostListener('document:click')` closes the panel on outside click; `@HostListener('document:keydown.escape')` closes it on Escape. The trigger (`.toolbar__locale-trigger`) shows the current locale's flag, label, and a rotating chevron. The panel (`.locale-dropdown`) and its options (`.locale-option`) are styled with the app's dark palette — active locale gets `$accent-light` / `$accent-glow`. Styles live in `toolbar.scss`.
+
+**FlagIcon component** — `src/app/components/flag-icon/flag-icon.ts`. Standalone component, takes a `locale` input (string) and renders an inline SVG flag (20×14 px, `border-radius: 2px`). Flags: 🇬🇧 `en`, 🇩🇪 `de`, 🇦🇹 `de-styr`, 🇪🇸 `es`, 🇩🇰 `da`, 🇯🇵 `ja`, 🇹🇼 `zh-TW`. Each SVG has a subtle `rgba(0,0,0,.15)` border overlay so light-coloured flags (Japan, Austria) stay visible against any background. Adding a new locale requires adding a matching `@case` block in the component template.
 
 ### Favicon
 
