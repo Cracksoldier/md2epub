@@ -46,6 +46,10 @@ export interface TranslationMap {
     removeCover: string;
     uploadCover: string;
     uploadCoverHint: string;
+    publisher: string;
+    publisherPlaceholder: string;
+    description: string;
+    descriptionPlaceholder: string;
     splitChapters: string;
     splitChaptersDesc: string;
   };
@@ -101,6 +105,10 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       removeCover: 'Remove cover',
       uploadCover: 'Upload cover image',
       uploadCoverHint: 'JPG or PNG recommended',
+      publisher: 'Publisher',
+      publisherPlaceholder: 'Publisher name',
+      description: 'Description',
+      descriptionPlaceholder: 'A short summary of the book…',
       splitChapters: 'Split into chapters',
       splitChaptersDesc: 'Split content at each H1 and H2 heading into separate EPUB chapters.',
     },
@@ -155,6 +163,10 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       removeCover: 'Titelbild entfernen',
       uploadCover: 'Titelbild hochladen',
       uploadCoverHint: 'JPG oder PNG empfohlen',
+      publisher: 'Verlag',
+      publisherPlaceholder: 'Verlagsname',
+      description: 'Beschreibung',
+      descriptionPlaceholder: 'Eine kurze Zusammenfassung des Buches…',
       splitChapters: 'In Kapitel aufteilen',
       splitChaptersDesc: 'Inhalt an H1- und H2-Überschriften in separate EPUB-Kapitel aufteilen.',
     },
@@ -209,6 +221,10 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       removeCover: 'Titelbiid wegschmeißn',
       uploadCover: 'Titelbiid hochladen',
       uploadCoverHint: 'JPG oder PNG empfohlen',
+      publisher: 'Verlog',
+      publisherPlaceholder: 'Verlogsname',
+      description: 'Beschreibung',
+      descriptionPlaceholder: 'A kurze Zsammenfassung vom Buach…',
       splitChapters: 'In Kapitel aufteilen',
       splitChaptersDesc: 'Den Inhalt bei jedn H1- und H2-Überschrift in eigane EPUB-Kapitel aufteilen.',
     },
@@ -263,6 +279,10 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       removeCover: 'Quitar portada',
       uploadCover: 'Subir imagen de portada',
       uploadCoverHint: 'Se recomienda JPG o PNG',
+      publisher: 'Editorial',
+      publisherPlaceholder: 'Nombre de la editorial',
+      description: 'Descripción',
+      descriptionPlaceholder: 'Un breve resumen del libro…',
       splitChapters: 'Dividir en capítulos',
       splitChaptersDesc: 'Divide el contenido en cada encabezado H1 y H2 en capítulos EPUB separados.',
     },
@@ -317,6 +337,10 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       removeCover: 'Fjern omslag',
       uploadCover: 'Upload omslagsbillede',
       uploadCoverHint: 'JPG eller PNG anbefales',
+      publisher: 'Udgiver',
+      publisherPlaceholder: 'Udgiverens navn',
+      description: 'Beskrivelse',
+      descriptionPlaceholder: 'En kort opsummering af bogen…',
       splitChapters: 'Opdel i kapitler',
       splitChaptersDesc: 'Opdel indhold ved hvert H1- og H2-overskrift i separate EPUB-kapitler.',
     },
@@ -371,6 +395,10 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       removeCover: '表紙を削除',
       uploadCover: '表紙画像をアップロード',
       uploadCoverHint: 'JPGまたはPNGを推奨',
+      publisher: '出版社',
+      publisherPlaceholder: '出版社名',
+      description: '概要',
+      descriptionPlaceholder: '本の短い説明…',
       splitChapters: 'チャプターに分割',
       splitChaptersDesc: 'H1とH2の見出しでコンテンツを分割し、個別のEPUBチャプターを作成します。',
     },
@@ -425,6 +453,10 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       removeCover: '移除封面',
       uploadCover: '上傳封面圖片',
       uploadCoverHint: '建議使用 JPG 或 PNG',
+      publisher: '出版社',
+      publisherPlaceholder: '出版社名稱',
+      description: '簡介',
+      descriptionPlaceholder: '書籍的簡短摘要…',
       splitChapters: '分割為章節',
       splitChaptersDesc: '在每個 H1 和 H2 標題處分割內容，生成獨立的 EPUB 章節。',
     },

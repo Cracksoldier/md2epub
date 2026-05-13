@@ -40,6 +40,32 @@
       />
     </div>
 
+    <!-- Publisher -->
+    <div class="form-group">
+      <label for="meta-publisher">{{ i18n.t('settings.publisher') }}</label>
+      <input
+        id="meta-publisher"
+        class="form-input"
+        type="text"
+        [value]="settings.metadata().publisher"
+        (input)="onPublisherChange($event)"
+        [placeholder]="i18n.t('settings.publisherPlaceholder')"
+      />
+    </div>
+
+    <!-- Description -->
+    <div class="form-group">
+      <label for="meta-description">{{ i18n.t('settings.description') }}</label>
+      <textarea
+        id="meta-description"
+        class="form-input"
+        rows="3"
+        [value]="settings.metadata().description"
+        (input)="onDescriptionChange($event)"
+        [placeholder]="i18n.t('settings.descriptionPlaceholder')"
+      ></textarea>
+    </div>
+
     <!-- Language -->
     <div class="form-group">
       <label for="meta-lang">{{ i18n.t('settings.language') }}</label>

@@ -40,6 +40,14 @@ export class SettingsPanel {
     this.settings.update({ author: (event.target as HTMLInputElement).value });
   }
 
+  onPublisherChange(event: Event): void {
+    this.settings.update({ publisher: (event.target as HTMLInputElement).value });
+  }
+
+  onDescriptionChange(event: Event): void {
+    this.settings.update({ description: (event.target as HTMLTextAreaElement).value });
+  }
+
   onLanguageChange(event: Event): void {
     this.settings.update({ language: (event.target as HTMLSelectElement).value });
   }

@@ -52,6 +52,12 @@ export class EpubService {
     const creatorEl = meta.author.trim()
       ? `\n    <dc:creator>${this.esc(meta.author)}</dc:creator>`
       : '';
+    const publisherEl = meta.publisher.trim()
+      ? `\n    <dc:publisher>${this.esc(meta.publisher)}</dc:publisher>`
+      : '';
+    const descriptionEl = meta.description.trim()
+      ? `\n    <dc:description>${this.esc(meta.description)}</dc:description>`
+      : '';
     const coverMeta = hasCover ? '\n    <meta name="cover" content="cover-image"/>' : '';
 
     // mimetype MUST be first and uncompressed
@@ -59,7 +65,7 @@ export class EpubService {
 
     zip.file('META-INF/container.xml', this.containerXml());
     zip.file('EPUB/package.opf', this.packageOpf({
-      uuid, title, lang, now, creatorEl, coverMeta,
+      uuid, title, lang, now, creatorEl, publisherEl, descriptionEl, coverMeta,
       manifestItems, spineItems,
     }));
     zip.file('EPUB/nav.xhtml', this.navXhtml({ lang, title: 'Table of Contents', tocItems }));
@@ -90,14 +96,14 @@ export class EpubService {
 
   private packageOpf(p: {
     uuid: string; title: string; lang: string; now: string;
-    creatorEl: string; coverMeta: string;
+    creatorEl: string; publisherEl: string; descriptionEl: string; coverMeta: string;
     manifestItems: string[]; spineItems: string[];
   }): string {
     return `<?xml version="1.0" encoding="UTF-8"?>
 <package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="uid" xml:lang="${p.lang}">
   <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
     <dc:identifier id="uid">urn:uuid:${p.uuid}</dc:identifier>
-    <dc:title>${this.esc(p.title)}</dc:title>${p.creatorEl}
+    <dc:title>${this.esc(p.title)}</dc:title>${p.creatorEl}${p.publisherEl}${p.descriptionEl}
     <dc:language>${p.lang}</dc:language>
     <meta property="dcterms:modified">${p.now}</meta>${p.coverMeta}
   </metadata>
