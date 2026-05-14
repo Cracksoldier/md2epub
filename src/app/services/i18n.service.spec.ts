@@ -61,10 +61,18 @@ describe('I18nService', () => {
     expect(service.locale()).toBe('es');
   });
 
-  it('setLocale() persists the locale to localStorage', () => {
+  it('setLocale() persists the locale to localStorage under the namespaced key', () => {
     const service = getService();
     service.setLocale('ja');
-    expect(localStorage.getItem('epub-i18n-locale')).toBe('ja');
+    expect(localStorage.getItem('epub:v1:locale')).toBe('ja');
+  });
+
+  it('migrates a legacy "epub-i18n-locale" value on first read', () => {
+    localStorage.setItem('epub-i18n-locale', 'da');
+    const service = getService();
+    expect(service.locale()).toBe('da');
+    expect(localStorage.getItem('epub:v1:locale')).toBe('da');
+    expect(localStorage.getItem('epub-i18n-locale')).toBeNull();
   });
 
   it('locales array contains all supported locale objects', () => {

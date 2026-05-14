@@ -12,6 +12,7 @@ import { SettingsService } from './services/settings.service';
 import { EpubService } from './services/epub.service';
 import { ToastService } from './services/toast.service';
 import { I18nService } from './services/i18n.service';
+import { readStorage, writeStorage } from './utils/storage';
 
 @Component({
   selector: 'app-root',
@@ -34,7 +35,7 @@ export class App {
   readonly exportLoading = signal(false);
   readonly mobileView = signal<'editor' | 'preview'>('editor');
   readonly gridColumns = signal(this.initColumns());
-  readonly showWelcome = signal(!localStorage.getItem('epub-welcomed'));
+  readonly showWelcome = signal(!readStorage('welcomed', 'epub-welcomed'));
   readonly showShortcuts = signal(false);
 
   @HostListener('window:keydown', ['$event'])
@@ -56,7 +57,7 @@ export class App {
   }
 
   onWelcomeClosed(): void {
-    localStorage.setItem('epub-welcomed', '1');
+    writeStorage('welcomed', '1');
     this.showWelcome.set(false);
   }
 

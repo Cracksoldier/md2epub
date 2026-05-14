@@ -1,5 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { BookMetadata } from '../models/book-metadata.model';
+import { readStorage, writeStorage } from '../utils/storage';
 
 const DEFAULT: BookMetadata = {
   title: '',
@@ -13,7 +14,8 @@ const DEFAULT: BookMetadata = {
   coverMimeType: null,
 };
 
-const STORAGE_KEY = 'epub-autosave-meta';
+const STORAGE_SUFFIX = 'autosave-meta';
+const LEGACY_KEY = 'epub-autosave-meta';
 const COVER_MAX_BYTES = 5 * 1024 * 1024;
 const COVER_ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/webp'] as const;
 
@@ -29,7 +31,7 @@ export class SettingsService {
 
   private initMeta(): BookMetadata {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
+      const stored = readStorage(STORAGE_SUFFIX, LEGACY_KEY);
       if (stored) return { ...DEFAULT, ...JSON.parse(stored) };
     } catch { /* corrupt JSON — fall through */ }
     return { ...DEFAULT };
@@ -41,10 +43,8 @@ export class SettingsService {
   }
 
   private saveMeta(): void {
-    try {
-      const { coverDataUrl: _cd, coverMimeType: _cm, ...rest } = this._metadata();
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(rest));
-    } catch { /* QuotaExceededError */ }
+    const { coverDataUrl: _cd, coverMimeType: _cm, ...rest } = this._metadata();
+    writeStorage(STORAGE_SUFFIX, JSON.stringify(rest));
   }
 
   loadCoverFromFile(file: File): Promise<void> {

@@ -50,11 +50,11 @@ I18nService.locale (Signal<Locale>)
 
 ### Key services
 
-- **`EditorStateService`** — single signal holding the raw markdown string; initialized with a sample document. Autosaves to `localStorage` key `epub-autosave-content` on every `setContent()` call; restores on init.
-- **`SettingsService`** — signal holding `BookMetadata`; `loadCoverFromFile(File)` reads the image as a base64 data URL. Autosaves to `localStorage` key `epub-autosave-meta` (cover excluded due to size).
+- **`EditorStateService`** — single signal holding the raw markdown string; initialized with a sample document. Autosaves to `localStorage` key `epub:v1:autosave-content` on every `setContent()` call; restores on init.
+- **`SettingsService`** — signal holding `BookMetadata`; `loadCoverFromFile(File)` validates type (PNG/JPEG/WebP only) and size (≤ 5 MB), rejecting with `CoverRejectedError` (reason: `too-large` | `wrong-type`) so the UI can surface a precise toast. Autosaves to `localStorage` key `epub:v1:autosave-meta` (cover excluded due to size).
 - **`MarkdownService`** — wraps `marked.parse()` with a **three-pass footnote processor** inside `parse()`: (1) strips `[^label]: text` definition lines, (2) calls `marked.parse()`, (3) replaces `[^label]` inline markers with `<sup>` footnote refs and appends a `<section class="footnotes" epub:type="footnotes">` block. `getChapterHeadings(markdown)` regex-scans raw markdown for `#` (H1 only) lines and returns `{ title, offset }[]` — used for drag-and-drop reordering; `getChapterTree(markdown)` returns a two-level `{ title, offset, subchapters[] }[]` hierarchy (H1 chapters + H2 subchapters) used by the sidebar; `splitIntoChapters(html)` uses `DOMParser` to walk `body.children` and splits only at `H1` boundaries — `H2` elements stay inside their parent chapter and get a slug `id` attribute injected; each `Chapter` carries a `subchapters: Subchapter[]` array populated from the H2 slugs. The footnote `<section>` element lands naturally at the end of the last chapter.
 - **`EpubService`** — assembles a valid EPUB 3 ZIP using `jszip`. The `mimetype` file **must** be the first entry and stored uncompressed (`{ compression: 'STORE' }`). Generates `container.xml`, `package.opf`, `nav.xhtml`, per-chapter XHTML files, and optionally a cover page. Selects embedded CSS via `themeCss(meta.epubTheme)` — three built-in themes: `classic` (serif), `modern` (system sans-serif, centred), `minimal` (near-bare). In split-chapter mode, rewrites footnote cross-file hrefs so `href="#fn1"` in early chapters becomes `href="chapterN.xhtml#fn1"` and back-links in the footnote section point to the originating chapter file.
-- **`I18nService`** — signal-based UI localisation. `locale` signal holds the active `Locale` code; `t(key, ...args)` looks up dot-notation keys (e.g. `'toolbar.import'`) with `{0}` interpolation for dynamic values. Locale is persisted in `localStorage` under `epub-i18n-locale`.
+- **`I18nService`** — signal-based UI localisation. `locale` signal holds the active `Locale` code; `t(key, ...args)` looks up dot-notation keys (e.g. `'toolbar.import'`) with `{0}` interpolation for dynamic values. Locale is persisted in `localStorage` under `epub:v1:locale`. In dev mode, `t()` warns on the console if a `{N}` placeholder has no matching argument.
 
 ### Internationalisation (i18n)
 
@@ -80,7 +80,7 @@ All user-visible strings live in `src/app/i18n/translations.ts` as a typed `Tran
 
 ### AppComponent (app.ts)
 
-Owns `exportLoading`, `settingsOpen`, `gridColumns`, `showWelcome`, `showShortcuts`, `mobileView`, `editorScrollRatio`, and `previewScrollRatio` signals. Handles `Ctrl+E` (export), `Ctrl+,` (toggle settings), and `Ctrl+?` (toggle shortcuts modal) via `@HostListener`. Calls `PaneDivider.saveRatio()` / `loadSavedRatio()` (static helpers) to persist the pane split in `localStorage`. `showWelcome` is `true` on first visit (no `epub-welcomed` key in `localStorage`); `onWelcomeClosed()` sets the flag and hides the modal.
+Owns `exportLoading`, `settingsOpen`, `gridColumns`, `showWelcome`, `showShortcuts`, `mobileView`, `editorScrollRatio`, and `previewScrollRatio` signals. Handles `Ctrl+E` (export), `Ctrl+,` (toggle settings), and `Ctrl+?` (toggle shortcuts modal) via `@HostListener`. Calls `PaneDivider.saveRatio()` / `loadSavedRatio()` (static helpers) to persist the pane split in `localStorage`. `showWelcome` is `true` on first visit (no `epub:v1:welcomed` key in `localStorage`); `onWelcomeClosed()` sets the flag and hides the modal.
 
 `editorScrollRatio` and `previewScrollRatio` are `Signal<number>` (initial value `NaN`). `EditorPane` emits its scroll ratio via `(scrollRatio)` → stored in `editorScrollRatio`; that value is passed as `[syncScrollRatio]` to `PreviewPane`, and vice versa. `NaN` is the "no-op" sentinel — both panes guard with `isFinite(ratio)` before applying.
 
@@ -88,7 +88,7 @@ Owns `exportLoading`, `settingsOpen`, `gridColumns`, `showWelcome`, `showShortcu
 
 ### WelcomeModal component
 
-Shown on first visit only. Displays a client-side privacy notice and a language picker so users can set their locale before starting. Dismisses on button click, backdrop click, or Escape. Dismissed state stored in `localStorage` key `epub-welcomed`.
+Shown on first visit only. Displays a client-side privacy notice and a language picker so users can set their locale before starting. Dismisses on button click, backdrop click, or Escape. Dismissed state stored in `localStorage` key `epub:v1:welcomed`.
 
 ### ShortcutsModal component
 
@@ -125,6 +125,14 @@ Toolbar button text is wrapped in `<span class="btn__label">` so it can be hidde
 All color tokens and layout constants live in `src/styles/_variables.scss` and are imported with `@use 'variables' as *` in component stylesheets (path is relative, e.g. `../../../styles/variables`). Shared button (`.btn`) and form input (`.form-input`) classes are defined in `src/styles.scss`. Use `@use 'sass:color'` for color functions — the deprecated global `darken()`/`mix()` functions will error.
 
 Button variants: `btn--primary` (blue), `btn--ghost` (bordered), `btn--icon` (icon-only), `btn--coffee` (amber/gold, used for the donation link). Button text that should hide on mobile is wrapped in `<span class="btn__label">` and toggled via `toolbar.scss`.
+
+### localStorage convention
+
+All localStorage keys are namespaced under the `epub:v1:` prefix via `src/app/utils/storage.ts` (`readStorage` / `writeStorage`). `readStorage('foo', 'legacy-foo')` returns the value at `epub:v1:foo`, falling back to a legacy bare key on first call and migrating its value into the namespaced slot. Current suffixes: `autosave-content`, `autosave-meta`, `locale`, `pane-ratio`, `welcomed`. Bump the prefix to `epub:v2:` when a stored schema changes incompatibly.
+
+### PWA
+
+`public/manifest.webmanifest` declares the app as installable (standalone display, theme color matching the toolbar). No service worker yet — offline caching is a possible follow-up via `@angular/pwa`.
 
 ### EPUB output structure
 

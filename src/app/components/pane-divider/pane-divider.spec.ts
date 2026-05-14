@@ -1,7 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { PaneDivider } from './pane-divider';
 
-const RATIO_KEY = 'pane-ratio';
+const RATIO_KEY = 'epub:v1:pane-ratio';
+const LEGACY_RATIO_KEY = 'pane-ratio';
 
 describe('PaneDivider', () => {
   beforeEach(() => {
@@ -50,7 +51,7 @@ describe('PaneDivider', () => {
   });
 
   describe('static saveRatio()', () => {
-    it('writes the ratio as a string to localStorage', () => {
+    it('writes the ratio as a string under the namespaced key', () => {
       PaneDivider.saveRatio(0.65);
       expect(localStorage.getItem(RATIO_KEY)).toBe('0.65');
     });
@@ -59,6 +60,15 @@ describe('PaneDivider', () => {
       PaneDivider.saveRatio(0.3);
       PaneDivider.saveRatio(0.7);
       expect(localStorage.getItem(RATIO_KEY)).toBe('0.7');
+    });
+  });
+
+  describe('legacy migration', () => {
+    it('reads a value left at the unprefixed "pane-ratio" key and migrates it', () => {
+      localStorage.setItem(LEGACY_RATIO_KEY, '0.55');
+      expect(PaneDivider.loadSavedRatio()).toBe(0.55);
+      expect(localStorage.getItem(RATIO_KEY)).toBe('0.55');
+      expect(localStorage.getItem(LEGACY_RATIO_KEY)).toBeNull();
     });
   });
 

@@ -1,6 +1,8 @@
 import { Component, ElementRef, HostListener, OnDestroy, output } from '@angular/core';
+import { readStorage, writeStorage } from '../../utils/storage';
 
-const PANE_RATIO_KEY = 'pane-ratio';
+const PANE_RATIO_SUFFIX = 'pane-ratio';
+const PANE_RATIO_LEGACY = 'pane-ratio';
 const MIN_RATIO = 0.2;
 const MAX_RATIO = 0.8;
 const KEYBOARD_STEP = 0.02;
@@ -93,12 +95,12 @@ export class PaneDivider implements OnDestroy {
   }
 
   static loadSavedRatio(): number {
-    const saved = localStorage.getItem(PANE_RATIO_KEY);
+    const saved = readStorage(PANE_RATIO_SUFFIX, PANE_RATIO_LEGACY);
     const parsed = saved ? parseFloat(saved) : NaN;
     return isNaN(parsed) ? 0.5 : Math.min(MAX_RATIO, Math.max(MIN_RATIO, parsed));
   }
 
   static saveRatio(ratio: number): void {
-    localStorage.setItem(PANE_RATIO_KEY, String(ratio));
+    writeStorage(PANE_RATIO_SUFFIX, String(ratio));
   }
 }

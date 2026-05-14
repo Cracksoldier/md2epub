@@ -1,4 +1,5 @@
 import { Injectable, signal } from '@angular/core';
+import { readStorage, writeStorage } from '../utils/storage';
 
 const SAMPLE = `# My First Book
 
@@ -40,17 +41,16 @@ The rest of the pages were blank — and waiting.
 *The end... or the beginning?*
 `;
 
-const STORAGE_KEY = 'epub-autosave-content';
+const STORAGE_SUFFIX = 'autosave-content';
+const LEGACY_KEY = 'epub-autosave-content';
 
 @Injectable({ providedIn: 'root' })
 export class EditorStateService {
-  private readonly _content = signal(localStorage.getItem(STORAGE_KEY) ?? SAMPLE);
+  private readonly _content = signal(readStorage(STORAGE_SUFFIX, LEGACY_KEY) ?? SAMPLE);
   readonly content = this._content.asReadonly();
 
   setContent(value: string): void {
     this._content.set(value);
-    try {
-      localStorage.setItem(STORAGE_KEY, value);
-    } catch { /* QuotaExceededError — content stays in-memory */ }
+    writeStorage(STORAGE_SUFFIX, value);
   }
 }

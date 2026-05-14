@@ -1,0 +1,19 @@
+{
+  "name": "MD → EPUB Converter",
+  "short_name": "MD2EPUB",
+  "description": "Convert Markdown to EPUB 3 entirely in your browser.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#050d1a",
+  "background_color": "#050d1a",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any"
+    }
+  ]
+}

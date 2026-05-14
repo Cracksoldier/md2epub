@@ -1,21 +1,23 @@
 import { Injectable, isDevMode, signal } from '@angular/core';
 import { TRANSLATIONS, LOCALES, type Locale, type TranslationMap } from '../i18n/translations';
+import { readStorage, writeStorage } from '../utils/storage';
+
+const STORAGE_SUFFIX = 'locale';
+const LEGACY_KEY = 'epub-i18n-locale';
 
 @Injectable({ providedIn: 'root' })
 export class I18nService {
-  private readonly STORAGE_KEY = 'epub-i18n-locale';
-
   readonly locale = signal<Locale>(this.initLocale());
   readonly locales = LOCALES;
 
   private initLocale(): Locale {
-    const stored = localStorage.getItem(this.STORAGE_KEY) as Locale;
-    return LOCALES.some(l => l.code === stored) ? stored : 'en';
+    const stored = readStorage(STORAGE_SUFFIX, LEGACY_KEY) as Locale | null;
+    return stored && LOCALES.some(l => l.code === stored) ? stored : 'en';
   }
 
   setLocale(locale: Locale): void {
     this.locale.set(locale);
-    localStorage.setItem(this.STORAGE_KEY, locale);
+    writeStorage(STORAGE_SUFFIX, locale);
   }
 
   t(key: string, ...args: string[]): string {
