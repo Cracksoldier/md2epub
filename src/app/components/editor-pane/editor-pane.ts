@@ -42,7 +42,63 @@ export class EditorPane {
     this.editorState.setContent((event.target as HTMLTextAreaElement).value);
   }
 
+  format(type: 'h1' | 'h2' | 'bold' | 'italic' | 'code' | 'link' | 'quote' | 'ul'): void {
+    const ta = this.textareaRef.nativeElement;
+    const { selectionStart: ss, selectionEnd: se, value } = ta;
+
+    const INLINE: Record<string, [string, string, string]> = {
+      bold:   ['**', '**', 'bold text'],
+      italic: ['*',  '*',  'italic text'],
+      code:   ['`',  '`',  'code'],
+      link:   ['[',  '](url)', 'link text'],
+    };
+    const BLOCK: Record<string, string> = {
+      h1: '# ', h2: '## ', quote: '> ', ul: '- ',
+    };
+
+    if (type in INLINE) {
+      const [pre, suf, placeholder] = INLINE[type];
+      const selected = value.slice(ss, se) || placeholder;
+      const replacement = pre + selected + suf;
+      this.applyReplacement(ta, ss, se, replacement, ss + pre.length, ss + pre.length + selected.length);
+    } else {
+      this.applyBlockPrefix(ta, ss, se, BLOCK[type]);
+    }
+    ta.focus();
+  }
+
+  private applyReplacement(
+    ta: HTMLTextAreaElement,
+    start: number, end: number,
+    text: string,
+    selectStart: number, selectEnd: number,
+  ): void {
+    this.editorState.setContent(ta.value.slice(0, start) + text + ta.value.slice(end));
+    setTimeout(() => ta.setSelectionRange(selectStart, selectEnd));
+  }
+
+  private applyBlockPrefix(
+    ta: HTMLTextAreaElement,
+    ss: number, se: number,
+    prefix: string,
+  ): void {
+    const value = ta.value;
+    const lineStart = value.lastIndexOf('\n', ss - 1) + 1;
+    const lineEndIdx = value.indexOf('\n', se);
+    const blockEnd = lineEndIdx === -1 ? value.length : lineEndIdx;
+    const lines = value.slice(lineStart, blockEnd).split('\n');
+    const allPrefixed = lines.every(l => l.startsWith(prefix));
+    const newLines = allPrefixed ? lines.map(l => l.slice(prefix.length)) : lines.map(l => prefix + l);
+    const replacement = newLines.join('\n');
+    const delta = replacement.length - (blockEnd - lineStart);
+    this.applyReplacement(ta, lineStart, blockEnd, replacement, ss, se + delta);
+  }
+
   onKeyDown(event: KeyboardEvent): void {
+    if ((event.ctrlKey || event.metaKey) && !event.shiftKey && !event.altKey) {
+      if (event.key === 'b') { event.preventDefault(); this.format('bold'); return; }
+      if (event.key === 'i') { event.preventDefault(); this.format('italic'); return; }
+    }
     if (event.key === 'Tab') {
       event.preventDefault();
       const ta = event.target as HTMLTextAreaElement;
