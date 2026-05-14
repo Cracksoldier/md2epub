@@ -80,6 +80,7 @@
       [value]="editorState.content()"
       (input)="onInput($event)"
       (keydown)="onKeyDown($event)"
+      (paste)="onPaste($event)"
       (scroll)="onEditorScroll($event)"
       [placeholder]="i18n.t('editor.placeholder')"
       spellcheck="false"

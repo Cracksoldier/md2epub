@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import JSZip from 'jszip';
 import { EpubService } from './epub.service';
+import { ImagesService } from './images.service';
 import { BookMetadata } from '../models/book-metadata.model';
 
 const DEFAULT_META: BookMetadata = {
@@ -25,10 +26,13 @@ async function fileText(zip: JSZip, path: string): Promise<string> {
 
 describe('EpubService', () => {
   let service: EpubService;
+  let images: ImagesService;
 
   beforeEach(() => {
+    localStorage.clear();
     TestBed.configureTestingModule({});
     service = TestBed.inject(EpubService);
+    images = TestBed.inject(ImagesService);
   });
 
   it('build() returns a Blob', async () => {
@@ -216,6 +220,35 @@ describe('EpubService', () => {
       });
       const zip = await loadZip(blob);
       expect(zip.file('EPUB/images/cover.jpg')).toBeTruthy();
+    });
+  });
+
+  describe('inline images', () => {
+    it('embeds an image bytes file and a manifest item when markdown references it', async () => {
+      const pngBytes = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+      const file = new File([pngBytes.buffer as ArrayBuffer], 'fig.png', { type: 'image/png' });
+      const { id } = await images.addImage(file);
+
+      const md = `# Chapter\n\n![alt](epub-img://${id})`;
+      const blob = await service.build(md, DEFAULT_META);
+      const zip = await loadZip(blob);
+
+      expect(zip.file(`EPUB/images/${id}.png`)).toBeTruthy();
+
+      const opf = await fileText(zip, 'EPUB/package.opf');
+      expect(opf).toContain(`id="img-${id}"`);
+      expect(opf).toContain(`href="images/${id}.png"`);
+      expect(opf).toContain('media-type="image/png"');
+
+      const chapter = await fileText(zip, 'EPUB/chapter001.xhtml');
+      expect(chapter).toContain(`src="images/${id}.png"`);
+      expect(chapter).not.toContain('epub-img://');
+    });
+
+    it('does not embed image bytes for an unknown reference', async () => {
+      const blob = await service.build('![](epub-img://deadbeef)', DEFAULT_META);
+      const zip = await loadZip(blob);
+      expect(zip.file('EPUB/images/deadbeef.png')).toBeNull();
     });
   });
 });

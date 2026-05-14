@@ -3,10 +3,12 @@ import JSZip from 'jszip';
 import { BookMetadata } from '../models/book-metadata.model';
 import { Chapter } from '../models/chapter.model';
 import { MarkdownService } from './markdown.service';
+import { ImagesService } from './images.service';
 
 @Injectable({ providedIn: 'root' })
 export class EpubService {
   private readonly markdown = inject(MarkdownService);
+  private readonly images = inject(ImagesService);
 
   async build(markdownText: string, meta: BookMetadata): Promise<Blob> {
     const zip = new JSZip();
@@ -15,7 +17,9 @@ export class EpubService {
     const title = meta.title.trim() || 'Untitled';
     const now = new Date().toISOString().replace(/\.\d+Z$/, 'Z');
 
-    const html = this.markdown.parse(markdownText);
+    const imageRefs = this.images.collectReferenced(markdownText);
+    const markdownForEpub = this.images.replaceUrls(markdownText, 'epub-path');
+    const html = this.markdown.parse(markdownForEpub);
     const chapters: Chapter[] = meta.splitChapters
       ? this.markdown.splitIntoChapters(html)
       : [{ title: this.markdown.getFirstHeading(html) || title, filename: 'chapter001.xhtml', htmlContent: html, subchapters: [] }];
@@ -72,6 +76,12 @@ export class EpubService {
       spineItems.push(`<itemref idref="${id}"/>`);
     });
 
+    for (const r of imageRefs) {
+      manifestItems.push(
+        `<item id="img-${r.id}" href="images/${r.id}.${r.ext}" media-type="${r.mimeType}"/>`
+      );
+    }
+
     const tocItems = chapters.map(ch => {
       const subItems = ch.subchapters.length
         ? '\n        <ol>\n' +
@@ -112,6 +122,10 @@ export class EpubService {
     if (hasCover && meta.coverDataUrl) {
       zip.file(`EPUB/${coverImgPath}`, this.dataUrlToBytes(meta.coverDataUrl));
       zip.file('EPUB/cover.xhtml', this.coverXhtml({ lang, title, imgPath: coverImgPath }));
+    }
+
+    for (const r of imageRefs) {
+      zip.file(`EPUB/images/${r.id}.${r.ext}`, r.bytes);
     }
 
     return zip.generateAsync({ type: 'blob', mimeType: 'application/epub+zip' });

@@ -24,11 +24,17 @@ Single-page Angular 21 app. No routing, no NgModules — all components are stan
 ### Data flow
 
 ```
-EditorPane (textarea)
+EditorPane (textarea, drag-drop + paste for images)
   → EditorStateService.content (Signal<string>)  [autosaved to localStorage]
     → PreviewPane (debounced 200ms via toObservable+toSignal → DomSanitizer → [innerHTML])
     → ChapterList (computed via MarkdownService.getChapterTree — shown when splitChapters is on)
     → EpubService.build() on export
+
+EditorPane image drop / paste
+  → ImagesService.addImage(file) — hash, validate, store
+  → editor content rewritten with `![](epub-img://<id>)` token at cursor
+  → MarkdownService.parse() resolves the token to a data URL for preview
+  → EpubService.build() pre-substitutes the token to `images/<id>.<ext>` and writes the bytes to the zip
 
 EditorPane scroll  →  App.editorScrollRatio (Signal<number>)  →  PreviewPane.syncScrollRatio
 PreviewPane scroll →  App.previewScrollRatio (Signal<number>) →  EditorPane.syncScrollRatio
@@ -55,6 +61,7 @@ I18nService.locale (Signal<Locale>)
 - **`MarkdownService`** — wraps `marked.parse()` with a **three-pass footnote processor** inside `parse()`: (1) strips `[^label]: text` definition lines, (2) calls `marked.parse()`, (3) replaces `[^label]` inline markers with `<sup>` footnote refs and appends a `<section class="footnotes" epub:type="footnotes">` block. `getChapterHeadings(markdown)` regex-scans raw markdown for `#` (H1 only) lines and returns `{ title, offset }[]` — used for drag-and-drop reordering; `getChapterTree(markdown)` returns a two-level `{ title, offset, subchapters[] }[]` hierarchy (H1 chapters + H2 subchapters) used by the sidebar; `splitIntoChapters(html)` uses `DOMParser` to walk `body.children` and splits only at `H1` boundaries — `H2` elements stay inside their parent chapter and get a slug `id` attribute injected; each `Chapter` carries a `subchapters: Subchapter[]` array populated from the H2 slugs. The footnote `<section>` element lands naturally at the end of the last chapter.
 - **`EpubService`** — assembles a valid EPUB 3 ZIP using `jszip`. The `mimetype` file **must** be the first entry and stored uncompressed (`{ compression: 'STORE' }`). Generates `container.xml`, `package.opf`, `nav.xhtml`, per-chapter XHTML files, and optionally a cover page. Selects embedded CSS via `themeCss(meta.epubTheme)` — three built-in themes: `classic` (serif), `modern` (system sans-serif, centred), `minimal` (near-bare). In split-chapter mode, rewrites footnote cross-file hrefs so `href="#fn1"` in early chapters becomes `href="chapterN.xhtml#fn1"` and back-links in the footnote section point to the originating chapter file.
 - **`I18nService`** — signal-based UI localisation. `locale` signal holds the active `Locale` code; `t(key, ...args)` looks up dot-notation keys (e.g. `'toolbar.import'`) with `{0}` interpolation for dynamic values. Locale is persisted in `localStorage` under `epub:v1:locale`. In dev mode, `t()` warns on the console if a `{N}` placeholder has no matching argument.
+- **`ImagesService`** — manages inline image embeds keyed by content hash. Markdown stores short references `![](epub-img://<8-hex-id>)`; the service rewrites those to data URLs (live preview) or `images/<id>.<ext>` (EPUB export), and exposes `collectReferenced()` for `EpubService` to write image bytes into the zip. PNG / JPEG / WebP only, ≤ 5 MB each. Autosaves to `epub:v1:images` opportunistically — large image collections that exceed `localStorage` quota silently fail to autosave; the user must Save Project to persist. Project files include the image map at schema `version: 2` (v1 files load with empty images map).
 
 ### Internationalisation (i18n)
 
@@ -159,8 +166,9 @@ Test runner: **Vitest** via `@angular/build:unit-test` (jsdom environment). Run 
 
 | Spec file | Coverage |
 |---|---|
-| `services/markdown.service.spec.ts` | `parse()` (headings, bold, footnote refs, footnote section, numbering order, missing defs), `getFirstHeading()`, `reorderMarkdownChapters()`, `splitIntoChapters()` (H1-only split, H2 ID injection, subchapter deduplication), `getChapterTree()` |
-| `services/epub.service.spec.ts` | ZIP structure, mimetype STORE + first-entry, container namespace, opf metadata, chapters, cover, XML escaping, footnotes in chapter XHTML, cross-chapter footnote href rewriting in split mode |
+| `services/markdown.service.spec.ts` | `parse()` (headings, bold, footnote refs, footnote section, numbering order, missing defs, fence-aware definition strip, fence-aware ref skip, image URL substitution), `getFirstHeading()`, `reorderMarkdownChapters()`, `splitIntoChapters()` (H1-only split, H2 ID injection, subchapter deduplication), `getChapterTree()` |
+| `services/epub.service.spec.ts` | ZIP structure, mimetype STORE + first-entry, container namespace, opf metadata, chapters, cover, XML escaping, footnotes in chapter XHTML, cross-chapter footnote href rewriting in split mode, inline image bytes + manifest entries |
+| `services/images.service.spec.ts` | `addImage()` validation (size, type), dedup by content hash, `replaceUrls()` data/epub-path modes, `collectReferenced()` dedup + unknown-id filtering, `serialize`/`restore` round-trip + mime sanitisation |
 | `services/i18n.service.spec.ts` | Key lookup, `{0}` interpolation, `setLocale()`, localStorage persistence, fallbacks |
 | `services/settings.service.spec.ts` | Defaults (including `epubTheme: 'classic'`), `update()` merge, `loadCoverFromFile()` (PNG/JPEG/reject), `clearCover()` |
 | `services/toast.service.spec.ts` | `show()`, `dismiss()`, auto-dismiss via fake timers (`vi.useFakeTimers`), unique IDs |

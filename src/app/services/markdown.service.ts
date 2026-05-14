@@ -1,13 +1,19 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { marked } from 'marked';
 import { Chapter, Subchapter } from '../models/chapter.model';
+import { ImagesService } from './images.service';
 
 @Injectable({ providedIn: 'root' })
 export class MarkdownService {
+  private readonly images = inject(ImagesService);
+
   parse(markdown: string): string {
+    // Pass 0: rewrite epub-img:// references to data URLs for live preview
+    const withDataUrls = this.images.replaceUrls(markdown, 'data');
+
     // Pass 1: strip [^label]: definition lines that are NOT inside a fenced code block
     const defs = new Map<string, string>();
-    const cleaned = this.stripFootnoteDefs(markdown, defs);
+    const cleaned = this.stripFootnoteDefs(withDataUrls, defs);
 
     // Pass 2: marked renders the cleaned markdown
     let html = marked.parse(cleaned) as string;

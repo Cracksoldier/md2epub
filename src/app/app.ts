@@ -13,6 +13,7 @@ import { SettingsService } from './services/settings.service';
 import { EpubService } from './services/epub.service';
 import { ToastService } from './services/toast.service';
 import { I18nService } from './services/i18n.service';
+import { ImagesService } from './services/images.service';
 import { readStorage, writeStorage } from './utils/storage';
 
 @Component({
@@ -27,6 +28,7 @@ export class App {
   private readonly epub = inject(EpubService);
   private readonly toast = inject(ToastService);
   protected readonly i18n = inject(I18nService);
+  private readonly images = inject(ImagesService);
 
   @ViewChild('projectFileInput') private projectFileInput!: ElementRef<HTMLInputElement>;
 
@@ -105,9 +107,10 @@ export class App {
 
   onSaveProject(): void {
     const payload = JSON.stringify({
-      version: 1,
+      version: 2,
       content: this.editorState.content(),
       metadata: this.settings.metadata(),
+      images: this.images.serialize(),
     });
     const blob = new Blob([payload], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -134,6 +137,7 @@ export class App {
         if (!data.version || !data.content || !data.metadata) throw new Error();
         this.editorState.setContent(data.content);
         this.settings.update(data.metadata);
+        this.images.restore(data.version >= 2 ? (data.images ?? {}) : {});
         this.toast.show(this.i18n.t('toast.projectLoaded', file.name), 'success');
       } catch {
         this.toast.show(this.i18n.t('toast.projectLoadError'), 'error');

@@ -4,6 +4,8 @@ import {
 import { EditorStateService } from '../../services/editor-state.service';
 import { SettingsService } from '../../services/settings.service';
 import { I18nService } from '../../services/i18n.service';
+import { ImagesService, ImageRejectedError } from '../../services/images.service';
+import { ToastService } from '../../services/toast.service';
 import { ChapterList } from '../chapter-list/chapter-list';
 
 @Component({
@@ -16,6 +18,8 @@ export class EditorPane {
   protected readonly editorState = inject(EditorStateService);
   private readonly settings = inject(SettingsService);
   protected readonly i18n = inject(I18nService);
+  private readonly images = inject(ImagesService);
+  private readonly toast = inject(ToastService);
 
   @ViewChild('fileInput') fileInputRef!: ElementRef<HTMLInputElement>;
   @ViewChild('textarea') textareaRef!: ElementRef<HTMLTextAreaElement>;
@@ -175,10 +179,53 @@ export class EditorPane {
   }
 
   private readFile(file: File): void {
+    if (file.type.startsWith('image/')) {
+      this.insertImageAtCursor(file);
+      return;
+    }
     const reader = new FileReader();
     reader.onload = e => {
       this.editorState.setContent(e.target?.result as string);
     };
     reader.readAsText(file);
+  }
+
+  onPaste(event: ClipboardEvent): void {
+    const items = event.clipboardData?.items;
+    if (!items) return;
+    for (const item of Array.from(items)) {
+      if (item.kind === 'file' && item.type.startsWith('image/')) {
+        const file = item.getAsFile();
+        if (file) {
+          event.preventDefault();
+          this.insertImageAtCursor(file);
+          return;
+        }
+      }
+    }
+  }
+
+  private async insertImageAtCursor(file: File): Promise<void> {
+    let snippet: string;
+    try {
+      const result = await this.images.addImage(file);
+      snippet = result.markdownSnippet;
+    } catch (err) {
+      const key = err instanceof ImageRejectedError && err.reason === 'too-large'
+        ? 'toast.imageTooLarge'
+        : 'toast.imageWrongType';
+      this.toast.show(this.i18n.t(key), 'error');
+      return;
+    }
+    const ta = this.textareaRef.nativeElement;
+    const start = ta.selectionStart;
+    const end = ta.selectionEnd;
+    const value = ta.value;
+    this.editorState.setContent(value.slice(0, start) + snippet + value.slice(end));
+    const caret = start + snippet.length;
+    setTimeout(() => {
+      ta.focus();
+      ta.setSelectionRange(caret, caret);
+    });
   }
 }

@@ -77,6 +77,8 @@ export interface TranslationMap {
     dismissTitle: string;
     coverTooLarge: string;
     coverWrongType: string;
+    imageTooLarge: string;
+    imageWrongType: string;
   };
   welcome: {
     title: string;
@@ -144,7 +146,7 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       readingTime: '~{0} min read',
       importTitle: 'Import file',
       clearTitle: 'Clear editor',
-      dropHint: 'Drop .md file to import',
+      dropHint: 'Drop .md file or image',
       placeholder: '# My Book Title\n\nStart writing your book here...\n\nDrop a .md file anywhere to import it.',
     },
     preview: {
@@ -186,6 +188,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       dismissTitle: 'Dismiss',
       coverTooLarge: 'Cover image is too large (max 5 MB).',
       coverWrongType: 'Cover must be PNG, JPEG, or WebP.',
+      imageTooLarge: 'Image is too large (max 5 MB).',
+      imageWrongType: 'Image must be PNG, JPEG, or WebP.',
     },
     welcome: {
       title: 'Welcome to MD → EPUB',
@@ -252,7 +256,7 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       readingTime: '~{0} Min. Lesezeit',
       importTitle: 'Datei importieren',
       clearTitle: 'Editor leeren',
-      dropHint: '.md-Datei ablegen zum Importieren',
+      dropHint: '.md-Datei oder Bild ablegen',
       placeholder: '# Mein Buchtitel\n\nHier mit dem Schreiben beginnen...\n\n.md-Datei hier ablegen, um sie zu importieren.',
     },
     preview: {
@@ -294,6 +298,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       dismissTitle: 'Schließen',
       coverTooLarge: 'Titelbild ist zu groß (max. 5 MB).',
       coverWrongType: 'Titelbild muss PNG, JPEG oder WebP sein.',
+      imageTooLarge: 'Bild ist zu groß (max. 5 MB).',
+      imageWrongType: 'Bild muss PNG, JPEG oder WebP sein.',
     },
     welcome: {
       title: 'Willkommen bei MD → EPUB',
@@ -360,7 +366,7 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       readingTime: '~{0} Min. Lesezeit',
       importTitle: 'Datei einlesen',
       clearTitle: 'Editor ausleern',
-      dropHint: '.md-Datei hinlegn zum Einlesen',
+      dropHint: '.md-Datei oder Buid hinlegn',
       placeholder: '# Mei Buachtitel\n\nDo kumm i zum Schreim on...\n\nA .md-Datei irgendwo hinlegn zum Einlesen.',
     },
     preview: {
@@ -402,6 +408,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       dismissTitle: 'Wegda',
       coverTooLarge: 'S Titelbiid is z groß (max. 5 MB).',
       coverWrongType: 'S Titelbiid muass PNG, JPEG oder WebP sein.',
+      imageTooLarge: 'S Buid is z groß (max. 5 MB).',
+      imageWrongType: 'S Buid muass PNG, JPEG oder WebP sein.',
     },
     welcome: {
       title: 'Willkumm bei MD → EPUB',
@@ -468,7 +476,7 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       readingTime: '~{0} min de lectura',
       importTitle: 'Importar archivo',
       clearTitle: 'Limpiar editor',
-      dropHint: 'Suelta el archivo .md para importar',
+      dropHint: 'Suelta archivo .md o imagen',
       placeholder: '# Título de mi libro\n\nEmpieza a escribir aquí...\n\nSuelta un archivo .md en cualquier lugar para importarlo.',
     },
     preview: {
@@ -510,6 +518,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       dismissTitle: 'Cerrar',
       coverTooLarge: 'La portada es demasiado grande (máx. 5 MB).',
       coverWrongType: 'La portada debe ser PNG, JPEG o WebP.',
+      imageTooLarge: 'La imagen es demasiado grande (máx. 5 MB).',
+      imageWrongType: 'La imagen debe ser PNG, JPEG o WebP.',
     },
     welcome: {
       title: 'Bienvenido a MD → EPUB',
@@ -576,7 +586,7 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       readingTime: '~{0} min læsning',
       importTitle: 'Importer fil',
       clearTitle: 'Ryd editor',
-      dropHint: 'Slip .md-fil for at importere',
+      dropHint: 'Slip .md-fil eller billede',
       placeholder: '# Min bogtitel\n\nBegynd at skrive her...\n\nSlip en .md-fil et sted for at importere den.',
     },
     preview: {
@@ -618,6 +628,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       dismissTitle: 'Luk',
       coverTooLarge: 'Omslagsbillede er for stort (maks. 5 MB).',
       coverWrongType: 'Omslag skal være PNG, JPEG eller WebP.',
+      imageTooLarge: 'Billede er for stort (maks. 5 MB).',
+      imageWrongType: 'Billede skal være PNG, JPEG eller WebP.',
     },
     welcome: {
       title: 'Velkommen til MD → EPUB',
@@ -684,7 +696,7 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       readingTime: '約{0}分',
       importTitle: 'ファイルをインポート',
       clearTitle: 'エディタをクリア',
-      dropHint: '.mdファイルをドロップしてインポート',
+      dropHint: '.mdファイルか画像をドロップ',
       placeholder: '# 本のタイトル\n\nここから書き始めてください...\n\n.mdファイルをここにドロップしてインポートできます。',
     },
     preview: {
@@ -726,6 +738,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       dismissTitle: '閉じる',
       coverTooLarge: '表紙画像が大きすぎます（最大5MB）。',
       coverWrongType: '表紙はPNG、JPEG、またはWebPである必要があります。',
+      imageTooLarge: '画像が大きすぎます（最大5MB）。',
+      imageWrongType: '画像はPNG、JPEG、またはWebPである必要があります。',
     },
     welcome: {
       title: 'MD → EPUB へようこそ',
@@ -792,7 +806,7 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       readingTime: '約{0}分鐘閱讀',
       importTitle: '匯入檔案',
       clearTitle: '清除編輯器',
-      dropHint: '拖放 .md 檔案以匯入',
+      dropHint: '拖放 .md 檔案或圖片',
       placeholder: '# 我的書名\n\n在此開始寫作...\n\n拖放 .md 檔案至任何位置以匯入。',
     },
     preview: {
@@ -834,6 +848,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       dismissTitle: '關閉',
       coverTooLarge: '封面圖片太大（最大 5 MB）。',
       coverWrongType: '封面必須是 PNG、JPEG 或 WebP。',
+      imageTooLarge: '圖片太大（最大 5 MB）。',
+      imageWrongType: '圖片必須是 PNG、JPEG 或 WebP。',
     },
     welcome: {
       title: '歡迎使用 MD → EPUB',

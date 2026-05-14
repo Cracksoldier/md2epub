@@ -1,12 +1,16 @@
 import { TestBed } from '@angular/core/testing';
 import { MarkdownService } from './markdown.service';
+import { ImagesService } from './images.service';
 
 describe('MarkdownService', () => {
   let service: MarkdownService;
+  let images: ImagesService;
 
   beforeEach(() => {
+    localStorage.clear();
     TestBed.configureTestingModule({});
     service = TestBed.inject(MarkdownService);
+    images = TestBed.inject(ImagesService);
   });
 
   describe('parse()', () => {
@@ -77,6 +81,14 @@ describe('MarkdownService', () => {
       // Exactly one footnote ref — the one outside the code block
       expect(html.match(new RegExp(fnref1, 'g'))?.length).toBe(1);
       expect(html).toContain('literal [^a] inside code');
+    });
+
+    it('rewrites epub-img:// references to data URLs when an image is registered', async () => {
+      const bytes = new Uint8Array([0x89, 0x50, 0x4e, 0x47]);
+      const { id } = await images.addImage(new File([bytes.buffer as ArrayBuffer], 'x.png', { type: 'image/png' }));
+      const html = service.parse(`![](epub-img://${id})`);
+      expect(html).toContain('src="data:image/png;base64,');
+      expect(html).not.toContain('epub-img://');
     });
   });
 
