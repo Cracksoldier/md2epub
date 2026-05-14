@@ -41,6 +41,34 @@
             (mousedown)="$event.stopPropagation()"
             [title]="ch.title"
           >{{ ch.title }}</button>
+          <span class="chapter-list__move" aria-hidden="false">
+            <button
+              type="button"
+              class="chapter-list__move-btn"
+              [disabled]="i === 0"
+              (click)="moveChapter(i, -1)"
+              (mousedown)="$event.stopPropagation()"
+              [attr.aria-label]="i18n.t('chapterList.moveUp')"
+              [title]="i18n.t('chapterList.moveUp')"
+            >
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M2 6.5L5 3.5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <button
+              type="button"
+              class="chapter-list__move-btn"
+              [disabled]="i === chapters().length - 1"
+              (click)="moveChapter(i, 1)"
+              (mousedown)="$event.stopPropagation()"
+              [attr.aria-label]="i18n.t('chapterList.moveDown')"
+              [title]="i18n.t('chapterList.moveDown')"
+            >
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M2 3.5L5 6.5l3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </span>
         </div>
         @if (ch.subchapters.length > 0) {
           <div class="chapter-list__subitems">

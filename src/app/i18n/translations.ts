@@ -84,6 +84,8 @@ export interface TranslationMap {
   chapterList: {
     label: string;
     noChapters: string;
+    moveUp: string;
+    moveDown: string;
   };
   shortcuts: {
     title: string;
@@ -175,6 +177,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
     chapterList: {
       label: 'Chapters',
       noChapters: 'No chapters yet',
+      moveUp: 'Move chapter up',
+      moveDown: 'Move chapter down',
     },
     shortcuts: {
       title: 'Keyboard Shortcuts',
@@ -265,6 +269,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
     chapterList: {
       label: 'Kapitel',
       noChapters: 'Noch keine Kapitel',
+      moveUp: 'Kapitel nach oben',
+      moveDown: 'Kapitel nach unten',
     },
     shortcuts: {
       title: 'Tastenkürzel',
@@ -355,6 +361,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
     chapterList: {
       label: 'Kapitel',
       noChapters: 'No kane Kapitel',
+      moveUp: 'Kapitel auffe',
+      moveDown: 'Kapitel obe',
     },
     shortcuts: {
       title: 'Tastnkürzel',
@@ -445,6 +453,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
     chapterList: {
       label: 'Capítulos',
       noChapters: 'Sin capítulos',
+      moveUp: 'Mover capítulo arriba',
+      moveDown: 'Mover capítulo abajo',
     },
     shortcuts: {
       title: 'Atajos de teclado',
@@ -535,6 +545,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
     chapterList: {
       label: 'Kapitler',
       noChapters: 'Ingen kapitler endnu',
+      moveUp: 'Flyt kapitel op',
+      moveDown: 'Flyt kapitel ned',
     },
     shortcuts: {
       title: 'Tastaturgenveje',
@@ -625,6 +637,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
     chapterList: {
       label: 'チャプター一覧',
       noChapters: 'チャプターなし',
+      moveUp: 'チャプターを上へ',
+      moveDown: 'チャプターを下へ',
     },
     shortcuts: {
       title: 'キーボードショートカット',
@@ -715,6 +729,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
     chapterList: {
       label: '章節列表',
       noChapters: '尚無章節',
+      moveUp: '上移章節',
+      moveDown: '下移章節',
     },
     shortcuts: {
       title: '鍵盤快捷鍵',

@@ -62,4 +62,13 @@ export class ChapterList {
     this.dragFromIndex.set(null);
     this.dragOverIndex.set(null);
   }
+
+  moveChapter(index: number, delta: -1 | 1): void {
+    const target = index + delta;
+    const total = this.chapters().length;
+    if (target < 0 || target >= total) return;
+    this.editorState.setContent(
+      this.markdown.reorderMarkdownChapters(this.editorState.content(), index, target)
+    );
+  }
 }
