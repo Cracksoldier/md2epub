@@ -5,7 +5,34 @@ import { Chapter, Subchapter } from '../models/chapter.model';
 @Injectable({ providedIn: 'root' })
 export class MarkdownService {
   parse(markdown: string): string {
-    return marked.parse(markdown) as string;
+    // Pass 1: strip and collect [^label]: definition lines
+    const defs = new Map<string, string>();
+    const cleaned = markdown.replace(/^\[\^([^\]]+)\]:\s*(.+)$/gm, (_, label, text) => {
+      defs.set(label, text.trim());
+      return '';
+    });
+
+    // Pass 2: marked renders the cleaned markdown
+    let html = marked.parse(cleaned) as string;
+
+    // Pass 3: replace surviving [^label] text nodes with footnote markup
+    const refOrder: string[] = [];
+    html = html.replace(/\[\^([^\]]+)\]/g, (_, label) => {
+      if (!refOrder.includes(label)) refOrder.push(label);
+      const n = refOrder.indexOf(label) + 1;
+      return `<sup id="fnref${n}" class="footnote-ref"><a href="#fn${n}">${n}</a></sup>`;
+    });
+
+    if (refOrder.length > 0) {
+      const items = refOrder.map((label, i) => {
+        const n = i + 1;
+        const def = defs.get(label) ?? label;
+        return `<li id="fn${n}" epub:type="footnote"><p>${def} <a class="footnote-back" href="#fnref${n}">↩</a></p></li>`;
+      }).join('\n');
+      html += `\n<section class="footnotes" epub:type="footnotes">\n<hr/>\n<ol>\n${items}\n</ol>\n</section>`;
+    }
+
+    return html;
   }
 
   getFirstHeading(html: string): string {

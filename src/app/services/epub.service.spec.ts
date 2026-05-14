@@ -165,6 +165,25 @@ describe('EpubService', () => {
     });
   });
 
+  describe('footnotes', () => {
+    it('footnote section appears in chapter XHTML', async () => {
+      const md = '# Chapter\n\nText[^1] here.\n\n[^1]: The note.';
+      const blob = await service.build(md, DEFAULT_META);
+      const zip = await loadZip(blob);
+      const ch = await fileText(zip, 'EPUB/chapter001.xhtml');
+      expect(ch).toContain('class="footnotes"');
+      expect(ch).toContain('The note.');
+    });
+
+    it('in split mode, forward refs in early chapters include last chapter filename', async () => {
+      const md = '# Ch One\n\nA[^1].\n\n[^1]: Note one.\n\n# Ch Two\n\nB.';
+      const blob = await service.build(md, { ...DEFAULT_META, splitChapters: true });
+      const zip = await loadZip(blob);
+      const ch1 = await fileText(zip, 'EPUB/chapter001.xhtml');
+      expect(ch1).toContain('href="chapter002.xhtml#fn1"');
+    });
+  });
+
   describe('cover', () => {
     it('no cover.xhtml when coverDataUrl is null', async () => {
       const blob = await service.build('# Hello', DEFAULT_META);

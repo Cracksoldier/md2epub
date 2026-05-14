@@ -28,6 +28,40 @@ describe('MarkdownService', () => {
     it('returns a string', () => {
       expect(typeof service.parse('# Title')).toBe('string');
     });
+
+    it('renders footnote inline ref as superscript link', () => {
+      const html = service.parse('Text[^1] here.\n\n[^1]: My note.');
+      expect(html).toContain('<sup id="fnref1" class="footnote-ref"><a href="#fn1">1</a></sup>');
+    });
+
+    it('appends footnote section when refs are present', () => {
+      const html = service.parse('Text[^1].\n\n[^1]: The note.');
+      expect(html).toContain('<section class="footnotes"');
+      expect(html).toContain('<li id="fn1"');
+      expect(html).toContain('The note.');
+    });
+
+    it('numbers multiple footnotes in first-appearance order', () => {
+      const html = service.parse('A[^b] and B[^a].\n\n[^a]: Alpha.\n[^b]: Beta.');
+      expect(html).toContain('<a href="#fn1">1</a>');
+      expect(html).toContain('<a href="#fn2">2</a>');
+      expect(html).toContain('<li id="fn1"');
+      const fn1Pos = html.indexOf('<li id="fn1"');
+      const fn2Pos = html.indexOf('<li id="fn2"');
+      expect(fn1Pos).toBeLessThan(fn2Pos);
+    });
+
+    it('falls back to the label when definition is missing', () => {
+      const html = service.parse('Text[^missing].');
+      expect(html).toContain('<li id="fn1"');
+      expect(html).toContain('>missing ');
+    });
+
+    it('produces no footnote section when no footnote syntax present', () => {
+      const html = service.parse('Just plain text.');
+      expect(html).not.toContain('footnotes');
+      expect(html).not.toContain('fnref');
+    });
   });
 
   describe('getFirstHeading()', () => {

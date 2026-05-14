@@ -20,6 +20,30 @@ export class EpubService {
       ? this.markdown.splitIntoChapters(html)
       : [{ title: this.markdown.getFirstHeading(html) || title, filename: 'chapter001.xhtml', htmlContent: html, subchapters: [] }];
 
+    if (chapters.length > 1) {
+      const lastFile = chapters[chapters.length - 1].filename;
+      for (let i = 0; i < chapters.length - 1; i++) {
+        chapters[i] = {
+          ...chapters[i],
+          htmlContent: chapters[i].htmlContent.replace(/href="#fn(\d+)"/g, `href="${lastFile}#fn$1"`),
+        };
+      }
+      for (let i = 0; i < chapters.length - 1; i++) {
+        const matches = [...chapters[i].htmlContent.matchAll(/id="fnref(\d+)"/g)];
+        for (const m of matches) {
+          const n = m[1];
+          const last = chapters.length - 1;
+          chapters[last] = {
+            ...chapters[last],
+            htmlContent: chapters[last].htmlContent.replace(
+              `href="#fnref${n}"`,
+              `href="${chapters[i].filename}#fnref${n}"`
+            ),
+          };
+        }
+      }
+    }
+
     const hasCover = !!meta.coverDataUrl;
     const coverExt = meta.coverMimeType === 'image/png' ? 'png' : 'jpg';
     const coverImgPath = `images/cover.${coverExt}`;
@@ -197,7 +221,13 @@ th,td{border:1px solid #ddd;padding:0.5em 0.8em;text-align:left}
 th{background:#f5f5f5;font-weight:600}
 img{max-width:100%;height:auto}
 a{color:#2563eb}
-hr{border:none;border-top:1px solid #e0e0e0;margin:1.5em 0}`;
+hr{border:none;border-top:1px solid #e0e0e0;margin:1.5em 0}
+.footnote-ref{font-size:.75em;vertical-align:super;line-height:0}
+.footnote-ref a{text-decoration:none;color:#2563eb}
+.footnotes{border-top:1px solid #ccc;margin-top:2em;padding-top:1em;font-size:.85em}
+.footnotes ol{padding-left:1.5em}
+.footnotes li{margin:.3em 0}
+.footnote-back{text-decoration:none;font-size:.9em}`;
   }
 
   private minimalCss(): string {
@@ -211,7 +241,9 @@ blockquote{margin:0.5em 0 0.5em 1em}
 img{max-width:100%;height:auto}
 a{text-decoration:underline}
 table{border-collapse:collapse}
-th,td{border:1px solid;padding:0.3em 0.5em}`;
+th,td{border:1px solid;padding:0.3em 0.5em}
+.footnote-ref{font-size:.75em;vertical-align:super}
+.footnotes{border-top:1px solid;margin-top:1.5em;font-size:.85em}`;
   }
 
   private epubCss(): string {
@@ -232,7 +264,13 @@ th,td{border:1px solid #ccc;padding:0.4em 0.6em;text-align:left}
 th{background:#f0f0f0;font-weight:bold}
 img{max-width:100%;height:auto}
 a{color:#2563eb}
-hr{border:none;border-top:1px solid #ddd;margin:1em 0}`;
+hr{border:none;border-top:1px solid #ddd;margin:1em 0}
+.footnote-ref{font-size:.75em;vertical-align:super;line-height:0}
+.footnote-ref a{text-decoration:none;color:#2563eb}
+.footnotes{border-top:1px solid #ccc;margin-top:2em;padding-top:1em;font-size:.85em}
+.footnotes ol{padding-left:1.5em}
+.footnotes li{margin:.3em 0}
+.footnote-back{text-decoration:none;font-size:.9em}`;
   }
 
   // ─── Utilities ────────────────────────────────────────────────────────────
