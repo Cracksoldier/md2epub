@@ -75,6 +75,7 @@
       [value]="editorState.content()"
       (input)="onInput($event)"
       (keydown)="onKeyDown($event)"
+      (scroll)="onEditorScroll($event)"
       [placeholder]="i18n.t('editor.placeholder')"
       spellcheck="false"
       autocomplete="off"

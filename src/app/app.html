@@ -12,9 +12,15 @@
     style="display:none" (change)="onProjectFileSelected($event)">
 
   <main class="workspace" [style.grid-template-columns]="gridColumns()">
-    <app-editor-pane #editorPaneRef [class.mobile-hidden]="mobileView() !== 'editor'"></app-editor-pane>
+    <app-editor-pane #editorPaneRef [class.mobile-hidden]="mobileView() !== 'editor'"
+      [syncScrollRatio]="previewScrollRatio()"
+      (scrollRatio)="editorScrollRatio.set($event)"
+    ></app-editor-pane>
     <app-pane-divider (ratioChange)="onPaneRatio($event)"></app-pane-divider>
-    <app-preview-pane [class.mobile-hidden]="mobileView() !== 'preview'"></app-preview-pane>
+    <app-preview-pane [class.mobile-hidden]="mobileView() !== 'preview'"
+      [syncScrollRatio]="editorScrollRatio()"
+      (scrollRatio)="previewScrollRatio.set($event)"
+    ></app-preview-pane>
   </main>
 
   <nav class="mobile-tabs" aria-label="View switcher">

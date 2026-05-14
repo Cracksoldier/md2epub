@@ -13,7 +13,7 @@
       </span>
     }
   </div>
-  <div class="preview-scroll">
+  <div class="preview-scroll" #scrollContainer (scroll)="onPreviewScroll($event)">
     <div class="preview prose" [innerHTML]="safeHtml()"></div>
   </div>
 </section>

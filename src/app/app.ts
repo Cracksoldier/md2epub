@@ -28,6 +28,8 @@ export class App {
   @ViewChild('projectFileInput') private projectFileInput!: ElementRef<HTMLInputElement>;
 
   readonly settingsOpen = signal(false);
+  readonly editorScrollRatio = signal(NaN);
+  readonly previewScrollRatio = signal(NaN);
   readonly exportLoading = signal(false);
   readonly mobileView = signal<'editor' | 'preview'>('editor');
   readonly gridColumns = signal(this.initColumns());

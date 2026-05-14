@@ -1,5 +1,5 @@
 import {
-  Component, inject, computed, ElementRef, ViewChild, HostListener,
+  Component, inject, computed, effect, ElementRef, ViewChild, HostListener, input, output,
 } from '@angular/core';
 import { EditorStateService } from '../../services/editor-state.service';
 import { SettingsService } from '../../services/settings.service';
@@ -20,7 +20,35 @@ export class EditorPane {
   @ViewChild('fileInput') fileInputRef!: ElementRef<HTMLInputElement>;
   @ViewChild('textarea') textareaRef!: ElementRef<HTMLTextAreaElement>;
 
+  readonly syncScrollRatio = input<number>(NaN);
+  readonly scrollRatio = output<number>();
+
+  private scrolling = false;
+  private scrollRafId = 0;
+
   isDragOver = false;
+
+  constructor() {
+    effect(() => {
+      const ratio = this.syncScrollRatio();
+      if (!isFinite(ratio) || this.scrolling) return;
+      const ta = this.textareaRef?.nativeElement;
+      if (!ta) return;
+      this.scrolling = true;
+      ta.scrollTop = ratio * (ta.scrollHeight - ta.clientHeight);
+      setTimeout(() => { this.scrolling = false; }, 50);
+    });
+  }
+
+  onEditorScroll(event: Event): void {
+    if (this.scrolling) return;
+    cancelAnimationFrame(this.scrollRafId);
+    this.scrollRafId = requestAnimationFrame(() => {
+      const ta = event.target as HTMLTextAreaElement;
+      const ratio = ta.scrollTop / (ta.scrollHeight - ta.clientHeight);
+      if (isFinite(ratio)) this.scrollRatio.emit(ratio);
+    });
+  }
 
   readonly wordCount = computed(() => {
     const text = this.editorState.content().trim();
