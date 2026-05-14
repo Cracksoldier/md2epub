@@ -9,6 +9,7 @@ const DEFAULT_META: BookMetadata = {
   publisher: '',
   description: '',
   language: 'en',
+  epubTheme: 'classic',
   splitChapters: false,
   coverDataUrl: null,
   coverMimeType: null,

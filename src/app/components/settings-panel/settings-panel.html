@@ -81,6 +81,21 @@
       </select>
     </div>
 
+    <!-- EPUB Theme -->
+    <div class="form-group">
+      <label for="meta-theme">{{ i18n.t('settings.epubTheme') }}</label>
+      <select
+        id="meta-theme"
+        class="form-input"
+        [value]="settings.metadata().epubTheme"
+        (change)="onEpubThemeChange($event)"
+      >
+        <option value="classic">{{ i18n.t('settings.themeClassic') }}</option>
+        <option value="modern">{{ i18n.t('settings.themeModern') }}</option>
+        <option value="minimal">{{ i18n.t('settings.themeMinimal') }}</option>
+      </select>
+    </div>
+
     <div class="settings-divider"></div>
 
     <!-- Cover image -->

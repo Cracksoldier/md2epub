@@ -2,6 +2,7 @@ import { Component, inject, input, output } from '@angular/core';
 import { SettingsService } from '../../services/settings.service';
 import { ToastService } from '../../services/toast.service';
 import { I18nService } from '../../services/i18n.service';
+import { EpubTheme } from '../../models/book-metadata.model';
 
 @Component({
   selector: 'app-settings-panel',
@@ -50,6 +51,10 @@ export class SettingsPanel {
 
   onLanguageChange(event: Event): void {
     this.settings.update({ language: (event.target as HTMLSelectElement).value });
+  }
+
+  onEpubThemeChange(event: Event): void {
+    this.settings.update({ epubTheme: (event.target as HTMLSelectElement).value as EpubTheme });
   }
 
   onSplitChaptersChange(event: Event): void {

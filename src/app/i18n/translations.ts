@@ -54,6 +54,10 @@ export interface TranslationMap {
     publisherPlaceholder: string;
     description: string;
     descriptionPlaceholder: string;
+    epubTheme: string;
+    themeClassic: string;
+    themeModern: string;
+    themeMinimal: string;
     splitChapters: string;
     splitChaptersDesc: string;
   };
@@ -124,6 +128,10 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       publisherPlaceholder: 'Publisher name',
       description: 'Description',
       descriptionPlaceholder: 'A short summary of the book…',
+      epubTheme: 'EPUB Theme',
+      themeClassic: 'Classic (serif)',
+      themeModern: 'Modern (sans-serif)',
+      themeMinimal: 'Minimal',
       splitChapters: 'Split into chapters',
       splitChaptersDesc: 'Split content at each H1 heading into separate EPUB chapters. H2 headings become subchapters within their chapter.',
     },
@@ -193,6 +201,10 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       publisherPlaceholder: 'Verlagsname',
       description: 'Beschreibung',
       descriptionPlaceholder: 'Eine kurze Zusammenfassung des Buches…',
+      epubTheme: 'EPUB-Design',
+      themeClassic: 'Klassisch (Serifenschrift)',
+      themeModern: 'Modern (serifenlos)',
+      themeMinimal: 'Minimal',
       splitChapters: 'In Kapitel aufteilen',
       splitChaptersDesc: 'Inhalt an H1-Überschriften in separate EPUB-Kapitel aufteilen. H2-Überschriften werden zu Unterkapiteln im jeweiligen Kapitel.',
     },
@@ -262,6 +274,10 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       publisherPlaceholder: 'Verlogsname',
       description: 'Beschreibung',
       descriptionPlaceholder: 'A kurze Zsammenfassung vom Buach…',
+      epubTheme: 'EPUB-Design',
+      themeClassic: 'Klassisch (Serifenschrift)',
+      themeModern: 'Modern (serifenlos)',
+      themeMinimal: 'Minimal',
       splitChapters: 'In Kapitel aufteilen',
       splitChaptersDesc: 'Den Inhalt bei jedn H1-Überschrift in eigane EPUB-Kapitel aufteilen. H2-Überschriften wern zu Unterkapiteln im jeweiligen Kapitel.',
     },
@@ -331,6 +347,10 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       publisherPlaceholder: 'Nombre de la editorial',
       description: 'Descripción',
       descriptionPlaceholder: 'Un breve resumen del libro…',
+      epubTheme: 'Tema EPUB',
+      themeClassic: 'Clásico (con serifa)',
+      themeModern: 'Moderno (sin serifa)',
+      themeMinimal: 'Mínimal',
       splitChapters: 'Dividir en capítulos',
       splitChaptersDesc: 'Divide el contenido en cada encabezado H1 en capítulos EPUB separados. Los encabezados H2 se convierten en subcapítulos dentro de su capítulo.',
     },
@@ -400,6 +420,10 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       publisherPlaceholder: 'Udgiverens navn',
       description: 'Beskrivelse',
       descriptionPlaceholder: 'En kort opsummering af bogen…',
+      epubTheme: 'EPUB-tema',
+      themeClassic: 'Klassisk (serif)',
+      themeModern: 'Moderne (sans-serif)',
+      themeMinimal: 'Minimal',
       splitChapters: 'Opdel i kapitler',
       splitChaptersDesc: 'Opdel indhold ved hvert H1-overskrift i separate EPUB-kapitler. H2-overskrifter bliver underkapitler i deres kapitel.',
     },
@@ -469,6 +493,10 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       publisherPlaceholder: '出版社名',
       description: '概要',
       descriptionPlaceholder: '本の短い説明…',
+      epubTheme: 'EPUBテーマ',
+      themeClassic: 'クラシック（セリフ体）',
+      themeModern: 'モダン（サンセリフ体）',
+      themeMinimal: 'ミニマル',
       splitChapters: 'チャプターに分割',
       splitChaptersDesc: 'H1の見出しでコンテンツを分割し、個別のEPUBチャプターを作成します。H2の見出しは各チャプター内のサブチャプターになります。',
     },
@@ -538,6 +566,10 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       publisherPlaceholder: '出版社名稱',
       description: '簡介',
       descriptionPlaceholder: '書籍的簡短摘要…',
+      epubTheme: 'EPUB 主題',
+      themeClassic: '經典（襯線字體）',
+      themeModern: '現代（無襯線字體）',
+      themeMinimal: '極簡',
       splitChapters: '分割為章節',
       splitChaptersDesc: '在每個 H1 標題處分割內容，生成獨立的 EPUB 章節。H2 標題成為其所在章節的子章節。',
     },

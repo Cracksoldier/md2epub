@@ -25,6 +25,10 @@ describe('SettingsService', () => {
       expect(service.metadata().splitChapters).toBe(false);
     });
 
+    it('defaults epubTheme to "classic"', () => {
+      expect(service.metadata().epubTheme).toBe('classic');
+    });
+
     it('defaults cover to null', () => {
       expect(service.metadata().coverDataUrl).toBeNull();
       expect(service.metadata().coverMimeType).toBeNull();

@@ -76,7 +76,7 @@ export class EpubService {
       manifestItems, spineItems,
     }));
     zip.file('EPUB/nav.xhtml', this.navXhtml({ lang, title: 'Table of Contents', tocItems }));
-    zip.file('EPUB/style.css', this.epubCss());
+    zip.file('EPUB/style.css', this.themeCss(meta.epubTheme));
 
     for (const ch of chapters) {
       zip.file(`EPUB/${ch.filename}`, this.chapterXhtml({ lang, title: ch.title, body: this.toXhtml(ch.htmlContent) }));
@@ -174,6 +174,44 @@ ${p.body}
   <img src="${p.imgPath}" alt="${this.esc(p.title)} cover"/>
 </body>
 </html>`;
+  }
+
+  private themeCss(theme: BookMetadata['epubTheme']): string {
+    if (theme === 'modern')  return this.modernCss();
+    if (theme === 'minimal') return this.minimalCss();
+    return this.epubCss();
+  }
+
+  private modernCss(): string {
+    return `body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:1em;line-height:1.75;margin:2em auto;max-width:36em}
+h1,h2,h3,h4,h5,h6{font-weight:700;line-height:1.2;margin:1.5em 0 0.4em}
+h1{font-size:2em}h2{font-size:1.5em}h3{font-size:1.2em}
+p{margin:0.8em 0}
+ul,ol{margin:0.8em 0;padding-left:1.8em}li{margin:0.3em 0}
+blockquote{border-left:3px solid #ccc;margin:1em 0 1em 0;padding:0.4em 1em;color:#555}
+pre{background:#f8f8f8;padding:1em;overflow-x:auto;margin:1em 0;border-radius:4px}
+code{font-family:monospace;font-size:0.88em;background:#f0f0f0;padding:0.15em 0.35em;border-radius:3px}
+pre code{background:none;padding:0}
+table{border-collapse:collapse;width:100%;margin:1em 0}
+th,td{border:1px solid #ddd;padding:0.5em 0.8em;text-align:left}
+th{background:#f5f5f5;font-weight:600}
+img{max-width:100%;height:auto}
+a{color:#2563eb}
+hr{border:none;border-top:1px solid #e0e0e0;margin:1.5em 0}`;
+  }
+
+  private minimalCss(): string {
+    return `body{font-size:1em;line-height:1.5;margin:1em}
+h1,h2,h3,h4,h5,h6{font-weight:bold;margin:1em 0 0.4em;line-height:1.3}
+p{margin:0.5em 0}
+ul,ol{margin:0.5em 0;padding-left:1.4em}
+pre,code{font-family:monospace;font-size:0.9em}
+pre{margin:0.5em 0;overflow-x:auto}
+blockquote{margin:0.5em 0 0.5em 1em}
+img{max-width:100%;height:auto}
+a{text-decoration:underline}
+table{border-collapse:collapse}
+th,td{border:1px solid;padding:0.3em 0.5em}`;
   }
 
   private epubCss(): string {
