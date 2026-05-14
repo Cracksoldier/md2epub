@@ -27,7 +27,7 @@ Single-page Angular 21 app. No routing, no NgModules — all components are stan
 EditorPane (textarea)
   → EditorStateService.content (Signal<string>)
     → PreviewPane (debounced 200ms via toObservable+toSignal → DomSanitizer → [innerHTML])
-    → ChapterList (computed via MarkdownService.getChapterHeadings — shown when splitChapters is on)
+    → ChapterList (computed via MarkdownService.getChapterTree — shown when splitChapters is on)
     → EpubService.build() on export
 
 SettingsService.metadata (Signal<BookMetadata>)
@@ -48,7 +48,7 @@ I18nService.locale (Signal<Locale>)
 
 - **`EditorStateService`** — single signal holding the raw markdown string; initialized with a sample document.
 - **`SettingsService`** — signal holding `BookMetadata`; `loadCoverFromFile(File)` reads the image as a base64 data URL.
-- **`MarkdownService`** — wraps `marked.parse()`; `getChapterHeadings(markdown)` regex-scans raw markdown for `#`/`##` lines and returns `{ title, offset }[]`; `splitIntoChapters(html)` uses `DOMParser` to walk `body.children` and split at `H1`/`H2` boundaries.
+- **`MarkdownService`** — wraps `marked.parse()`; `getChapterHeadings(markdown)` regex-scans raw markdown for `#` (H1 only) lines and returns `{ title, offset }[]` — used for drag-and-drop reordering; `getChapterTree(markdown)` returns a two-level `{ title, offset, subchapters[] }[]` hierarchy (H1 chapters + H2 subchapters) used by the sidebar; `splitIntoChapters(html)` uses `DOMParser` to walk `body.children` and splits only at `H1` boundaries — `H2` elements stay inside their parent chapter and get a slug `id` attribute injected; each `Chapter` carries a `subchapters: Subchapter[]` array populated from the H2 slugs.
 - **`EpubService`** — assembles a valid EPUB 3 ZIP using `jszip`. The `mimetype` file **must** be the first entry and stored uncompressed (`{ compression: 'STORE' }`). Generates `container.xml`, `package.opf`, `nav.xhtml`, per-chapter XHTML files, and optionally a cover page.
 - **`I18nService`** — signal-based UI localisation. `locale` signal holds the active `Locale` code; `t(key, ...args)` looks up dot-notation keys (e.g. `'toolbar.import'`) with `{0}` interpolation for dynamic values. Locale is persisted in `localStorage` under `epub-i18n-locale`.
 
@@ -72,7 +72,7 @@ All user-visible strings live in `src/app/i18n/translations.ts` as a typed `Tran
 
 ### ChapterList component
 
-`src/app/components/chapter-list/` — standalone component rendered inside `EditorPane` when `splitChapters` is enabled. Reads `EditorStateService.content()` through `MarkdownService.getChapterHeadings()` to produce a reactive list of `{ title, offset }` entries. Each item is a `<button>` that emits `chapterSelect` with the character offset; `EditorPane.scrollToOffset()` receives it and scrolls the textarea. The sidebar is 168px wide, sits left of the textarea in a `.editor-body` flex row, and hides automatically on mobile (the parent pane gets `mobile-hidden`).
+`src/app/components/chapter-list/` — standalone component rendered inside `EditorPane` when `splitChapters` is enabled. Reads `EditorStateService.content()` through `MarkdownService.getChapterTree()` to produce a reactive two-level hierarchy. Each H1 chapter item is draggable (drag handle + chapter number + title button) and emits `chapterSelect` on click; H2 subchapters appear as indented, non-draggable `<button>` elements below their parent and also emit `chapterSelect` with the subchapter's character offset. `EditorPane.scrollToOffset()` receives the offset and scrolls the textarea. The sidebar is 168px wide, sits left of the textarea in a `.editor-body` flex row, and hides automatically on mobile (the parent pane gets `mobile-hidden`). Drag-and-drop uses the native HTML5 API; reordering calls `MarkdownService.reorderMarkdownChapters()` which moves entire H1 sections (subchapters move with their parent automatically).
 
 ### AppComponent (app.ts)
 
@@ -137,7 +137,7 @@ Test runner: **Vitest** via `@angular/build:unit-test` (jsdom environment). Run 
 
 | Spec file | Coverage |
 |---|---|
-| `services/markdown.service.spec.ts` | `parse()`, `getFirstHeading()`, `getChapterHeadings()`, `splitIntoChapters()` edge cases |
+| `services/markdown.service.spec.ts` | `parse()`, `getFirstHeading()`, `reorderMarkdownChapters()`, `splitIntoChapters()` (H1-only split, H2 ID injection, subchapter deduplication), `getChapterTree()` |
 | `services/epub.service.spec.ts` | ZIP structure, mimetype STORE + first-entry, container namespace, opf metadata, chapters, cover, XML escaping |
 | `services/i18n.service.spec.ts` | Key lookup, `{0}` interpolation, `setLocale()`, localStorage persistence, fallbacks |
 | `services/settings.service.spec.ts` | Defaults, `update()` merge, `loadCoverFromFile()` (PNG/JPEG/reject), `clearCover()` |
@@ -151,4 +151,4 @@ Test runner: **Vitest** via `@angular/build:unit-test` (jsdom environment). Run 
 - Clear `localStorage` in `beforeEach` for any service that reads it on init (`I18nService`, `PaneDivider`).
 - Mock `window.FileReader` by replacing it with a class: `(window as any).FileReader = class FakeReader { ... }`. Arrow-function implementations don't work as constructors.
 - Use `vi.useFakeTimers()` / `vi.useRealTimers()` from `'vitest'` to control `setTimeout`-based behaviour (toast auto-dismiss).
-- `splitIntoChapters()` discards content that appears before the first `H1`/`H2` heading; this is by design and is tested explicitly.
+- `splitIntoChapters()` discards content that appears before the first `H1` heading; this is by design and is tested explicitly.

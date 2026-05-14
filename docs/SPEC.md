@@ -41,12 +41,21 @@ interface BookMetadata {
 }
 ```
 
+### `Subchapter`
+```typescript
+interface Subchapter {
+  title: string;  // H2 text content
+  id: string;     // slug used as fragment href, e.g. 'my-section'
+}
+```
+
 ### `Chapter`
 ```typescript
 interface Chapter {
-  title: string;      // heading text or fallback
-  filename: string;   // e.g. 'chapter001.xhtml'
-  htmlContent: string;
+  title: string;           // H1 text or fallback
+  filename: string;        // e.g. 'chapter001.xhtml'
+  htmlContent: string;     // full chapter HTML; H2 elements have id attrs injected
+  subchapters: Subchapter[];
 }
 ```
 
@@ -100,18 +109,24 @@ class SettingsService {
 class MarkdownService {
   parse(markdown: string): string                                    // marked.parse() → HTML string
   getFirstHeading(html: string): string                              // extract first H1/H2 text
-  getChapterHeadings(markdown: string): { title: string; offset: number }[]  // regex scan of raw markdown
-  splitIntoChapters(html: string): Chapter[]                         // see algorithm below
+  getChapterHeadings(markdown: string): { title: string; offset: number }[]  // H1-only regex scan; used for drag-and-drop reordering
+  getChapterTree(markdown: string): {                                // H1+H2 hierarchy for ChapterList sidebar
+    title: string; offset: number;
+    subchapters: { title: string; offset: number }[];
+  }[]
+  splitIntoChapters(html: string): Chapter[]                        // see algorithm below
+  reorderMarkdownChapters(markdown: string, from: number, to: number): string
 }
 ```
 
 **Chapter Splitting Algorithm:**
 1. `DOMParser.parseFromString(html, 'text/html')`
 2. Walk `document.body.children` (element children, not text nodes)
-3. On `H1` or `H2`: close current chapter, start new one (title = `textContent`)
-4. All other elements: `outerHTML` appended to current chapter content
-5. Content before first heading: prepended to first chapter
-6. Fallback: if no headings, return single chapter with all content
+3. On `H1`: close current chapter, start new one (title = `textContent`)
+4. On `H2` (while a chapter is open): inject `id="<slug>"` attribute onto the element, append to current chapter content, push `{ title, id }` to current chapter's `subchapters` array. Slugs are deduplicated within the chapter with `-2`, `-3` suffixes.
+5. All other elements: `outerHTML` appended to current chapter content
+6. Content before first H1: discarded (not included in any chapter)
+7. Fallback: if no H1 headings, return single chapter with all content
 
 ---
 
@@ -137,7 +152,7 @@ EPUB/images/cover.{jpg|png}      ← only if cover uploaded
 ```
 
 **package.opf must:** list every file in `<manifest>`, list reading order in `<spine>`.
-**nav.xhtml must:** have `<nav epub:type="toc">` element.
+**nav.xhtml must:** have `<nav epub:type="toc">` element with nested `<ol>` entries for subchapters (fragment `#slug` hrefs linking into the chapter XHTML).
 
 **Cover handling:**
 - Strip `data:image/jpeg;base64,` prefix from dataUrl
@@ -209,10 +224,12 @@ Injects: `EditorStateService`, `MarkdownService`
 chapterSelect: OutputEmitterRef<number>  // character offset in markdown
 
 // Computed
-chapters: Signal<{ title: string; offset: number }[]>
+chapters: Signal<{ title: string; offset: number; subchapters: { title: string; offset: number }[] }[]>
 ```
 
-**Template:** numbered `<button>` list of chapter headings. Emits `chapterSelect` on click; shows localised empty-state text when no headings found. 168px fixed-width sidebar styled with the dark palette.
+**Template:** numbered, draggable chapter items (drag handle + number + title button). Each item may have an indented sub-list of H2 subchapter buttons beneath it. Both chapter and subchapter buttons emit `chapterSelect` with the heading's character offset. Shows localised empty-state text when no H1 headings are found. 168px fixed-width sidebar styled with the dark palette.
+
+**Drag-and-drop:** native HTML5 API. `dragstart`/`dragover`/`dragleave`/`drop`/`dragend` handlers on the host element. A `drop-before` CSS class provides a visual indicator line. On drop, calls `MarkdownService.reorderMarkdownChapters()` — entire H1 sections move, so subchapters follow their parent automatically.
 
 ---
 

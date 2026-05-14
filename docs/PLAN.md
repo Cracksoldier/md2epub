@@ -8,7 +8,7 @@ A fully client-side Markdown-to-EPUB 3 converter built with Angular 21 (standalo
 - Render a live split-pane HTML preview
 - Generate a valid EPUB 3 file downloadable in the browser
 - Support book metadata: title, author, language, cover image
-- Support automatic chapter splitting at H1/H2 headings
+- Support automatic chapter splitting at H1 headings; H2 headings become subchapters nested within their parent chapter
 
 ## Technology Choices
 
@@ -66,6 +66,8 @@ src/app/
 - Internationalisation: 7 locales (en, de, de-styr, es, da, ja, zh-TW) via `I18nService`
 - WelcomeModal with language picker on first visit
 - Chapter list sidebar in EditorPane (visible when Split Chapters is enabled)
+- Drag-and-drop chapter reordering in the sidebar (H1-level; H2 subchapters move with their parent)
+- H1 = chapters, H2 = subchapters: `splitIntoChapters()` splits only at H1 boundaries; H2 elements get slug `id` attrs injected and are listed as nested subchapters in both the sidebar and EPUB nav TOC
 
 ## Deployment to GitHub Pages
 
