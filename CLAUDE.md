@@ -25,14 +25,18 @@ Single-page Angular 21 app. No routing, no NgModules — all components are stan
 
 ```
 EditorPane (textarea)
-  → EditorStateService.content (Signal<string>)
+  → EditorStateService.content (Signal<string>)  [autosaved to localStorage]
     → PreviewPane (debounced 200ms via toObservable+toSignal → DomSanitizer → [innerHTML])
     → ChapterList (computed via MarkdownService.getChapterTree — shown when splitChapters is on)
     → EpubService.build() on export
 
-SettingsService.metadata (Signal<BookMetadata>)
-  ← SettingsPanel (form inputs)
-  → EpubService.build() on export (title, author, publisher, description, lang, cover, splitChapters flag)
+EditorPane scroll  →  App.editorScrollRatio (Signal<number>)  →  PreviewPane.syncScrollRatio
+PreviewPane scroll →  App.previewScrollRatio (Signal<number>) →  EditorPane.syncScrollRatio
+  (proportional scroll sync; NaN = no-op sentinel)
+
+SettingsService.metadata (Signal<BookMetadata>)  [autosaved to localStorage, cover excluded]
+  ← SettingsPanel (form inputs: title, author, publisher, description, language, epubTheme, cover, splitChapters)
+  → EpubService.build() on export
   → EditorPane (showChapterList computed — toggles ChapterList sidebar)
 
 ToastService.toasts (Signal<Toast[]>)
@@ -46,10 +50,10 @@ I18nService.locale (Signal<Locale>)
 
 ### Key services
 
-- **`EditorStateService`** — single signal holding the raw markdown string; initialized with a sample document.
-- **`SettingsService`** — signal holding `BookMetadata`; `loadCoverFromFile(File)` reads the image as a base64 data URL.
-- **`MarkdownService`** — wraps `marked.parse()`; `getChapterHeadings(markdown)` regex-scans raw markdown for `#` (H1 only) lines and returns `{ title, offset }[]` — used for drag-and-drop reordering; `getChapterTree(markdown)` returns a two-level `{ title, offset, subchapters[] }[]` hierarchy (H1 chapters + H2 subchapters) used by the sidebar; `splitIntoChapters(html)` uses `DOMParser` to walk `body.children` and splits only at `H1` boundaries — `H2` elements stay inside their parent chapter and get a slug `id` attribute injected; each `Chapter` carries a `subchapters: Subchapter[]` array populated from the H2 slugs.
-- **`EpubService`** — assembles a valid EPUB 3 ZIP using `jszip`. The `mimetype` file **must** be the first entry and stored uncompressed (`{ compression: 'STORE' }`). Generates `container.xml`, `package.opf`, `nav.xhtml`, per-chapter XHTML files, and optionally a cover page.
+- **`EditorStateService`** — single signal holding the raw markdown string; initialized with a sample document. Autosaves to `localStorage` key `epub-autosave-content` on every `setContent()` call; restores on init.
+- **`SettingsService`** — signal holding `BookMetadata`; `loadCoverFromFile(File)` reads the image as a base64 data URL. Autosaves to `localStorage` key `epub-autosave-meta` (cover excluded due to size).
+- **`MarkdownService`** — wraps `marked.parse()` with a **three-pass footnote processor** inside `parse()`: (1) strips `[^label]: text` definition lines, (2) calls `marked.parse()`, (3) replaces `[^label]` inline markers with `<sup>` footnote refs and appends a `<section class="footnotes" epub:type="footnotes">` block. `getChapterHeadings(markdown)` regex-scans raw markdown for `#` (H1 only) lines and returns `{ title, offset }[]` — used for drag-and-drop reordering; `getChapterTree(markdown)` returns a two-level `{ title, offset, subchapters[] }[]` hierarchy (H1 chapters + H2 subchapters) used by the sidebar; `splitIntoChapters(html)` uses `DOMParser` to walk `body.children` and splits only at `H1` boundaries — `H2` elements stay inside their parent chapter and get a slug `id` attribute injected; each `Chapter` carries a `subchapters: Subchapter[]` array populated from the H2 slugs. The footnote `<section>` element lands naturally at the end of the last chapter.
+- **`EpubService`** — assembles a valid EPUB 3 ZIP using `jszip`. The `mimetype` file **must** be the first entry and stored uncompressed (`{ compression: 'STORE' }`). Generates `container.xml`, `package.opf`, `nav.xhtml`, per-chapter XHTML files, and optionally a cover page. Selects embedded CSS via `themeCss(meta.epubTheme)` — three built-in themes: `classic` (serif), `modern` (system sans-serif, centred), `minimal` (near-bare). In split-chapter mode, rewrites footnote cross-file hrefs so `href="#fn1"` in early chapters becomes `href="chapterN.xhtml#fn1"` and back-links in the footnote section point to the originating chapter file.
 - **`I18nService`** — signal-based UI localisation. `locale` signal holds the active `Locale` code; `t(key, ...args)` looks up dot-notation keys (e.g. `'toolbar.import'`) with `{0}` interpolation for dynamic values. Locale is persisted in `localStorage` under `epub-i18n-locale`.
 
 ### Internationalisation (i18n)
@@ -76,13 +80,19 @@ All user-visible strings live in `src/app/i18n/translations.ts` as a typed `Tran
 
 ### AppComponent (app.ts)
 
-Owns `exportLoading`, `settingsOpen`, `gridColumns`, `showWelcome`, and `mobileView` signals. Handles `Ctrl+E` (export) and `Ctrl+,` (toggle settings) via `@HostListener`. Calls `PaneDivider.saveRatio()` / `loadSavedRatio()` (static helpers) to persist the pane split in `localStorage`. `showWelcome` is `true` on first visit (no `epub-welcomed` key in `localStorage`); `onWelcomeClosed()` sets the flag and hides the modal.
+Owns `exportLoading`, `settingsOpen`, `gridColumns`, `showWelcome`, `showShortcuts`, `mobileView`, `editorScrollRatio`, and `previewScrollRatio` signals. Handles `Ctrl+E` (export), `Ctrl+,` (toggle settings), and `Ctrl+?` (toggle shortcuts modal) via `@HostListener`. Calls `PaneDivider.saveRatio()` / `loadSavedRatio()` (static helpers) to persist the pane split in `localStorage`. `showWelcome` is `true` on first visit (no `epub-welcomed` key in `localStorage`); `onWelcomeClosed()` sets the flag and hides the modal.
+
+`editorScrollRatio` and `previewScrollRatio` are `Signal<number>` (initial value `NaN`). `EditorPane` emits its scroll ratio via `(scrollRatio)` → stored in `editorScrollRatio`; that value is passed as `[syncScrollRatio]` to `PreviewPane`, and vice versa. `NaN` is the "no-op" sentinel — both panes guard with `isFinite(ratio)` before applying.
 
 `mobileView` (`Signal<'editor' | 'preview'>`) tracks the active tab on phones; toggled by the mobile bottom tab bar in `app.html`. `i18n` is `protected` (not `private`) so the template can call `i18n.t()` directly for tab labels.
 
 ### WelcomeModal component
 
 Shown on first visit only. Displays a client-side privacy notice and a language picker so users can set their locale before starting. Dismisses on button click, backdrop click, or Escape. Dismissed state stored in `localStorage` key `epub-welcomed`.
+
+### ShortcutsModal component
+
+`src/app/components/shortcuts-modal/` — opened via `Ctrl+?` (or `⌘+?` on Mac); toggled by `App.showShortcuts` signal. Lists all keyboard shortcuts in two groups (General, Editor). Detects Mac at runtime via `navigator.platform` / `navigator.userAgent` and shows `⌘` vs `Ctrl`. Follows the same pattern as `WelcomeModal`: fixed backdrop, `#card` ViewChild, Escape to close, backdrop click to close, Tab focus trap in `@HostListener('keydown')`.
 
 ### Responsive layout
 
@@ -100,7 +110,7 @@ Toolbar button text is wrapped in `<span class="btn__label">` so it can be hidde
 
 ### Toolbar component
 
-`src/app/components/toolbar/toolbar.html` — contains the brand logo (inline SVG, 32×32 viewBox), action buttons (import, settings, export), a custom locale dropdown, and a **Buy Me a Coffee** `<a class="btn btn--coffee">` placeholder. Update its `href` when a real donation link is available. Button text is wrapped in `<span class="btn__label">` for mobile hiding.
+`src/app/components/toolbar/toolbar.html` — contains the brand logo (inline SVG, 32×32 viewBox), action buttons (import, load project, save project, settings, export), a custom locale dropdown, and a **Buy Me a Coffee** `<a class="btn btn--coffee">` placeholder. Update its `href` when a real donation link is available. Button text is wrapped in `<span class="btn__label">` for mobile hiding. The toolbar title (`.toolbar__title`) is hidden below `$breakpoint-tablet: 1024px` via `toolbar.scss`.
 
 **Locale dropdown** — a fully custom dropdown replacing the native `<select>`. `Toolbar` owns a `localeOpen` signal and a `currentLocaleLabel` computed. A `@HostListener('document:click')` closes the panel on outside click; `@HostListener('document:keydown.escape')` closes it on Escape. The trigger (`.toolbar__locale-trigger`) shows the current locale's flag, label, and a rotating chevron. The panel (`.locale-dropdown`) and its options (`.locale-option`) are styled with the app's dark palette — active locale gets `$accent-light` / `$accent-glow`. Styles live in `toolbar.scss`.
 
@@ -137,10 +147,10 @@ Test runner: **Vitest** via `@angular/build:unit-test` (jsdom environment). Run 
 
 | Spec file | Coverage |
 |---|---|
-| `services/markdown.service.spec.ts` | `parse()`, `getFirstHeading()`, `reorderMarkdownChapters()`, `splitIntoChapters()` (H1-only split, H2 ID injection, subchapter deduplication), `getChapterTree()` |
-| `services/epub.service.spec.ts` | ZIP structure, mimetype STORE + first-entry, container namespace, opf metadata, chapters, cover, XML escaping |
+| `services/markdown.service.spec.ts` | `parse()` (headings, bold, footnote refs, footnote section, numbering order, missing defs), `getFirstHeading()`, `reorderMarkdownChapters()`, `splitIntoChapters()` (H1-only split, H2 ID injection, subchapter deduplication), `getChapterTree()` |
+| `services/epub.service.spec.ts` | ZIP structure, mimetype STORE + first-entry, container namespace, opf metadata, chapters, cover, XML escaping, footnotes in chapter XHTML, cross-chapter footnote href rewriting in split mode |
 | `services/i18n.service.spec.ts` | Key lookup, `{0}` interpolation, `setLocale()`, localStorage persistence, fallbacks |
-| `services/settings.service.spec.ts` | Defaults, `update()` merge, `loadCoverFromFile()` (PNG/JPEG/reject), `clearCover()` |
+| `services/settings.service.spec.ts` | Defaults (including `epubTheme: 'classic'`), `update()` merge, `loadCoverFromFile()` (PNG/JPEG/reject), `clearCover()` |
 | `services/toast.service.spec.ts` | `show()`, `dismiss()`, auto-dismiss via fake timers (`vi.useFakeTimers`), unique IDs |
 | `services/editor-state.service.spec.ts` | Initial sample content, `setContent()` |
 | `components/pane-divider/pane-divider.spec.ts` | Static `loadSavedRatio()`/`saveRatio()`, clamping, ArrowLeft/ArrowRight keyboard resize |

@@ -29,12 +29,15 @@ $settings-width: 320px;
 
 ### `BookMetadata`
 ```typescript
+type EpubTheme = 'classic' | 'modern' | 'minimal';
+
 interface BookMetadata {
   title: string;
   author: string;
   publisher: string;
   description: string;
   language: string;            // BCP 47 tag, e.g. 'en', 'fr'
+  epubTheme: EpubTheme;        // selects embedded CSS preset
   splitChapters: boolean;
   coverDataUrl: string | null; // base64 data URL from FileReader
   coverMimeType: 'image/jpeg' | 'image/png' | null;
@@ -107,7 +110,7 @@ class SettingsService {
 
 ```typescript
 class MarkdownService {
-  parse(markdown: string): string                                    // marked.parse() → HTML string
+  parse(markdown: string): string                                    // 3-pass: strip footnote defs → marked.parse() → inject footnote HTML
   getFirstHeading(html: string): string                              // extract first H1/H2 text
   getChapterHeadings(markdown: string): { title: string; offset: number }[]  // H1-only regex scan; used for drag-and-drop reordering
   getChapterTree(markdown: string): {                                // H1+H2 hierarchy for ChapterList sidebar
@@ -118,6 +121,12 @@ class MarkdownService {
   reorderMarkdownChapters(markdown: string, from: number, to: number): string
 }
 ```
+
+**Footnote syntax** (Pandoc-style, not standard CommonMark):
+- Inline: `[^label]` → `<sup id="fnref1" class="footnote-ref"><a href="#fn1">1</a></sup>`
+- Definition: `[^label]: text` (standalone line, single-line only)
+- Footnote section appended to full HTML: `<section class="footnotes" epub:type="footnotes">`
+- `EpubService` rewrites cross-chapter hrefs in split mode (see EpubService notes)
 
 **Chapter Splitting Algorithm:**
 1. `DOMParser.parseFromString(html, 'text/html')`
@@ -145,7 +154,7 @@ mimetype                         ← STORE (uncompressed), MUST be first
 META-INF/container.xml
 EPUB/package.opf
 EPUB/nav.xhtml
-EPUB/style.css
+EPUB/style.css                   ← one of three theme presets
 EPUB/chapter001.xhtml            ← one or more
 EPUB/cover.xhtml                 ← only if cover uploaded
 EPUB/images/cover.{jpg|png}      ← only if cover uploaded
@@ -153,6 +162,14 @@ EPUB/images/cover.{jpg|png}      ← only if cover uploaded
 
 **package.opf must:** list every file in `<manifest>`, list reading order in `<spine>`.
 **nav.xhtml must:** have `<nav epub:type="toc">` element with nested `<ol>` entries for subchapters (fragment `#slug` hrefs linking into the chapter XHTML).
+
+**EPUB themes** (`meta.epubTheme`):
+- `classic` — serif body, H1 underline border (default)
+- `modern` — system sans-serif stack, `max-width: 36em`, generous line-height
+- `minimal` — near-bare CSS; maximises reader-override compatibility
+All three themes include `.footnote-ref` and `.footnotes` rules.
+
+**Footnote cross-chapter rewriting** (split mode only): after splitting into chapters, `EpubService.build()` rewrites `href="#fn1"` in early chapters to `href="chapterN.xhtml#fn1"`, and rewrites back-links in the footnote section to `href="chapterM.xhtml#fnref1"`.
 
 **Cover handling:**
 - Strip `data:image/jpeg;base64,` prefix from dataUrl
@@ -186,11 +203,13 @@ exportLoading: InputSignal<boolean>
 
 // Outputs
 importClick: OutputEmitterRef<void>
+saveProjectClick: OutputEmitterRef<void>
+loadProjectClick: OutputEmitterRef<void>
 settingsClick: OutputEmitterRef<void>
 exportClick: OutputEmitterRef<void>
 ```
 
-**Template:** Logo icon + "MD → EPUB" brand text | Import button | Settings button | Export button (with spinner when loading).
+**Template:** Logo icon + "MD → EPUB" brand text (hidden ≤1024px) | Import | Load Project | Save Project | Settings | Export (with spinner when loading) | locale dropdown | Buy Me a Coffee link.
 
 ---
 
@@ -200,9 +219,19 @@ exportClick: OutputEmitterRef<void>
 
 Injects: `EditorStateService`, `SettingsService`
 
+```typescript
+// Inputs
+syncScrollRatio: InputSignal<number>   // NaN = no-op
+
+// Outputs
+scrollRatio: OutputEmitterRef<number>  // emitted on scroll via requestAnimationFrame
+```
+
 **Features:**
 - `<textarea>` bound two-way to `EditorStateService.content`
 - Tab key → inserts 2 spaces (prevents focus loss)
+- Ctrl+B / Ctrl+I → bold / italic formatting
+- **Format bar** (`.format-bar`) — 8 buttons: H1, H2, Bold, Italic, Code, Link, Blockquote, List. Hidden on mobile. `format(type)` method handles inline wrapping and block prefix toggling.
 - Word count in pane header (computed from content)
 - Clear button resets content to empty string
 - File drag-drop: `dragover` + `drop` handlers on pane element
@@ -210,6 +239,7 @@ Injects: `EditorStateService`, `SettingsService`
 - `showChapterList` computed signal — true when `metadata().splitChapters` is on
 - `scrollToOffset(offset)` — scrolls textarea to a given character offset (line-height calculation)
 - Renders `<app-chapter-list>` in a flex `.editor-body` row when `showChapterList()` is true
+- Scroll sync: emits `scrollRatio` on textarea scroll; applies `syncScrollRatio` input via `effect()` with a 50 ms feedback-loop guard
 
 ---
 
@@ -240,6 +270,12 @@ chapters: Signal<{ title: string; offset: number; subchapters: { title: string; 
 Injects: `EditorStateService`, `MarkdownService`, `DomSanitizer`, `SettingsService`
 
 ```typescript
+// Inputs
+syncScrollRatio: InputSignal<number>   // NaN = no-op
+
+// Outputs
+scrollRatio: OutputEmitterRef<number>  // emitted on scroll via requestAnimationFrame
+
 // Debounced HTML (200ms via RxJS toObservable + debounceTime + toSignal)
 safeHtml: Signal<SafeHtml>
 
@@ -247,7 +283,7 @@ safeHtml: Signal<SafeHtml>
 chapterCount: Signal<number>
 ```
 
-**Template:** `<div class="preview" [innerHTML]="safeHtml()">` + chapter badge in header.
+**Template:** `<div class="preview-scroll" #scrollContainer>` scroll container wrapping `<div class="preview" [innerHTML]="safeHtml()">` + chapter badge in header. Scroll sync via same pattern as EditorPane.
 
 ---
 
@@ -287,6 +323,7 @@ Injects: `SettingsService`
 - Publisher (text input)
 - Description (textarea)
 - Language (select: en, fr, de, es, pt, it, nl, ru, ja, zh, ar, ko)
+- EPUB Theme (select: classic / modern / minimal)
 - Cover Image (file input → preview thumbnail)
 - Split into chapters (checkbox toggle — also shows `ChapterList` sidebar in EditorPane)
 
@@ -302,30 +339,54 @@ Injects: `ToastService`
 
 ---
 
+### `ShortcutsModal`
+**Selector:** `app-shortcuts-modal`
+**File:** `src/app/components/shortcuts-modal/shortcuts-modal.ts`
+
+```typescript
+// Outputs
+close: OutputEmitterRef<void>
+```
+
+Opened via `Ctrl+?` / `⌘+?`. Lists shortcuts in two groups (General, Editor). Detects Mac via `navigator.platform`. Same modal pattern as `WelcomeModal` (Escape, backdrop click, Tab focus trap).
+
+---
+
 ## App Shell (`App`)
 **File:** `src/app/app.ts`
 
 **State:**
 ```typescript
-settingsOpen = signal(false);
-exportLoading = signal(false);
-gridColumns = signal('1fr 4px 1fr'); // updated by PaneDivider
+settingsOpen    = signal(false);
+showShortcuts   = signal(false);
+exportLoading   = signal(false);
+editorScrollRatio  = signal(NaN);
+previewScrollRatio = signal(NaN);
+gridColumns     = signal('1fr 4px 1fr'); // updated by PaneDivider
+showWelcome     = signal(!localStorage.getItem('epub-welcomed'));
+mobileView      = signal<'editor' | 'preview'>('editor');
 ```
 
 **Keyboard shortcuts** (via `@HostListener`):
-- `Control+e` / `Meta+e` → trigger export
-- `Control+,` / `Meta+,` → toggle settings panel
+- `Ctrl+E` / `⌘+E` → trigger export
+- `Ctrl+,` / `⌘+,` → toggle settings panel
+- `Ctrl+?` / `⌘+?` → toggle shortcuts modal
+
+**Project Save/Load:** `onSaveProject()` serialises `EditorStateService.content()` + `SettingsService.metadata()` (excluding cover) to a `.epub-project.json` blob download. `onLoadProject()` triggers a hidden `<input type="file">` and `onProjectFileSelected()` restores content + metadata.
 
 **Template layout:**
 ```
 <app-toolbar>
+<input #projectFileInput type="file" hidden>
 <main.workspace [style.grid-template-columns]>
-  <app-editor-pane>
+  <app-editor-pane [syncScrollRatio] (scrollRatio)>
   <app-pane-divider>
-  <app-preview-pane>
+  <app-preview-pane [syncScrollRatio] (scrollRatio)>
 <app-settings-panel>
 <div.backdrop>
 <app-toast>
+@if (showWelcome()) <app-welcome-modal>
+@if (showShortcuts()) <app-shortcuts-modal>
 ```
 
 ---
@@ -372,19 +433,18 @@ gridColumns = signal('1fr 4px 1fr'); // updated by PaneDivider
 ---
 
 ## EPUB Inner Stylesheet (`EPUB/style.css`)
-Embedded in the generated EPUB — not the web app styles.
+Embedded in the generated EPUB — not the web app styles. Selected by `meta.epubTheme`.
 
+| Theme | Body font | Notable rules |
+|-------|-----------|---------------|
+| `classic` | `serif` | H1 underline border, 1.6 line-height |
+| `modern` | system sans-serif | `max-width: 36em`, centred, 1.75 line-height |
+| `minimal` | (reader default) | Near-bare — font-size, margin, pre/code only |
+
+All themes append footnote rules:
 ```css
-body { font-family: serif; font-size: 1em; line-height: 1.6; margin: 1.5em; }
-h1, h2, h3 { font-family: sans-serif; margin: 1.2em 0 0.4em; }
-p { margin: 0.6em 0; }
-pre { background: #f5f5f5; padding: 1em; overflow-x: auto; }
-code { font-family: monospace; background: #f5f5f5; padding: 0.1em 0.3em; }
-blockquote { border-left: 3px solid #999; margin-left: 1.5em; padding-left: 0.8em; color: #555; }
-img { max-width: 100%; height: auto; }
-table { border-collapse: collapse; width: 100%; }
-th, td { border: 1px solid #ddd; padding: 0.5em; }
-a { color: #2563eb; }
+.footnote-ref { font-size: .75em; vertical-align: super; }
+.footnotes { border-top: 1px solid #ccc; margin-top: 2em; font-size: .85em; }
 ```
 
 ---

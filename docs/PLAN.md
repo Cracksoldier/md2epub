@@ -69,6 +69,15 @@ src/app/
 - Drag-and-drop chapter reordering in the sidebar (H1-level; H2 subchapters move with their parent)
 - H1 = chapters, H2 = subchapters: `splitIntoChapters()` splits only at H1 boundaries; H2 elements get slug `id` attrs injected and are listed as nested subchapters in both the sidebar and EPUB nav TOC
 
+### Phase 7 — Editor & export enhancements ✓
+- **Project Save/Load** — serialise content + metadata to `.epub-project.json` (cover excluded); restore via file picker
+- **Autosave to localStorage** — content saved on every keystroke; metadata saved on every settings change; both restored on page load
+- **Markdown formatting toolbar** — 8 buttons (H1, H2, Bold, Italic, Code, Link, Blockquote, List) + Ctrl+B/I shortcuts; block prefix toggling
+- **EPUB themes** — 3 built-in CSS presets (Classic, Modern, Minimal) selectable in Settings; stored in `BookMetadata.epubTheme`
+- **Footnote support** — Pandoc-style `[^label]` / `[^label]: text`; renders in preview and exports as `epub:type="footnotes"` section; cross-chapter hrefs rewritten in split mode
+- **Scroll sync** — proportional scroll sync between editor and preview via `scrollRatio` output / `syncScrollRatio` input; `requestAnimationFrame` throttling; feedback-loop guard
+- **Keyboard shortcuts modal** — `Ctrl+?` opens a modal listing all shortcuts; Mac-aware (`⌘` vs `Ctrl`); full i18n across 7 locales
+
 ## Deployment to GitHub Pages
 
 ### Option A — Manual (single command)
