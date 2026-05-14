@@ -203,7 +203,7 @@ ${p.body}
 </html>`;
   }
 
-  private themeCss(theme: BookMetadata['epubTheme']): string {
+  themeCss(theme: BookMetadata['epubTheme']): string {
     if (theme === 'modern')  return this.modernCss();
     if (theme === 'minimal') return this.minimalCss();
     return this.epubCss();

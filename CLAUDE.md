@@ -80,7 +80,7 @@ All user-visible strings live in `src/app/i18n/translations.ts` as a typed `Tran
 
 ### AppComponent (app.ts)
 
-Owns `exportLoading`, `settingsOpen`, `gridColumns`, `showWelcome`, `showShortcuts`, `mobileView`, `editorScrollRatio`, and `previewScrollRatio` signals. Handles `Ctrl+E` (export), `Ctrl+,` (toggle settings), and `Ctrl+?` (toggle shortcuts modal) via `@HostListener`. Calls `PaneDivider.saveRatio()` / `loadSavedRatio()` (static helpers) to persist the pane split in `localStorage`. `showWelcome` is `true` on first visit (no `epub:v1:welcomed` key in `localStorage`); `onWelcomeClosed()` sets the flag and hides the modal.
+Owns `exportLoading`, `settingsOpen`, `gridColumns`, `showWelcome`, `showShortcuts`, `showEpubPreview`, `mobileView`, `editorScrollRatio`, and `previewScrollRatio` signals. Handles `Ctrl+E` (export), `Ctrl+,` (toggle settings), `Ctrl+?` (toggle shortcuts modal), and `Ctrl+Shift+P` (toggle EPUB preview) via `@HostListener`. Calls `PaneDivider.saveRatio()` / `loadSavedRatio()` (static helpers) to persist the pane split in `localStorage`. `showWelcome` is `true` on first visit (no `epub:v1:welcomed` key in `localStorage`); `onWelcomeClosed()` sets the flag and hides the modal.
 
 `editorScrollRatio` and `previewScrollRatio` are `Signal<number>` (initial value `NaN`). `EditorPane` emits its scroll ratio via `(scrollRatio)` → stored in `editorScrollRatio`; that value is passed as `[syncScrollRatio]` to `PreviewPane`, and vice versa. `NaN` is the "no-op" sentinel — both panes guard with `isFinite(ratio)` before applying.
 
@@ -93,6 +93,10 @@ Shown on first visit only. Displays a client-side privacy notice and a language 
 ### ShortcutsModal component
 
 `src/app/components/shortcuts-modal/` — opened via `Ctrl+?` (or `⌘+?` on Mac); toggled by `App.showShortcuts` signal. Lists all keyboard shortcuts in two groups (General, Editor). Detects Mac at runtime via `navigator.platform` / `navigator.userAgent` and shows `⌘` vs `Ctrl`. Follows the same pattern as `WelcomeModal`: fixed backdrop, `#card` ViewChild, Escape to close, backdrop click to close, Tab focus trap in `@HostListener('keydown')`.
+
+### EpubPreviewModal component
+
+`src/app/components/epub-preview-modal/` — opened via the toolbar **Preview** button or `Ctrl+Shift+P`; toggled by `App.showEpubPreview` signal. Renders the document chapter-by-chapter in a sandboxed iframe (`sandbox=""` + `[srcdoc]`) themed with the exact CSS the EPUB build uses (`EpubService.themeCss(theme)` — now public for this reason). If a cover image is set, it's shown as page 0 with a black-background contain layout. Pages are derived from `MarkdownService.parse()` + `splitIntoChapters()` so footnote markup carries through. Prev/Next buttons + Left/Right arrow keys navigate; Escape closes; Tab focus is trapped — same modal pattern as `WelcomeModal`/`ShortcutsModal`. The Download button emits an output the App routes back into the existing `onExport()` flow (no duplicate EPUB build).
 
 ### Responsive layout
 

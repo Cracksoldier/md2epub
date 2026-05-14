@@ -19,6 +19,7 @@ export class Toolbar {
   readonly saveProjectClick = output<void>();
   readonly loadProjectClick = output<void>();
   readonly settingsClick = output<void>();
+  readonly previewClick = output<void>();
   readonly exportClick = output<void>();
 
   readonly localeOpen = signal(false);

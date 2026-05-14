@@ -7,6 +7,7 @@ import { SettingsPanel } from './components/settings-panel/settings-panel';
 import { Toast } from './components/toast/toast';
 import { WelcomeModal } from './components/welcome-modal/welcome-modal';
 import { ShortcutsModal } from './components/shortcuts-modal/shortcuts-modal';
+import { EpubPreviewModal } from './components/epub-preview-modal/epub-preview-modal';
 import { EditorStateService } from './services/editor-state.service';
 import { SettingsService } from './services/settings.service';
 import { EpubService } from './services/epub.service';
@@ -16,13 +17,13 @@ import { readStorage, writeStorage } from './utils/storage';
 
 @Component({
   selector: 'app-root',
-  imports: [Toolbar, EditorPane, PreviewPane, PaneDivider, SettingsPanel, Toast, WelcomeModal, ShortcutsModal],
+  imports: [Toolbar, EditorPane, PreviewPane, PaneDivider, SettingsPanel, Toast, WelcomeModal, ShortcutsModal, EpubPreviewModal],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
 export class App {
-  private readonly editorState = inject(EditorStateService);
-  private readonly settings = inject(SettingsService);
+  protected readonly editorState = inject(EditorStateService);
+  protected readonly settings = inject(SettingsService);
   private readonly epub = inject(EpubService);
   private readonly toast = inject(ToastService);
   protected readonly i18n = inject(I18nService);
@@ -37,6 +38,7 @@ export class App {
   readonly gridColumns = signal(this.initColumns());
   readonly showWelcome = signal(!readStorage('welcomed', 'epub-welcomed'));
   readonly showShortcuts = signal(false);
+  readonly showEpubPreview = signal(false);
 
   @HostListener('window:keydown', ['$event'])
   onKeyDown(e: KeyboardEvent): void {
@@ -44,7 +46,21 @@ export class App {
       if (!e.shiftKey && e.key === 'e') { e.preventDefault(); this.onExport(); }
       if (!e.shiftKey && e.key === ',') { e.preventDefault(); this.settingsOpen.update(v => !v); }
       if (e.key === '?') { e.preventDefault(); this.showShortcuts.update(v => !v); }
+      if (e.shiftKey && (e.key === 'P' || e.key === 'p')) { e.preventDefault(); this.onPreviewEpub(); }
     }
+  }
+
+  onPreviewEpub(): void {
+    if (!this.editorState.content().trim()) {
+      this.toast.show(this.i18n.t('toast.nothingToExport'), 'error');
+      return;
+    }
+    this.showEpubPreview.set(true);
+  }
+
+  onPreviewDownload(): void {
+    this.showEpubPreview.set(false);
+    this.onExport();
   }
 
   onPaneRatio(ratio: number): void {

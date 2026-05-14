@@ -43,6 +43,14 @@
       <span class="btn__label">{{ i18n.t('toolbar.settings') }}</span>
     </button>
 
+    <button class="btn btn--ghost" (click)="previewClick.emit()" [title]="i18n.t('toolbar.previewTitle')">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M1 7.5s2.5-4.5 6.5-4.5S14 7.5 14 7.5s-2.5 4.5-6.5 4.5S1 7.5 1 7.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+        <circle cx="7.5" cy="7.5" r="2" stroke="currentColor" stroke-width="1.4"/>
+      </svg>
+      <span class="btn__label">{{ i18n.t('toolbar.preview') }}</span>
+    </button>
+
     <div class="toolbar__locale-wrap" [class.is-open]="localeOpen()">
       <button
         class="toolbar__locale-trigger"

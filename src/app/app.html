@@ -5,6 +5,7 @@
     (saveProjectClick)="onSaveProject()"
     (loadProjectClick)="onLoadProject()"
     (settingsClick)="toggleSettings()"
+    (previewClick)="onPreviewEpub()"
     (exportClick)="onExport()"
   ></app-toolbar>
 
@@ -61,4 +62,13 @@
 
 @if (showShortcuts()) {
   <app-shortcuts-modal (close)="showShortcuts.set(false)"></app-shortcuts-modal>
+}
+
+@if (showEpubPreview()) {
+  <app-epub-preview-modal
+    [markdownText]="editorState.content()"
+    [meta]="settings.metadata()"
+    (close)="showEpubPreview.set(false)"
+    (download)="onPreviewDownload()"
+  ></app-epub-preview-modal>
 }

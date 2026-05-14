@@ -16,6 +16,8 @@ export interface TranslationMap {
     saveProject: string;
     loadProject: string;
     settings: string;
+    preview: string;
+    previewTitle: string;
     exportEpub: string;
     generating: string;
     importTitle: string;
@@ -98,9 +100,21 @@ export interface TranslationMap {
     actionExport: string;
     actionSettings: string;
     actionHelp: string;
+    actionPreview: string;
     actionBold: string;
     actionItalic: string;
     actionIndent: string;
+  };
+  epubPreview: {
+    title: string;
+    chapterOf: string;
+    coverLabel: string;
+    prev: string;
+    next: string;
+    close: string;
+    closeTitle: string;
+    download: string;
+    downloadTitle: string;
   };
 }
 
@@ -111,6 +125,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       saveProject: 'Save Project',
       loadProject: 'Load Project',
       settings: 'Settings',
+      preview: 'Preview',
+      previewTitle: 'Preview EPUB (Ctrl+Shift+P)',
       exportEpub: 'Export EPUB',
       generating: 'Generating…',
       importTitle: 'Import .md file (or drag and drop)',
@@ -193,9 +209,21 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       actionExport: 'Export EPUB',
       actionSettings: 'Open / close settings',
       actionHelp: 'Show keyboard shortcuts',
+      actionPreview: 'Preview EPUB',
       actionBold: 'Bold',
       actionItalic: 'Italic',
       actionIndent: 'Indent 2 spaces',
+    },
+    epubPreview: {
+      title: 'EPUB Preview',
+      chapterOf: 'Chapter {0} of {1}',
+      coverLabel: 'Cover',
+      prev: 'Previous chapter',
+      next: 'Next chapter',
+      close: 'Close',
+      closeTitle: 'Close preview',
+      download: 'Download',
+      downloadTitle: 'Download the EPUB file',
     },
   },
 
@@ -205,6 +233,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       saveProject: 'Projekt speichern',
       loadProject: 'Projekt laden',
       settings: 'Einstellungen',
+      preview: 'Vorschau',
+      previewTitle: 'EPUB-Vorschau (Strg+Umschalt+P)',
       exportEpub: 'EPUB exportieren',
       generating: 'Wird erstellt…',
       importTitle: '.md-Datei importieren (oder ablegen)',
@@ -287,9 +317,21 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       actionExport: 'EPUB exportieren',
       actionSettings: 'Einstellungen öffnen / schließen',
       actionHelp: 'Tastenkürzel anzeigen',
+      actionPreview: 'EPUB-Vorschau',
       actionBold: 'Fett',
       actionItalic: 'Kursiv',
       actionIndent: '2 Leerzeichen einrücken',
+    },
+    epubPreview: {
+      title: 'EPUB-Vorschau',
+      chapterOf: 'Kapitel {0} von {1}',
+      coverLabel: 'Titelbild',
+      prev: 'Vorheriges Kapitel',
+      next: 'Nächstes Kapitel',
+      close: 'Schließen',
+      closeTitle: 'Vorschau schließen',
+      download: 'Herunterladen',
+      downloadTitle: 'EPUB-Datei herunterladen',
     },
   },
 
@@ -299,6 +341,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       saveProject: 'Projekt speichern',
       loadProject: 'Projekt laden',
       settings: 'Einstellungen',
+      preview: 'Vorschau',
+      previewTitle: 'EPUB-Vorschau (Strg+Umschalt+P)',
       exportEpub: 'EPUB exportiern',
       generating: 'Wiad gmocht…',
       importTitle: '.md-Datei einlesen (oder drogn und lossn)',
@@ -381,9 +425,21 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       actionExport: 'EPUB exportiern',
       actionSettings: 'Einstellungen auf- / zumachen',
       actionHelp: 'Tastnkürzel ozoagn',
+      actionPreview: 'EPUB-Vorschau',
       actionBold: 'Fett',
       actionItalic: 'Kursiv',
       actionIndent: '2 Leerzeichen einrückn',
+    },
+    epubPreview: {
+      title: 'EPUB-Vorschau',
+      chapterOf: 'Kapitel {0} vo {1}',
+      coverLabel: 'Titelbiid',
+      prev: 'Voriges Kapitel',
+      next: 'Nächstes Kapitel',
+      close: 'Zumachen',
+      closeTitle: 'Vorschau zumachen',
+      download: 'Runterladn',
+      downloadTitle: 'EPUB-Datei runterladn',
     },
   },
 
@@ -393,6 +449,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       saveProject: 'Guardar proyecto',
       loadProject: 'Cargar proyecto',
       settings: 'Ajustes',
+      preview: 'Vista previa',
+      previewTitle: 'Vista previa del EPUB (Ctrl+Mayús+P)',
       exportEpub: 'Exportar EPUB',
       generating: 'Generando…',
       importTitle: 'Importar archivo .md (o arrastrar y soltar)',
@@ -475,9 +533,21 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       actionExport: 'Exportar EPUB',
       actionSettings: 'Abrir / cerrar ajustes',
       actionHelp: 'Mostrar atajos de teclado',
+      actionPreview: 'Vista previa del EPUB',
       actionBold: 'Negrita',
       actionItalic: 'Cursiva',
       actionIndent: 'Indentar 2 espacios',
+    },
+    epubPreview: {
+      title: 'Vista previa del EPUB',
+      chapterOf: 'Capítulo {0} de {1}',
+      coverLabel: 'Portada',
+      prev: 'Capítulo anterior',
+      next: 'Capítulo siguiente',
+      close: 'Cerrar',
+      closeTitle: 'Cerrar vista previa',
+      download: 'Descargar',
+      downloadTitle: 'Descargar el archivo EPUB',
     },
   },
 
@@ -487,6 +557,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       saveProject: 'Gem projekt',
       loadProject: 'Indlæs projekt',
       settings: 'Indstillinger',
+      preview: 'Forhåndsvisning',
+      previewTitle: 'EPUB-forhåndsvisning (Ctrl+Skift+P)',
       exportEpub: 'Eksporter EPUB',
       generating: 'Genererer…',
       importTitle: 'Importer .md-fil (eller træk og slip)',
@@ -569,9 +641,21 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       actionExport: 'Eksporter EPUB',
       actionSettings: 'Åbn / luk indstillinger',
       actionHelp: 'Vis tastaturgenveje',
+      actionPreview: 'EPUB-forhåndsvisning',
       actionBold: 'Fed',
       actionItalic: 'Kursiv',
       actionIndent: 'Indryk 2 mellemrum',
+    },
+    epubPreview: {
+      title: 'EPUB-forhåndsvisning',
+      chapterOf: 'Kapitel {0} af {1}',
+      coverLabel: 'Omslag',
+      prev: 'Forrige kapitel',
+      next: 'Næste kapitel',
+      close: 'Luk',
+      closeTitle: 'Luk forhåndsvisning',
+      download: 'Download',
+      downloadTitle: 'Download EPUB-filen',
     },
   },
 
@@ -581,6 +665,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       saveProject: 'プロジェクトを保存',
       loadProject: 'プロジェクトを読込',
       settings: '設定',
+      preview: 'プレビュー',
+      previewTitle: 'EPUBプレビュー (Ctrl+Shift+P)',
       exportEpub: 'EPUBを出力',
       generating: '生成中…',
       importTitle: '.mdファイルをインポート（またはドラッグ＆ドロップ）',
@@ -663,9 +749,21 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       actionExport: 'EPUBを出力',
       actionSettings: '設定を開く / 閉じる',
       actionHelp: 'ショートカット一覧を表示',
+      actionPreview: 'EPUBプレビュー',
       actionBold: '太字',
       actionItalic: 'イタリック',
       actionIndent: '2スペースインデント',
+    },
+    epubPreview: {
+      title: 'EPUBプレビュー',
+      chapterOf: '{1}章中{0}章',
+      coverLabel: '表紙',
+      prev: '前のチャプター',
+      next: '次のチャプター',
+      close: '閉じる',
+      closeTitle: 'プレビューを閉じる',
+      download: 'ダウンロード',
+      downloadTitle: 'EPUBファイルをダウンロード',
     },
   },
 
@@ -675,6 +773,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       saveProject: '儲存專案',
       loadProject: '載入專案',
       settings: '設定',
+      preview: '預覽',
+      previewTitle: 'EPUB 預覽 (Ctrl+Shift+P)',
       exportEpub: '匯出 EPUB',
       generating: '產生中…',
       importTitle: '匯入 .md 檔案（或拖放）',
@@ -757,9 +857,21 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       actionExport: '匯出 EPUB',
       actionSettings: '開啟 / 關閉設定',
       actionHelp: '顯示鍵盤快捷鍵',
+      actionPreview: 'EPUB 預覽',
       actionBold: '粗體',
       actionItalic: '斜體',
       actionIndent: '縮排 2 個空格',
+    },
+    epubPreview: {
+      title: 'EPUB 預覽',
+      chapterOf: '第 {0} 章，共 {1} 章',
+      coverLabel: '封面',
+      prev: '上一章',
+      next: '下一章',
+      close: '關閉',
+      closeTitle: '關閉預覽',
+      download: '下載',
+      downloadTitle: '下載 EPUB 檔案',
     },
   },
 };
