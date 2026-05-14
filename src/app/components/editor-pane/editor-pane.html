@@ -29,18 +29,23 @@
     </div>
   </div>
 
-  <textarea
-    #textarea
-    class="editor"
-    [value]="editorState.content()"
-    (input)="onInput($event)"
-    (keydown)="onKeyDown($event)"
-    [placeholder]="i18n.t('editor.placeholder')"
-    spellcheck="false"
-    autocomplete="off"
-    autocorrect="off"
-    autocapitalize="off"
-  ></textarea>
+  <div class="editor-body">
+    @if (showChapterList()) {
+      <app-chapter-list (chapterSelect)="scrollToOffset($event)"></app-chapter-list>
+    }
+    <textarea
+      #textarea
+      class="editor"
+      [value]="editorState.content()"
+      (input)="onInput($event)"
+      (keydown)="onKeyDown($event)"
+      [placeholder]="i18n.t('editor.placeholder')"
+      spellcheck="false"
+      autocomplete="off"
+      autocorrect="off"
+      autocapitalize="off"
+    ></textarea>
+  </div>
 
   <div class="drop-hint" aria-hidden="true">
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

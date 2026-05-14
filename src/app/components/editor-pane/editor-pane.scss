@@ -56,6 +56,13 @@
   font-variant-numeric: tabular-nums;
 }
 
+.editor-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .editor {
   flex: 1;
   min-height: 0;

@@ -1,0 +1,26 @@
+<nav class="chapter-list" aria-label="{{ i18n.t('chapterList.label') }}">
+  <div class="chapter-list__header">
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect x="0.65" y="0.65" width="10.7" height="10.7" rx="1.35" stroke="currentColor" stroke-width="1.3"/>
+      <path d="M3 3.5h6M3 6h6M3 8.5h3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+    </svg>
+    <span>{{ i18n.t('chapterList.label') }}</span>
+  </div>
+
+  <div class="chapter-list__items">
+    @if (chapters().length === 0) {
+      <p class="chapter-list__empty">{{ i18n.t('chapterList.noChapters') }}</p>
+    } @else {
+      @for (ch of chapters(); track ch.offset; let i = $index) {
+        <button
+          class="chapter-list__item"
+          (click)="chapterSelect.emit(ch.offset)"
+          [title]="ch.title"
+        >
+          <span class="chapter-list__num">{{ i + 1 }}</span>
+          <span class="chapter-list__title">{{ ch.title }}</span>
+        </button>
+      }
+    }
+  </div>
+</nav>

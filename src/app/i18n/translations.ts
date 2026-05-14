@@ -66,6 +66,10 @@ export interface TranslationMap {
     languageLabel: string;
     continueBtn: string;
   };
+  chapterList: {
+    label: string;
+    noChapters: string;
+  };
 }
 
 export const TRANSLATIONS: Record<Locale, TranslationMap> = {
@@ -125,6 +129,10 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       languageLabel: 'Choose your language',
       continueBtn: 'Get Started',
     },
+    chapterList: {
+      label: 'Chapters',
+      noChapters: 'No chapters yet',
+    },
   },
 
   de: {
@@ -182,6 +190,10 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       privacyText: 'Alles läuft vollständig in deinem Browser. Dein Text, deine Dateien und Metadaten werden niemals an einen Server gesendet.',
       languageLabel: 'Sprache wählen',
       continueBtn: 'Loslegen',
+    },
+    chapterList: {
+      label: 'Kapitel',
+      noChapters: 'Noch keine Kapitel',
     },
   },
 
@@ -241,6 +253,10 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       languageLabel: 'Sproch auswählen',
       continueBtn: 'Los geht\'s',
     },
+    chapterList: {
+      label: 'Kapitel',
+      noChapters: 'No kane Kapitel',
+    },
   },
 
   es: {
@@ -298,6 +314,10 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       privacyText: 'Todo se ejecuta completamente en tu navegador. Tu texto, archivos y metadatos nunca se envían a ningún servidor.',
       languageLabel: 'Elige tu idioma',
       continueBtn: 'Comenzar',
+    },
+    chapterList: {
+      label: 'Capítulos',
+      noChapters: 'Sin capítulos',
     },
   },
 
@@ -357,6 +377,10 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       languageLabel: 'Vælg dit sprog',
       continueBtn: 'Kom i gang',
     },
+    chapterList: {
+      label: 'Kapitler',
+      noChapters: 'Ingen kapitler endnu',
+    },
   },
 
   ja: {
@@ -415,6 +439,10 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       languageLabel: '言語を選択',
       continueBtn: 'はじめる',
     },
+    chapterList: {
+      label: 'チャプター一覧',
+      noChapters: 'チャプターなし',
+    },
   },
 
   'zh-TW': {
@@ -472,6 +500,10 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       privacyText: '所有處理完全在您的瀏覽器中進行。您的文字、檔案和中繼資料不會傳送至任何伺服器。',
       languageLabel: '選擇語言',
       continueBtn: '開始使用',
+    },
+    chapterList: {
+      label: '章節列表',
+      noChapters: '尚無章節',
     },
   },
 };

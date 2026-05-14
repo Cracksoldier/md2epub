@@ -2,16 +2,19 @@ import {
   Component, inject, computed, ElementRef, ViewChild, HostListener,
 } from '@angular/core';
 import { EditorStateService } from '../../services/editor-state.service';
+import { SettingsService } from '../../services/settings.service';
 import { I18nService } from '../../services/i18n.service';
+import { ChapterList } from '../chapter-list/chapter-list';
 
 @Component({
   selector: 'app-editor-pane',
-  imports: [],
+  imports: [ChapterList],
   templateUrl: './editor-pane.html',
   styleUrl: './editor-pane.scss',
 })
 export class EditorPane {
   protected readonly editorState = inject(EditorStateService);
+  private readonly settings = inject(SettingsService);
   protected readonly i18n = inject(I18nService);
 
   @ViewChild('fileInput') fileInputRef!: ElementRef<HTMLInputElement>;
@@ -23,6 +26,17 @@ export class EditorPane {
     const text = this.editorState.content().trim();
     return text ? text.split(/\s+/).length : 0;
   });
+
+  readonly showChapterList = computed(() => this.settings.metadata().splitChapters);
+
+  scrollToOffset(offset: number): void {
+    const ta = this.textareaRef.nativeElement;
+    const lineNumber = ta.value.slice(0, offset).split('\n').length - 1;
+    const lineHeight = parseInt(getComputedStyle(ta).lineHeight, 10) || 20;
+    ta.scrollTop = lineNumber * lineHeight;
+    ta.focus();
+    ta.setSelectionRange(offset, offset);
+  }
 
   onInput(event: Event): void {
     this.editorState.setContent((event.target as HTMLTextAreaElement).value);

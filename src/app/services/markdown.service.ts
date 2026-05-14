@@ -14,6 +14,16 @@ export class MarkdownService {
     return h?.textContent?.trim() ?? '';
   }
 
+  getChapterHeadings(markdown: string): { title: string; offset: number }[] {
+    const result: { title: string; offset: number }[] = [];
+    const regex = /^#{1,2} (.+)$/gm;
+    let match;
+    while ((match = regex.exec(markdown)) !== null) {
+      result.push({ title: match[1].trim(), offset: match.index });
+    }
+    return result;
+  }
+
   splitIntoChapters(html: string): Chapter[] {
     const doc = new DOMParser().parseFromString(html, 'text/html');
     const chapters: Chapter[] = [];

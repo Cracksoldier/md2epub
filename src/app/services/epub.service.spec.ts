@@ -6,6 +6,8 @@ import { BookMetadata } from '../models/book-metadata.model';
 const DEFAULT_META: BookMetadata = {
   title: 'Test Book',
   author: 'Test Author',
+  publisher: '',
+  description: '',
   language: 'en',
   splitChapters: false,
   coverDataUrl: null,
