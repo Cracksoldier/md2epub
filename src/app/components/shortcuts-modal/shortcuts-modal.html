@@ -1,0 +1,51 @@
+<div class="shortcuts-backdrop" (click)="close.emit()" role="dialog" aria-modal="true"
+     [attr.aria-label]="i18n.t('shortcuts.title')">
+  <div #card class="shortcuts-card" (click)="$event.stopPropagation()">
+
+    <div class="shortcuts-header">
+      <span class="shortcuts-title">{{ i18n.t('shortcuts.title') }}</span>
+      <button class="btn btn--icon" (click)="close.emit()" [title]="i18n.t('shortcuts.closeTitle')">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="shortcuts-group">
+      <div class="shortcuts-group__label">{{ i18n.t('shortcuts.groupGeneral') }}</div>
+      <div class="shortcuts-row">
+        <span class="shortcuts-keys"><kbd>{{ mod }}</kbd><kbd>E</kbd></span>
+        <span class="shortcuts-action">{{ i18n.t('shortcuts.actionExport') }}</span>
+      </div>
+      <div class="shortcuts-row">
+        <span class="shortcuts-keys"><kbd>{{ mod }}</kbd><kbd>,</kbd></span>
+        <span class="shortcuts-action">{{ i18n.t('shortcuts.actionSettings') }}</span>
+      </div>
+      <div class="shortcuts-row">
+        <span class="shortcuts-keys"><kbd>{{ mod }}</kbd><kbd>?</kbd></span>
+        <span class="shortcuts-action">{{ i18n.t('shortcuts.actionHelp') }}</span>
+      </div>
+    </div>
+
+    <div class="shortcuts-group">
+      <div class="shortcuts-group__label">{{ i18n.t('shortcuts.groupEditor') }}</div>
+      <div class="shortcuts-row">
+        <span class="shortcuts-keys"><kbd>{{ mod }}</kbd><kbd>B</kbd></span>
+        <span class="shortcuts-action">{{ i18n.t('shortcuts.actionBold') }}</span>
+      </div>
+      <div class="shortcuts-row">
+        <span class="shortcuts-keys"><kbd>{{ mod }}</kbd><kbd>I</kbd></span>
+        <span class="shortcuts-action">{{ i18n.t('shortcuts.actionItalic') }}</span>
+      </div>
+      <div class="shortcuts-row">
+        <span class="shortcuts-keys"><kbd>Tab</kbd></span>
+        <span class="shortcuts-action">{{ i18n.t('shortcuts.actionIndent') }}</span>
+      </div>
+    </div>
+
+    <button class="btn btn--ghost shortcuts-close" (click)="close.emit()">
+      {{ i18n.t('shortcuts.closeBtn') }}
+    </button>
+
+  </div>
+</div>

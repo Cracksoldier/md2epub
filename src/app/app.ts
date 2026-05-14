@@ -6,6 +6,7 @@ import { PaneDivider } from './components/pane-divider/pane-divider';
 import { SettingsPanel } from './components/settings-panel/settings-panel';
 import { Toast } from './components/toast/toast';
 import { WelcomeModal } from './components/welcome-modal/welcome-modal';
+import { ShortcutsModal } from './components/shortcuts-modal/shortcuts-modal';
 import { EditorStateService } from './services/editor-state.service';
 import { SettingsService } from './services/settings.service';
 import { EpubService } from './services/epub.service';
@@ -14,7 +15,7 @@ import { I18nService } from './services/i18n.service';
 
 @Component({
   selector: 'app-root',
-  imports: [Toolbar, EditorPane, PreviewPane, PaneDivider, SettingsPanel, Toast, WelcomeModal],
+  imports: [Toolbar, EditorPane, PreviewPane, PaneDivider, SettingsPanel, Toast, WelcomeModal, ShortcutsModal],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
@@ -34,12 +35,14 @@ export class App {
   readonly mobileView = signal<'editor' | 'preview'>('editor');
   readonly gridColumns = signal(this.initColumns());
   readonly showWelcome = signal(!localStorage.getItem('epub-welcomed'));
+  readonly showShortcuts = signal(false);
 
   @HostListener('window:keydown', ['$event'])
   onKeyDown(e: KeyboardEvent): void {
-    if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey) {
-      if (e.key === 'e') { e.preventDefault(); this.onExport(); }
-      if (e.key === ',') { e.preventDefault(); this.settingsOpen.update(v => !v); }
+    if ((e.ctrlKey || e.metaKey) && !e.altKey) {
+      if (!e.shiftKey && e.key === 'e') { e.preventDefault(); this.onExport(); }
+      if (!e.shiftKey && e.key === ',') { e.preventDefault(); this.settingsOpen.update(v => !v); }
+      if (e.key === '?') { e.preventDefault(); this.showShortcuts.update(v => !v); }
     }
   }
 

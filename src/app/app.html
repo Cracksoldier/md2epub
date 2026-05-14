@@ -58,3 +58,7 @@
 @if (showWelcome()) {
   <app-welcome-modal (close)="onWelcomeClosed()"></app-welcome-modal>
 }
+
+@if (showShortcuts()) {
+  <app-shortcuts-modal (close)="showShortcuts.set(false)"></app-shortcuts-modal>
+}

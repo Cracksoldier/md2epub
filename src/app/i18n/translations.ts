@@ -81,6 +81,19 @@ export interface TranslationMap {
     label: string;
     noChapters: string;
   };
+  shortcuts: {
+    title: string;
+    closeTitle: string;
+    closeBtn: string;
+    groupGeneral: string;
+    groupEditor: string;
+    actionExport: string;
+    actionSettings: string;
+    actionHelp: string;
+    actionBold: string;
+    actionItalic: string;
+    actionIndent: string;
+  };
 }
 
 export const TRANSLATIONS: Record<Locale, TranslationMap> = {
@@ -155,6 +168,19 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       label: 'Chapters',
       noChapters: 'No chapters yet',
     },
+    shortcuts: {
+      title: 'Keyboard Shortcuts',
+      closeTitle: 'Close',
+      closeBtn: 'Close',
+      groupGeneral: 'General',
+      groupEditor: 'Editor',
+      actionExport: 'Export EPUB',
+      actionSettings: 'Open / close settings',
+      actionHelp: 'Show keyboard shortcuts',
+      actionBold: 'Bold',
+      actionItalic: 'Italic',
+      actionIndent: 'Indent 2 spaces',
+    },
   },
 
   de: {
@@ -227,6 +253,19 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
     chapterList: {
       label: 'Kapitel',
       noChapters: 'Noch keine Kapitel',
+    },
+    shortcuts: {
+      title: 'Tastenkürzel',
+      closeTitle: 'Schließen',
+      closeBtn: 'Schließen',
+      groupGeneral: 'Allgemein',
+      groupEditor: 'Editor',
+      actionExport: 'EPUB exportieren',
+      actionSettings: 'Einstellungen öffnen / schließen',
+      actionHelp: 'Tastenkürzel anzeigen',
+      actionBold: 'Fett',
+      actionItalic: 'Kursiv',
+      actionIndent: '2 Leerzeichen einrücken',
     },
   },
 
@@ -301,6 +340,19 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       label: 'Kapitel',
       noChapters: 'No kane Kapitel',
     },
+    shortcuts: {
+      title: 'Tastnkürzel',
+      closeTitle: 'Zumachen',
+      closeBtn: 'Zumachen',
+      groupGeneral: 'Allgemoin',
+      groupEditor: 'Editor',
+      actionExport: 'EPUB exportiern',
+      actionSettings: 'Einstellungen auf- / zumachen',
+      actionHelp: 'Tastnkürzel ozoagn',
+      actionBold: 'Fett',
+      actionItalic: 'Kursiv',
+      actionIndent: '2 Leerzeichen einrückn',
+    },
   },
 
   es: {
@@ -373,6 +425,19 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
     chapterList: {
       label: 'Capítulos',
       noChapters: 'Sin capítulos',
+    },
+    shortcuts: {
+      title: 'Atajos de teclado',
+      closeTitle: 'Cerrar',
+      closeBtn: 'Cerrar',
+      groupGeneral: 'General',
+      groupEditor: 'Editor',
+      actionExport: 'Exportar EPUB',
+      actionSettings: 'Abrir / cerrar ajustes',
+      actionHelp: 'Mostrar atajos de teclado',
+      actionBold: 'Negrita',
+      actionItalic: 'Cursiva',
+      actionIndent: 'Indentar 2 espacios',
     },
   },
 
@@ -447,6 +512,19 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       label: 'Kapitler',
       noChapters: 'Ingen kapitler endnu',
     },
+    shortcuts: {
+      title: 'Tastaturgenveje',
+      closeTitle: 'Luk',
+      closeBtn: 'Luk',
+      groupGeneral: 'Generelt',
+      groupEditor: 'Editor',
+      actionExport: 'Eksporter EPUB',
+      actionSettings: 'Åbn / luk indstillinger',
+      actionHelp: 'Vis tastaturgenveje',
+      actionBold: 'Fed',
+      actionItalic: 'Kursiv',
+      actionIndent: 'Indryk 2 mellemrum',
+    },
   },
 
   ja: {
@@ -520,6 +598,19 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       label: 'チャプター一覧',
       noChapters: 'チャプターなし',
     },
+    shortcuts: {
+      title: 'キーボードショートカット',
+      closeTitle: '閉じる',
+      closeBtn: '閉じる',
+      groupGeneral: '全般',
+      groupEditor: 'エディタ',
+      actionExport: 'EPUBを出力',
+      actionSettings: '設定を開く / 閉じる',
+      actionHelp: 'ショートカット一覧を表示',
+      actionBold: '太字',
+      actionItalic: 'イタリック',
+      actionIndent: '2スペースインデント',
+    },
   },
 
   'zh-TW': {
@@ -592,6 +683,19 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
     chapterList: {
       label: '章節列表',
       noChapters: '尚無章節',
+    },
+    shortcuts: {
+      title: '鍵盤快捷鍵',
+      closeTitle: '關閉',
+      closeBtn: '關閉',
+      groupGeneral: '一般',
+      groupEditor: '編輯器',
+      actionExport: '匯出 EPUB',
+      actionSettings: '開啟 / 關閉設定',
+      actionHelp: '顯示鍵盤快捷鍵',
+      actionBold: '粗體',
+      actionItalic: '斜體',
+      actionIndent: '縮排 2 個空格',
     },
   },
 };
