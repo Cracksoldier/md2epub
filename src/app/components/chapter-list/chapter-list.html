@@ -15,7 +15,7 @@
         <div
           class="chapter-list__item"
           [class.is-dragging]="dragFrom() === i"
-          [class.drop-before]="dragOver() === i && dragFrom() !== null && dragFrom() !== i"
+          [class.drop-before]="dragOver() === i && isDragging() && dragFrom() !== i"
           draggable="true"
           role="listitem"
           (dragstart)="onDragStart($event, i)"
@@ -38,6 +38,7 @@
           <button
             class="chapter-list__title"
             (click)="chapterSelect.emit(ch.offset)"
+            (mousedown)="$event.stopPropagation()"
             [title]="ch.title"
           >{{ ch.title }}</button>
         </div>

@@ -24,6 +24,7 @@ export class ChapterList {
   private readonly dragOverIndex = signal<number | null>(null);
   protected readonly dragFrom = this.dragFromIndex.asReadonly();
   protected readonly dragOver = this.dragOverIndex.asReadonly();
+  protected readonly isDragging = computed(() => this.dragFromIndex() !== null);
 
   onDragStart(event: DragEvent, index: number): void {
     this.dragFromIndex.set(index);
@@ -46,6 +47,7 @@ export class ChapterList {
 
   onDrop(event: DragEvent, toIndex: number): void {
     event.preventDefault();
+    event.stopPropagation();
     const fromIndex = this.dragFromIndex();
     if (fromIndex !== null && fromIndex !== toIndex) {
       this.editorState.setContent(

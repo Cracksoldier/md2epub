@@ -86,9 +86,6 @@
     color: $text-muted;
     opacity: 0;
     transition: opacity $transition-fast;
-    cursor: grab;
-
-    .is-dragging & { cursor: grabbing; }
   }
 
   &__num {
@@ -97,7 +94,6 @@
     color: $text-muted;
     font-variant-numeric: tabular-nums;
     min-width: 14px;
-    pointer-events: none;
   }
 
   &__title {
