@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { SettingsService } from './settings.service';
+import { SettingsService, CoverRejectedError } from './settings.service';
 
 describe('SettingsService', () => {
   let service: SettingsService;
@@ -59,42 +59,71 @@ describe('SettingsService', () => {
   });
 
   describe('loadCoverFromFile()', () => {
-    it('rejects when the file is not an image', async () => {
+    const stubReader = (dataUrl: string) => {
+      const original = (window as any).FileReader;
+      (window as any).FileReader = class FakeReader {
+        onload: ((e: any) => void) | null = null;
+        onerror: (() => void) | null = null;
+        readAsDataURL(_: File) { this.onload?.({ target: { result: dataUrl } }); }
+      };
+      return () => { (window as any).FileReader = original; };
+    };
+
+    it('rejects a file over 5 MB with reason "too-large"', async () => {
+      const big = new File([new Uint8Array(5 * 1024 * 1024 + 1)], 'big.png', { type: 'image/png' });
+      await expect(service.loadCoverFromFile(big)).rejects.toBeInstanceOf(CoverRejectedError);
+      try {
+        await service.loadCoverFromFile(big);
+      } catch (err) {
+        expect((err as CoverRejectedError).reason).toBe('too-large');
+      }
+    });
+
+    it('rejects a GIF (or any non-allowed type) with reason "wrong-type"', async () => {
+      const gif = new File([''], 'pic.gif', { type: 'image/gif' });
+      try {
+        await service.loadCoverFromFile(gif);
+        throw new Error('expected rejection');
+      } catch (err) {
+        expect(err).toBeInstanceOf(CoverRejectedError);
+        expect((err as CoverRejectedError).reason).toBe('wrong-type');
+      }
+    });
+
+    it('rejects plain-text files with reason "wrong-type"', async () => {
       const file = new File(['text'], 'doc.txt', { type: 'text/plain' });
-      await expect(service.loadCoverFromFile(file)).rejects.toThrow('File must be an image');
+      try {
+        await service.loadCoverFromFile(file);
+        throw new Error('expected rejection');
+      } catch (err) {
+        expect(err).toBeInstanceOf(CoverRejectedError);
+        expect((err as CoverRejectedError).reason).toBe('wrong-type');
+      }
+    });
+
+    it('accepts a WebP cover and preserves the WebP mime type', async () => {
+      const restore = stubReader('data:image/webp;base64,abc');
+      const file = new File([''], 'cover.webp', { type: 'image/webp' });
+      await service.loadCoverFromFile(file);
+      expect(service.metadata().coverMimeType).toBe('image/webp');
+      restore();
     });
 
     it('resolves and stores PNG data URL and mime type', async () => {
-      const fakeDataUrl = 'data:image/png;base64,abc123';
-      const original = (window as any).FileReader;
-      (window as any).FileReader = class FakeReader {
-        onload: ((e: any) => void) | null = null;
-        onerror: (() => void) | null = null;
-        readAsDataURL(_: File) { this.onload?.({ target: { result: fakeDataUrl } }); }
-      };
-
+      const restore = stubReader('data:image/png;base64,abc123');
       const file = new File([''], 'cover.png', { type: 'image/png' });
       await service.loadCoverFromFile(file);
-
-      expect(service.metadata().coverDataUrl).toBe(fakeDataUrl);
+      expect(service.metadata().coverDataUrl).toBe('data:image/png;base64,abc123');
       expect(service.metadata().coverMimeType).toBe('image/png');
-      (window as any).FileReader = original;
+      restore();
     });
 
-    it('uses image/jpeg mime type for non-PNG images', async () => {
-      const fakeDataUrl = 'data:image/jpeg;base64,xyz';
-      const original = (window as any).FileReader;
-      (window as any).FileReader = class FakeReader {
-        onload: ((e: any) => void) | null = null;
-        onerror: (() => void) | null = null;
-        readAsDataURL(_: File) { this.onload?.({ target: { result: fakeDataUrl } }); }
-      };
-
+    it('preserves image/jpeg mime type for JPEG covers', async () => {
+      const restore = stubReader('data:image/jpeg;base64,xyz');
       const file = new File([''], 'cover.jpg', { type: 'image/jpeg' });
       await service.loadCoverFromFile(file);
-
       expect(service.metadata().coverMimeType).toBe('image/jpeg');
-      (window as any).FileReader = original;
+      restore();
     });
   });
 

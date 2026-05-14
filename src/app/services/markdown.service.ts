@@ -5,23 +5,16 @@ import { Chapter, Subchapter } from '../models/chapter.model';
 @Injectable({ providedIn: 'root' })
 export class MarkdownService {
   parse(markdown: string): string {
-    // Pass 1: strip and collect [^label]: definition lines
+    // Pass 1: strip [^label]: definition lines that are NOT inside a fenced code block
     const defs = new Map<string, string>();
-    const cleaned = markdown.replace(/^\[\^([^\]]+)\]:\s*(.+)$/gm, (_, label, text) => {
-      defs.set(label, text.trim());
-      return '';
-    });
+    const cleaned = this.stripFootnoteDefs(markdown, defs);
 
     // Pass 2: marked renders the cleaned markdown
     let html = marked.parse(cleaned) as string;
 
-    // Pass 3: replace surviving [^label] text nodes with footnote markup
+    // Pass 3: replace surviving [^label] refs with footnote markup, skipping <pre>/<code> regions
     const refOrder: string[] = [];
-    html = html.replace(/\[\^([^\]]+)\]/g, (_, label) => {
-      if (!refOrder.includes(label)) refOrder.push(label);
-      const n = refOrder.indexOf(label) + 1;
-      return `<sup id="fnref${n}" class="footnote-ref"><a href="#fn${n}">${n}</a></sup>`;
-    });
+    html = this.replaceFootnoteRefs(html, refOrder);
 
     if (refOrder.length > 0) {
       const items = refOrder.map((label, i) => {
@@ -33,6 +26,42 @@ export class MarkdownService {
     }
 
     return html;
+  }
+
+  private stripFootnoteDefs(markdown: string, defs: Map<string, string>): string {
+    const lines = markdown.split('\n');
+    let inFence = false;
+    let fenceChar = '';
+    return lines.map(line => {
+      const fenceMatch = line.match(/^[ \t]{0,3}(`{3,}|~{3,})/);
+      if (fenceMatch) {
+        const ch = fenceMatch[1][0];
+        if (!inFence) { inFence = true; fenceChar = ch; return line; }
+        if (ch === fenceChar) { inFence = false; fenceChar = ''; return line; }
+      }
+      if (inFence) return line;
+      const m = line.match(/^\[\^([^\]]+)\]:\s*(.+)$/);
+      if (m) { defs.set(m[1], m[2].trim()); return ''; }
+      return line;
+    }).join('\n');
+  }
+
+  private replaceFootnoteRefs(html: string, refOrder: string[]): string {
+    const codeRegion = /<pre[\s\S]*?<\/pre>|<code[\s\S]*?<\/code>/gi;
+    const refRegex = /\[\^([^\]]+)\]/g;
+    const transform = (chunk: string) => chunk.replace(refRegex, (_, label) => {
+      if (!refOrder.includes(label)) refOrder.push(label);
+      const n = refOrder.indexOf(label) + 1;
+      return `<sup id="fnref${n}" class="footnote-ref"><a href="#fn${n}">${n}</a></sup>`;
+    });
+    let result = '';
+    let lastIndex = 0;
+    let m: RegExpExecArray | null;
+    while ((m = codeRegion.exec(html)) !== null) {
+      result += transform(html.slice(lastIndex, m.index)) + m[0];
+      lastIndex = codeRegion.lastIndex;
+    }
+    return result + transform(html.slice(lastIndex));
   }
 
   getFirstHeading(html: string): string {

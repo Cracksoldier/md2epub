@@ -62,6 +62,22 @@ describe('MarkdownService', () => {
       expect(html).not.toContain('footnotes');
       expect(html).not.toContain('fnref');
     });
+
+    it('keeps [^label]: definition literal inside a fenced code block', () => {
+      const md = '```\n[^x]: should stay literal\n```\n\nNo refs here.';
+      const html = service.parse(md);
+      expect(html).toContain('[^x]: should stay literal');
+      expect(html).not.toContain('class="footnotes"');
+    });
+
+    it('keeps [^label] ref literal inside a fenced code block', () => {
+      const md = 'Real[^a].\n\n[^a]: Note.\n\n```\nliteral [^a] inside code\n```';
+      const html = service.parse(md);
+      const fnref1 = '<sup id="fnref1"';
+      // Exactly one footnote ref — the one outside the code block
+      expect(html.match(new RegExp(fnref1, 'g'))?.length).toBe(1);
+      expect(html).toContain('literal [^a] inside code');
+    });
   });
 
   describe('getFirstHeading()', () => {

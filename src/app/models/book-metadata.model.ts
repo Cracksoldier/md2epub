@@ -9,5 +9,5 @@ export interface BookMetadata {
   epubTheme: EpubTheme;
   splitChapters: boolean;
   coverDataUrl: string | null;
-  coverMimeType: 'image/jpeg' | 'image/png' | null;
+  coverMimeType: 'image/jpeg' | 'image/png' | 'image/webp' | null;
 }

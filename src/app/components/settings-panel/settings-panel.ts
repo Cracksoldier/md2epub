@@ -1,5 +1,5 @@
 import { Component, inject, input, output } from '@angular/core';
-import { SettingsService } from '../../services/settings.service';
+import { SettingsService, CoverRejectedError } from '../../services/settings.service';
 import { ToastService } from '../../services/toast.service';
 import { I18nService } from '../../services/i18n.service';
 import { EpubTheme } from '../../models/book-metadata.model';
@@ -66,8 +66,13 @@ export class SettingsPanel {
     if (!file) return;
     try {
       await this.settings.loadCoverFromFile(file);
-    } catch {
-      this.toast.show(this.i18n.t('toast.coverLoadError'), 'error');
+    } catch (err) {
+      const key = err instanceof CoverRejectedError && err.reason === 'too-large'
+        ? 'toast.coverTooLarge'
+        : err instanceof CoverRejectedError && err.reason === 'wrong-type'
+          ? 'toast.coverWrongType'
+          : 'toast.coverLoadError';
+      this.toast.show(this.i18n.t(key), 'error');
     }
     (event.target as HTMLInputElement).value = '';
   }

@@ -45,7 +45,10 @@ export class EpubService {
     }
 
     const hasCover = !!meta.coverDataUrl;
-    const coverExt = meta.coverMimeType === 'image/png' ? 'png' : 'jpg';
+    const coverExt =
+      meta.coverMimeType === 'image/png'  ? 'png'  :
+      meta.coverMimeType === 'image/webp' ? 'webp' :
+      'jpg';
     const coverImgPath = `images/cover.${coverExt}`;
 
     // Build manifest + spine item lists

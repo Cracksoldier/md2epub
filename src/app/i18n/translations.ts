@@ -73,6 +73,8 @@ export interface TranslationMap {
     projectLoaded: string;
     projectLoadError: string;
     dismissTitle: string;
+    coverTooLarge: string;
+    coverWrongType: string;
   };
   welcome: {
     title: string;
@@ -166,6 +168,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       projectLoaded: 'Project loaded: {0}',
       projectLoadError: 'Invalid project file.',
       dismissTitle: 'Dismiss',
+      coverTooLarge: 'Cover image is too large (max 5 MB).',
+      coverWrongType: 'Cover must be PNG, JPEG, or WebP.',
     },
     welcome: {
       title: 'Welcome to MD → EPUB',
@@ -258,6 +262,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       projectLoaded: 'Projekt geladen: {0}',
       projectLoadError: 'Ungültige Projektdatei.',
       dismissTitle: 'Schließen',
+      coverTooLarge: 'Titelbild ist zu groß (max. 5 MB).',
+      coverWrongType: 'Titelbild muss PNG, JPEG oder WebP sein.',
     },
     welcome: {
       title: 'Willkommen bei MD → EPUB',
@@ -350,6 +356,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       projectLoaded: 'Projekt gladen: {0}',
       projectLoadError: 'Ungütige Projektdatei.',
       dismissTitle: 'Wegda',
+      coverTooLarge: 'S Titelbiid is z groß (max. 5 MB).',
+      coverWrongType: 'S Titelbiid muass PNG, JPEG oder WebP sein.',
     },
     welcome: {
       title: 'Willkumm bei MD → EPUB',
@@ -442,6 +450,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       projectLoaded: 'Proyecto cargado: {0}',
       projectLoadError: 'Archivo de proyecto inválido.',
       dismissTitle: 'Cerrar',
+      coverTooLarge: 'La portada es demasiado grande (máx. 5 MB).',
+      coverWrongType: 'La portada debe ser PNG, JPEG o WebP.',
     },
     welcome: {
       title: 'Bienvenido a MD → EPUB',
@@ -534,6 +544,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       projectLoaded: 'Projekt indlæst: {0}',
       projectLoadError: 'Ugyldig projektfil.',
       dismissTitle: 'Luk',
+      coverTooLarge: 'Omslagsbillede er for stort (maks. 5 MB).',
+      coverWrongType: 'Omslag skal være PNG, JPEG eller WebP.',
     },
     welcome: {
       title: 'Velkommen til MD → EPUB',
@@ -626,6 +638,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       projectLoaded: 'プロジェクトを読み込みました：{0}',
       projectLoadError: '無効なプロジェクトファイルです。',
       dismissTitle: '閉じる',
+      coverTooLarge: '表紙画像が大きすぎます（最大5MB）。',
+      coverWrongType: '表紙はPNG、JPEG、またはWebPである必要があります。',
     },
     welcome: {
       title: 'MD → EPUB へようこそ',
@@ -718,6 +732,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       projectLoaded: '專案已載入：{0}',
       projectLoadError: '無效的專案檔案。',
       dismissTitle: '關閉',
+      coverTooLarge: '封面圖片太大（最大 5 MB）。',
+      coverWrongType: '封面必須是 PNG、JPEG 或 WebP。',
     },
     welcome: {
       title: '歡迎使用 MD → EPUB',

@@ -14,6 +14,13 @@ const DEFAULT: BookMetadata = {
 };
 
 const STORAGE_KEY = 'epub-autosave-meta';
+const COVER_MAX_BYTES = 5 * 1024 * 1024;
+const COVER_ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/webp'] as const;
+
+export type CoverRejectReason = 'too-large' | 'wrong-type';
+export class CoverRejectedError extends Error {
+  constructor(readonly reason: CoverRejectReason) { super(reason); }
+}
 
 @Injectable({ providedIn: 'root' })
 export class SettingsService {
@@ -42,16 +49,18 @@ export class SettingsService {
 
   loadCoverFromFile(file: File): Promise<void> {
     return new Promise((resolve, reject) => {
-      if (!file.type.startsWith('image/')) {
-        reject(new Error('File must be an image'));
+      if (file.size > COVER_MAX_BYTES) {
+        reject(new CoverRejectedError('too-large'));
         return;
       }
+      if (!COVER_ALLOWED_TYPES.includes(file.type as typeof COVER_ALLOWED_TYPES[number])) {
+        reject(new CoverRejectedError('wrong-type'));
+        return;
+      }
+      const mimeType = file.type as BookMetadata['coverMimeType'];
       const reader = new FileReader();
       reader.onload = e => {
         const dataUrl = e.target?.result as string;
-        const mimeType = (
-          file.type === 'image/png' ? 'image/png' : 'image/jpeg'
-        ) as BookMetadata['coverMimeType'];
         this._metadata.update(m => ({ ...m, coverDataUrl: dataUrl, coverMimeType: mimeType }));
         this.saveMeta();
         resolve();
