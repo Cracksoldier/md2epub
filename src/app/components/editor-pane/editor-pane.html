@@ -14,7 +14,12 @@
       {{ i18n.t('editor.label') }}
     </span>
     <div class="pane__header-actions">
-      <span class="word-count">{{ wordCount() }} {{ i18n.t('editor.words') }}</span>
+      <span class="word-count">
+        {{ wordCount() }} {{ i18n.t('editor.words') }}
+        @if (wordCount() > 0) {
+          · {{ i18n.t('editor.readingTime', readingTime().toString()) }}
+        }
+      </span>
       <button class="btn btn--icon btn--sm" (click)="openFileDialog()" [title]="i18n.t('editor.importTitle')">
         <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <path d="M6.5 1v7M4 5.5l2.5 2.5 2.5-2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>

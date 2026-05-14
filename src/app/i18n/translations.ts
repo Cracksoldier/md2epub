@@ -28,6 +28,7 @@ export interface TranslationMap {
   editor: {
     label: string;
     words: string;
+    readingTime: string;
     importTitle: string;
     clearTitle: string;
     dropHint: string;
@@ -115,6 +116,7 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
     editor: {
       label: 'Markdown',
       words: 'words',
+      readingTime: '~{0} min read',
       importTitle: 'Import file',
       clearTitle: 'Clear editor',
       dropHint: 'Drop .md file to import',
@@ -201,6 +203,7 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
     editor: {
       label: 'Markdown',
       words: 'Wörter',
+      readingTime: '~{0} Min. Lesezeit',
       importTitle: 'Datei importieren',
       clearTitle: 'Editor leeren',
       dropHint: '.md-Datei ablegen zum Importieren',
@@ -287,6 +290,7 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
     editor: {
       label: 'Markdown',
       words: 'Wörter',
+      readingTime: '~{0} Min. Lesezeit',
       importTitle: 'Datei einlesen',
       clearTitle: 'Editor ausleern',
       dropHint: '.md-Datei hinlegn zum Einlesen',
@@ -373,6 +377,7 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
     editor: {
       label: 'Markdown',
       words: 'palabras',
+      readingTime: '~{0} min de lectura',
       importTitle: 'Importar archivo',
       clearTitle: 'Limpiar editor',
       dropHint: 'Suelta el archivo .md para importar',
@@ -459,6 +464,7 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
     editor: {
       label: 'Markdown',
       words: 'ord',
+      readingTime: '~{0} min læsning',
       importTitle: 'Importer fil',
       clearTitle: 'Ryd editor',
       dropHint: 'Slip .md-fil for at importere',
@@ -545,6 +551,7 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
     editor: {
       label: 'Markdown',
       words: '語',
+      readingTime: '約{0}分',
       importTitle: 'ファイルをインポート',
       clearTitle: 'エディタをクリア',
       dropHint: '.mdファイルをドロップしてインポート',
@@ -631,6 +638,7 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
     editor: {
       label: 'Markdown',
       words: '字',
+      readingTime: '約{0}分鐘閱讀',
       importTitle: '匯入檔案',
       clearTitle: '清除編輯器',
       dropHint: '拖放 .md 檔案以匯入',

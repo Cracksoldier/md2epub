@@ -55,6 +55,8 @@ export class EditorPane {
     return text ? text.split(/\s+/).length : 0;
   });
 
+  readonly readingTime = computed(() => Math.max(1, Math.ceil(this.wordCount() / 200)));
+
   readonly showChapterList = computed(() => this.settings.metadata().splitChapters);
 
   scrollToOffset(offset: number): void {
