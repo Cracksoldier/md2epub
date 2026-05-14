@@ -12,13 +12,31 @@ const DEFAULT: BookMetadata = {
   coverMimeType: null,
 };
 
+const STORAGE_KEY = 'epub-autosave-meta';
+
 @Injectable({ providedIn: 'root' })
 export class SettingsService {
-  private readonly _metadata = signal<BookMetadata>({ ...DEFAULT });
+  private readonly _metadata = signal<BookMetadata>(this.initMeta());
   readonly metadata = this._metadata.asReadonly();
+
+  private initMeta(): BookMetadata {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) return { ...DEFAULT, ...JSON.parse(stored) };
+    } catch { /* corrupt JSON — fall through */ }
+    return { ...DEFAULT };
+  }
 
   update(patch: Partial<BookMetadata>): void {
     this._metadata.update(m => ({ ...m, ...patch }));
+    this.saveMeta();
+  }
+
+  private saveMeta(): void {
+    try {
+      const { coverDataUrl: _cd, coverMimeType: _cm, ...rest } = this._metadata();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(rest));
+    } catch { /* QuotaExceededError */ }
   }
 
   loadCoverFromFile(file: File): Promise<void> {
@@ -34,6 +52,7 @@ export class SettingsService {
           file.type === 'image/png' ? 'image/png' : 'image/jpeg'
         ) as BookMetadata['coverMimeType'];
         this._metadata.update(m => ({ ...m, coverDataUrl: dataUrl, coverMimeType: mimeType }));
+        this.saveMeta();
         resolve();
       };
       reader.onerror = () => reject(new Error('Failed to read file'));
@@ -43,5 +62,6 @@ export class SettingsService {
 
   clearCover(): void {
     this._metadata.update(m => ({ ...m, coverDataUrl: null, coverMimeType: null }));
+    this.saveMeta();
   }
 }

@@ -40,12 +40,17 @@ The rest of the pages were blank — and waiting.
 *The end... or the beginning?*
 `;
 
+const STORAGE_KEY = 'epub-autosave-content';
+
 @Injectable({ providedIn: 'root' })
 export class EditorStateService {
-  private readonly _content = signal(SAMPLE);
+  private readonly _content = signal(localStorage.getItem(STORAGE_KEY) ?? SAMPLE);
   readonly content = this._content.asReadonly();
 
   setContent(value: string): void {
     this._content.set(value);
+    try {
+      localStorage.setItem(STORAGE_KEY, value);
+    } catch { /* QuotaExceededError — content stays in-memory */ }
   }
 }

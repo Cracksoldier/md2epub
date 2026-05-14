@@ -5,6 +5,7 @@ describe('EditorStateService', () => {
   let service: EditorStateService;
 
   beforeEach(() => {
+    localStorage.clear();
     TestBed.configureTestingModule({});
     service = TestBed.inject(EditorStateService);
   });
