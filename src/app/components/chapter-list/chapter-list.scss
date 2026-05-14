@@ -46,28 +46,49 @@
 
   &__item {
     display: flex;
-    align-items: baseline;
-    gap: 6px;
+    align-items: center;
+    gap: 4px;
     width: 100%;
-    padding: 5px 10px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    text-align: left;
+    padding: 5px 8px 5px 4px;
+    border-top: 2px solid transparent; // reserve space — prevents reflow on drop indicator
     color: $text-secondary;
     font-size: 12px;
     line-height: 1.4;
-    transition: background $transition-fast, color $transition-fast;
+    cursor: grab;
+    user-select: none;
+    transition: background $transition-fast, color $transition-fast,
+                border-color $transition-fast, opacity $transition-fast;
 
     &:hover {
       background: $bg-elevated;
       color: $text-primary;
+
+      .chapter-list__handle { opacity: 1; }
     }
 
-    &:focus-visible {
-      outline: 2px solid $accent-light;
-      outline-offset: -2px;
+    &.is-dragging {
+      opacity: 0.35;
+      cursor: grabbing;
     }
+
+    &.drop-before {
+      border-top-color: $accent-light;
+    }
+  }
+
+  &__handle {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    color: $text-muted;
+    opacity: 0;
+    transition: opacity $transition-fast;
+    cursor: grab;
+
+    .is-dragging & { cursor: grabbing; }
   }
 
   &__num {
@@ -76,11 +97,28 @@
     color: $text-muted;
     font-variant-numeric: tabular-nums;
     min-width: 14px;
+    pointer-events: none;
   }
 
   &__title {
+    flex: 1;
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: inherit;
+    font-size: inherit;
+    font-family: inherit;
+    text-align: left;
+
+    &:focus-visible {
+      outline: 2px solid $accent-light;
+      outline-offset: 2px;
+      border-radius: 2px;
+    }
   }
 }

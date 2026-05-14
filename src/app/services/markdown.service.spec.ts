@@ -57,6 +57,57 @@ describe('MarkdownService', () => {
     });
   });
 
+  describe('reorderMarkdownChapters()', () => {
+    const md = '# Alpha\n\nText A.\n\n# Beta\n\nText B.\n\n# Gamma\n\nText C.\n';
+
+    it('returns original string when fromIndex === toIndex', () => {
+      expect(service.reorderMarkdownChapters(md, 1, 1)).toBe(md);
+    });
+
+    it('returns original string when fewer than 2 chapters', () => {
+      const single = '# Only\n\nContent.\n';
+      expect(service.reorderMarkdownChapters(single, 0, 0)).toBe(single);
+    });
+
+    it('returns original string for out-of-range fromIndex', () => {
+      expect(service.reorderMarkdownChapters(md, 5, 0)).toBe(md);
+    });
+
+    it('returns original string for out-of-range toIndex', () => {
+      expect(service.reorderMarkdownChapters(md, 0, 5)).toBe(md);
+    });
+
+    it('moves first chapter to last position', () => {
+      const result = service.reorderMarkdownChapters(md, 0, 2);
+      expect(result).toBe('# Beta\n\nText B.\n\n# Gamma\n\nText C.\n# Alpha\n\nText A.\n\n');
+    });
+
+    it('moves last chapter to first position', () => {
+      const result = service.reorderMarkdownChapters(md, 2, 0);
+      expect(result).toBe('# Gamma\n\nText C.\n# Alpha\n\nText A.\n\n# Beta\n\nText B.\n\n');
+    });
+
+    it('swaps adjacent chapters', () => {
+      const result = service.reorderMarkdownChapters(md, 0, 1);
+      expect(result).toBe('# Beta\n\nText B.\n\n# Alpha\n\nText A.\n\n# Gamma\n\nText C.\n');
+    });
+
+    it('preserves preamble before first heading', () => {
+      const withPreamble = 'Intro text.\n\n# Alpha\n\nText A.\n\n# Beta\n\nText B.\n';
+      const result = service.reorderMarkdownChapters(withPreamble, 0, 1);
+      expect(result.startsWith('Intro text.\n\n')).toBe(true);
+      expect(result).toContain('# Beta');
+      expect(result).toContain('# Alpha');
+    });
+
+    it('preserves trailing whitespace within each section', () => {
+      const result = service.reorderMarkdownChapters(md, 1, 0);
+      // Every section should still end with its original trailing newline(s)
+      expect(result).toContain('Text B.\n\n');
+      expect(result).toContain('Text A.\n\n');
+    });
+  });
+
   describe('splitIntoChapters()', () => {
     it('returns single auto-titled chapter when html has no headings', () => {
       // No heading → title falls back to "Chapter 1" (auto-generated via idx counter)

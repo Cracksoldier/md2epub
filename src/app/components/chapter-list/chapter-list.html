@@ -7,19 +7,40 @@
     <span>{{ i18n.t('chapterList.label') }}</span>
   </div>
 
-  <div class="chapter-list__items">
+  <div class="chapter-list__items" role="list">
     @if (chapters().length === 0) {
       <p class="chapter-list__empty">{{ i18n.t('chapterList.noChapters') }}</p>
     } @else {
       @for (ch of chapters(); track ch.offset; let i = $index) {
-        <button
+        <div
           class="chapter-list__item"
-          (click)="chapterSelect.emit(ch.offset)"
-          [title]="ch.title"
+          [class.is-dragging]="dragFrom() === i"
+          [class.drop-before]="dragOver() === i && dragFrom() !== null && dragFrom() !== i"
+          draggable="true"
+          role="listitem"
+          (dragstart)="onDragStart($event, i)"
+          (dragover)="onDragOver($event, i)"
+          (dragleave)="onDragLeave($event, i)"
+          (drop)="onDrop($event, i)"
+          (dragend)="onDragEnd()"
         >
+          <span class="chapter-list__handle" aria-hidden="true">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="3" cy="2" r="1" fill="currentColor"/>
+              <circle cx="7" cy="2" r="1" fill="currentColor"/>
+              <circle cx="3" cy="5" r="1" fill="currentColor"/>
+              <circle cx="7" cy="5" r="1" fill="currentColor"/>
+              <circle cx="3" cy="8" r="1" fill="currentColor"/>
+              <circle cx="7" cy="8" r="1" fill="currentColor"/>
+            </svg>
+          </span>
           <span class="chapter-list__num">{{ i + 1 }}</span>
-          <span class="chapter-list__title">{{ ch.title }}</span>
-        </button>
+          <button
+            class="chapter-list__title"
+            (click)="chapterSelect.emit(ch.offset)"
+            [title]="ch.title"
+          >{{ ch.title }}</button>
+        </div>
       }
     }
   </div>

@@ -72,6 +72,7 @@ export class EditorPane {
   }
 
   onDragOver(event: DragEvent): void {
+    if (!event.dataTransfer?.types.includes('Files')) return;
     event.preventDefault();
     this.isDragOver = true;
   }

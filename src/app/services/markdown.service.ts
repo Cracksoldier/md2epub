@@ -24,6 +24,26 @@ export class MarkdownService {
     return result;
   }
 
+  reorderMarkdownChapters(markdown: string, fromIndex: number, toIndex: number): string {
+    if (fromIndex === toIndex) return markdown;
+    const headings = this.getChapterHeadings(markdown);
+    if (headings.length < 2) return markdown;
+    if (fromIndex < 0 || fromIndex >= headings.length) return markdown;
+    if (toIndex   < 0 || toIndex   >= headings.length) return markdown;
+
+    const preamble = markdown.slice(0, headings[0].offset);
+    const sections = headings.map((h, i) => {
+      const start = h.offset;
+      const end = i + 1 < headings.length ? headings[i + 1].offset : markdown.length;
+      return markdown.slice(start, end);
+    });
+
+    const reordered = [...sections];
+    const [moved] = reordered.splice(fromIndex, 1);
+    reordered.splice(toIndex, 0, moved);
+    return preamble + reordered.join('');
+  }
+
   splitIntoChapters(html: string): Chapter[] {
     const doc = new DOMParser().parseFromString(html, 'text/html');
     const chapters: Chapter[] = [];

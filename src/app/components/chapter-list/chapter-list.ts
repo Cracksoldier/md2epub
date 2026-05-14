@@ -1,4 +1,4 @@
-import { Component, inject, computed, output } from '@angular/core';
+import { Component, inject, computed, output, signal } from '@angular/core';
 import { EditorStateService } from '../../services/editor-state.service';
 import { MarkdownService } from '../../services/markdown.service';
 import { I18nService } from '../../services/i18n.service';
@@ -19,4 +19,45 @@ export class ChapterList {
   readonly chapters = computed(() =>
     this.markdown.getChapterHeadings(this.editorState.content())
   );
+
+  private readonly dragFromIndex = signal<number | null>(null);
+  private readonly dragOverIndex = signal<number | null>(null);
+  protected readonly dragFrom = this.dragFromIndex.asReadonly();
+  protected readonly dragOver = this.dragOverIndex.asReadonly();
+
+  onDragStart(event: DragEvent, index: number): void {
+    this.dragFromIndex.set(index);
+    event.dataTransfer!.effectAllowed = 'move';
+    event.dataTransfer!.setData('text/plain', String(index));
+  }
+
+  onDragOver(event: DragEvent, index: number): void {
+    event.preventDefault();
+    event.dataTransfer!.dropEffect = 'move';
+    this.dragOverIndex.set(index);
+  }
+
+  onDragLeave(event: DragEvent, index: number): void {
+    const related = event.relatedTarget as Node | null;
+    if (!(event.currentTarget as HTMLElement).contains(related)) {
+      if (this.dragOverIndex() === index) this.dragOverIndex.set(null);
+    }
+  }
+
+  onDrop(event: DragEvent, toIndex: number): void {
+    event.preventDefault();
+    const fromIndex = this.dragFromIndex();
+    if (fromIndex !== null && fromIndex !== toIndex) {
+      this.editorState.setContent(
+        this.markdown.reorderMarkdownChapters(this.editorState.content(), fromIndex, toIndex)
+      );
+    }
+    this.dragFromIndex.set(null);
+    this.dragOverIndex.set(null);
+  }
+
+  onDragEnd(): void {
+    this.dragFromIndex.set(null);
+    this.dragOverIndex.set(null);
+  }
 }
