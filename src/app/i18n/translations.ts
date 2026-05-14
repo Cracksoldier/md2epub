@@ -24,6 +24,8 @@ export interface TranslationMap {
     settingsTitle: string;
     exportTitle: string;
     languageLabel: string;
+    coffee: string;
+    coffeeTitle: string;
   };
   editor: {
     label: string;
@@ -70,6 +72,7 @@ export interface TranslationMap {
     projectSaved: string;
     projectLoaded: string;
     projectLoadError: string;
+    dismissTitle: string;
   };
   welcome: {
     title: string;
@@ -112,6 +115,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       settingsTitle: 'Book settings (Ctrl+,)',
       exportTitle: 'Download EPUB (Ctrl+E)',
       languageLabel: 'UI Language',
+      coffee: 'Buy me a coffee',
+      coffeeTitle: 'Buy me a coffee',
     },
     editor: {
       label: 'Markdown',
@@ -158,6 +163,7 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       projectSaved: 'Project saved.',
       projectLoaded: 'Project loaded: {0}',
       projectLoadError: 'Invalid project file.',
+      dismissTitle: 'Dismiss',
     },
     welcome: {
       title: 'Welcome to MD → EPUB',
@@ -199,6 +205,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       settingsTitle: 'Bucheinstellungen (Strg+,)',
       exportTitle: 'EPUB herunterladen (Strg+E)',
       languageLabel: 'Sprache der Oberfläche',
+      coffee: 'Spendier mir einen Kaffee',
+      coffeeTitle: 'Spendier mir einen Kaffee',
     },
     editor: {
       label: 'Markdown',
@@ -245,6 +253,7 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       projectSaved: 'Projekt gespeichert.',
       projectLoaded: 'Projekt geladen: {0}',
       projectLoadError: 'Ungültige Projektdatei.',
+      dismissTitle: 'Schließen',
     },
     welcome: {
       title: 'Willkommen bei MD → EPUB',
@@ -286,6 +295,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       settingsTitle: 'Buacheinstellungen (Strg+,)',
       exportTitle: 'EPUB runterladen (Strg+E)',
       languageLabel: 'Oberflächen-Sproch',
+      coffee: 'Hau mir an Kaffee aussa',
+      coffeeTitle: 'Hau mir an Kaffee aussa',
     },
     editor: {
       label: 'Markdown',
@@ -332,6 +343,7 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       projectSaved: 'Projekt gspreichert.',
       projectLoaded: 'Projekt gladen: {0}',
       projectLoadError: 'Ungütige Projektdatei.',
+      dismissTitle: 'Wegda',
     },
     welcome: {
       title: 'Willkumm bei MD → EPUB',
@@ -373,6 +385,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       settingsTitle: 'Ajustes del libro (Ctrl+,)',
       exportTitle: 'Descargar EPUB (Ctrl+E)',
       languageLabel: 'Idioma de la interfaz',
+      coffee: 'Invítame un café',
+      coffeeTitle: 'Invítame un café',
     },
     editor: {
       label: 'Markdown',
@@ -419,6 +433,7 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       projectSaved: 'Proyecto guardado.',
       projectLoaded: 'Proyecto cargado: {0}',
       projectLoadError: 'Archivo de proyecto inválido.',
+      dismissTitle: 'Cerrar',
     },
     welcome: {
       title: 'Bienvenido a MD → EPUB',
@@ -460,6 +475,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       settingsTitle: 'Bogindstillinger (Ctrl+,)',
       exportTitle: 'Download EPUB (Ctrl+E)',
       languageLabel: 'Grænsefladesprog',
+      coffee: 'Køb mig en kaffe',
+      coffeeTitle: 'Køb mig en kaffe',
     },
     editor: {
       label: 'Markdown',
@@ -506,6 +523,7 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       projectSaved: 'Projekt gemt.',
       projectLoaded: 'Projekt indlæst: {0}',
       projectLoadError: 'Ugyldig projektfil.',
+      dismissTitle: 'Luk',
     },
     welcome: {
       title: 'Velkommen til MD → EPUB',
@@ -547,6 +565,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       settingsTitle: '本の設定 (Ctrl+,)',
       exportTitle: 'EPUBをダウンロード (Ctrl+E)',
       languageLabel: '表示言語',
+      coffee: 'コーヒーをおごる',
+      coffeeTitle: 'コーヒーをおごる',
     },
     editor: {
       label: 'Markdown',
@@ -593,6 +613,7 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       projectSaved: 'プロジェクトを保存しました。',
       projectLoaded: 'プロジェクトを読み込みました：{0}',
       projectLoadError: '無効なプロジェクトファイルです。',
+      dismissTitle: '閉じる',
     },
     welcome: {
       title: 'MD → EPUB へようこそ',
@@ -634,6 +655,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       settingsTitle: '書籍設定 (Ctrl+,)',
       exportTitle: '下載 EPUB (Ctrl+E)',
       languageLabel: '介面語言',
+      coffee: '請我喝杯咖啡',
+      coffeeTitle: '請我喝杯咖啡',
     },
     editor: {
       label: 'Markdown',
@@ -680,6 +703,7 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       projectSaved: '專案已儲存。',
       projectLoaded: '專案已載入：{0}',
       projectLoadError: '無效的專案檔案。',
+      dismissTitle: '關閉',
     },
     welcome: {
       title: '歡迎使用 MD → EPUB',

@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { ToastService } from '../../services/toast.service';
+import { I18nService } from '../../services/i18n.service';
 
 @Component({
   selector: 'app-toast',
@@ -9,4 +10,5 @@ import { ToastService } from '../../services/toast.service';
 })
 export class Toast {
   protected readonly toastService = inject(ToastService);
+  protected readonly i18n = inject(I18nService);
 }

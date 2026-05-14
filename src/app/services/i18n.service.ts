@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, isDevMode, signal } from '@angular/core';
 import { TRANSLATIONS, LOCALES, type Locale, type TranslationMap } from '../i18n/translations';
 
 @Injectable({ providedIn: 'root' })
@@ -35,8 +35,14 @@ export class I18nService {
     }
 
     const str = value as string;
-    return args.length
-      ? str.replace(/\{(\d+)\}/g, (_, i) => args[+i] ?? '')
-      : str;
+    if (!args.length) return str;
+    return str.replace(/\{(\d+)\}/g, (_, i) => {
+      const arg = args[+i];
+      if (arg === undefined && isDevMode()) {
+        console.warn(`[i18n] Missing argument {${i}} for key "${key}" (locale "${this.locale()}")`);
+        return '';
+      }
+      return arg ?? '';
+    });
   }
 }
