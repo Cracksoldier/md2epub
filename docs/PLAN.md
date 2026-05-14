@@ -80,43 +80,22 @@ src/app/
 
 ## Deployment to GitHub Pages
 
-### Option A — Manual (single command)
+Pushing to `main` triggers `.github/workflows/deploy.yml`, which runs the unit test suite, builds with `--base-href /md2epub/`, and publishes to GitHub Pages via the official `actions/deploy-pages` action. Live site: https://cracksoldier.github.io/md2epub/
+
+The workflow:
+1. `npm ci` — install dependencies from the lockfile
+2. `npm test` — broken tests block deploy
+3. `npm run build -- --base-href /md2epub/` — production build
+4. `actions/upload-pages-artifact` + `actions/deploy-pages` — publish
+
+GitHub Pages must be enabled in Settings → Pages → Source: **GitHub Actions** (not `gh-pages` branch). Replace `/md2epub/` with your own repo name if you fork.
+
+### Manual build (rarely needed)
+
 ```bash
-# Build with your repo's base href
-ng build --base-href /epub-converter/
-
-# Deploy dist/epub-converter/browser/ to gh-pages branch
-npx angular-cli-ghpages --dir=dist/epub-converter/browser
+npm run build -- --base-href /md2epub/
+# dist/epub-converter/browser/ contains the static site
 ```
-
-### Option B — GitHub Actions (automated)
-Create `.github/workflows/deploy.yml`:
-```yaml
-name: Deploy to GitHub Pages
-on:
-  push:
-    branches: [main]
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - run: yarn install --frozen-lockfile
-      - run: yarn ng build --base-href /epub-converter/
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: dist/epub-converter/browser
-```
-
-### Important
-- Replace `/epub-converter/` with your actual repository name
-- Enable GitHub Pages in repo Settings → Pages → Source: `gh-pages` branch
 
 ## Running Locally
 
