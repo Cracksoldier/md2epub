@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { marked } from 'marked';
-import { Chapter } from '../models/chapter.model';
+import { Chapter, Subchapter } from '../models/chapter.model';
 
 @Injectable({ providedIn: 'root' })
 export class MarkdownService {
@@ -14,12 +14,31 @@ export class MarkdownService {
     return h?.textContent?.trim() ?? '';
   }
 
+  /** H1-only headings with char offsets — used for drag-and-drop reordering. */
   getChapterHeadings(markdown: string): { title: string; offset: number }[] {
     const result: { title: string; offset: number }[] = [];
-    const regex = /^#{1,2} (.+)$/gm;
+    const regex = /^# (.+)$/gm;
     let match;
     while ((match = regex.exec(markdown)) !== null) {
       result.push({ title: match[1].trim(), offset: match.index });
+    }
+    return result;
+  }
+
+  /** Full heading tree for the sidebar: H1 chapters with nested H2 subchapters. */
+  getChapterTree(markdown: string): { title: string; offset: number; subchapters: { title: string; offset: number }[] }[] {
+    const regex = /^(#{1,2}) (.+)$/gm;
+    const result: { title: string; offset: number; subchapters: { title: string; offset: number }[] }[] = [];
+    let match;
+    while ((match = regex.exec(markdown)) !== null) {
+      const level = match[1].length;
+      const title = match[2].trim();
+      const offset = match.index;
+      if (level === 1) {
+        result.push({ title, offset, subchapters: [] });
+      } else if (result.length > 0) {
+        result[result.length - 1].subchapters.push({ title, offset });
+      }
     }
     return result;
   }
@@ -50,6 +69,8 @@ export class MarkdownService {
     let idx = 1;
     let currentTitle = '';
     let currentContent = '';
+    let currentSubchapters: Subchapter[] = [];
+    let seenSlugs: string[] = [];
     let started = false;
 
     const pushChapter = () => {
@@ -58,6 +79,7 @@ export class MarkdownService {
           title: currentTitle || `Chapter ${idx}`,
           filename: `chapter${String(idx).padStart(3, '0')}.xhtml`,
           htmlContent: currentContent,
+          subchapters: currentSubchapters,
         });
         idx++;
       }
@@ -65,11 +87,20 @@ export class MarkdownService {
 
     for (const el of Array.from(doc.body.children)) {
       const tag = el.tagName.toUpperCase();
-      if (tag === 'H1' || tag === 'H2') {
+      if (tag === 'H1') {
         if (started) pushChapter();
         currentTitle = el.textContent?.trim() || `Chapter ${idx}`;
         currentContent = el.outerHTML;
+        currentSubchapters = [];
+        seenSlugs = [];
         started = true;
+      } else if (tag === 'H2' && started) {
+        const raw = el.textContent?.trim() || '';
+        const id = this.uniqueSlug(raw, seenSlugs);
+        seenSlugs.push(id);
+        el.setAttribute('id', id);
+        currentContent += el.outerHTML;
+        currentSubchapters.push({ title: raw, id });
       } else {
         currentContent += el.outerHTML;
       }
@@ -77,8 +108,20 @@ export class MarkdownService {
     pushChapter();
 
     if (chapters.length === 0) {
-      return [{ title: 'Content', filename: 'chapter001.xhtml', htmlContent: html }];
+      return [{ title: 'Content', filename: 'chapter001.xhtml', htmlContent: html, subchapters: [] }];
     }
     return chapters;
+  }
+
+  private uniqueSlug(text: string, seen: string[]): string {
+    const base = text.toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '') || 'section';
+    let slug = base;
+    let n = 2;
+    while (seen.includes(slug)) slug = `${base}-${n++}`;
+    return slug;
   }
 }

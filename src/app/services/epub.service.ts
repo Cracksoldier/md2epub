@@ -18,7 +18,7 @@ export class EpubService {
     const html = this.markdown.parse(markdownText);
     const chapters: Chapter[] = meta.splitChapters
       ? this.markdown.splitIntoChapters(html)
-      : [{ title: this.markdown.getFirstHeading(html) || title, filename: 'chapter001.xhtml', htmlContent: html }];
+      : [{ title: this.markdown.getFirstHeading(html) || title, filename: 'chapter001.xhtml', htmlContent: html, subchapters: [] }];
 
     const hasCover = !!meta.coverDataUrl;
     const coverExt = meta.coverMimeType === 'image/png' ? 'png' : 'jpg';
@@ -45,9 +45,16 @@ export class EpubService {
       spineItems.push(`<itemref idref="${id}"/>`);
     });
 
-    const tocItems = chapters
-      .map(ch => `      <li><a href="${ch.filename}">${this.esc(ch.title)}</a></li>`)
-      .join('\n');
+    const tocItems = chapters.map(ch => {
+      const subItems = ch.subchapters.length
+        ? '\n        <ol>\n' +
+          ch.subchapters.map(s =>
+            `          <li><a href="${ch.filename}#${s.id}">${this.esc(s.title)}</a></li>`
+          ).join('\n') +
+          '\n        </ol>'
+        : '';
+      return `      <li><a href="${ch.filename}">${this.esc(ch.title)}</a>${subItems}</li>`;
+    }).join('\n');
 
     const creatorEl = meta.author.trim()
       ? `\n    <dc:creator>${this.esc(meta.author)}</dc:creator>`

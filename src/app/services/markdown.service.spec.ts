@@ -126,12 +126,55 @@ describe('MarkdownService', () => {
       expect(chapters[1].title).toBe('Part Two');
     });
 
-    it('splits on h2 boundaries', () => {
-      const html = '<h2>Section A</h2><p>Text A</p><h2>Section B</h2><p>Text B</p>';
+    it('does not split on h2 — h2 stays within its parent h1 chapter', () => {
+      const html = '<h1>Chapter</h1><h2>Section A</h2><p>Text A</p><h2>Section B</h2><p>Text B</p>';
       const chapters = service.splitIntoChapters(html);
-      expect(chapters).toHaveLength(2);
-      expect(chapters[0].title).toBe('Section A');
-      expect(chapters[1].title).toBe('Section B');
+      expect(chapters).toHaveLength(1);
+      expect(chapters[0].title).toBe('Chapter');
+      expect(chapters[0].htmlContent).toContain('Section A');
+      expect(chapters[0].htmlContent).toContain('Section B');
+    });
+
+    it('h2 without a preceding h1 is treated as body content, not a chapter', () => {
+      const html = '<h2>Orphan</h2><p>Text</p>';
+      const chapters = service.splitIntoChapters(html);
+      expect(chapters).toHaveLength(1);
+      expect(chapters[0].htmlContent).toContain('Orphan');
+    });
+
+    it('populates subchapters array with h2 title and slug id', () => {
+      const html = '<h1>My Chapter</h1><h2>First Section</h2><p>Body</p>';
+      const chapters = service.splitIntoChapters(html);
+      expect(chapters[0].subchapters).toHaveLength(1);
+      expect(chapters[0].subchapters[0].title).toBe('First Section');
+      expect(chapters[0].subchapters[0].id).toBe('first-section');
+    });
+
+    it('injects id attribute onto h2 elements in htmlContent', () => {
+      const html = '<h1>Chapter</h1><h2>My Section</h2><p>Body</p>';
+      const chapters = service.splitIntoChapters(html);
+      expect(chapters[0].htmlContent).toContain('id="my-section"');
+    });
+
+    it('deduplicates h2 ids within the same chapter', () => {
+      const html = '<h1>Ch</h1><h2>Intro</h2><p>A</p><h2>Intro</h2><p>B</p>';
+      const chapters = service.splitIntoChapters(html);
+      const ids = chapters[0].subchapters.map(s => s.id);
+      expect(ids[0]).toBe('intro');
+      expect(ids[1]).toBe('intro-2');
+    });
+
+    it('resets subchapter id deduplication between chapters', () => {
+      const html = '<h1>Ch1</h1><h2>Intro</h2><p>A</p><h1>Ch2</h1><h2>Intro</h2><p>B</p>';
+      const chapters = service.splitIntoChapters(html);
+      expect(chapters[0].subchapters[0].id).toBe('intro');
+      expect(chapters[1].subchapters[0].id).toBe('intro');
+    });
+
+    it('chapter with no h2 has empty subchapters array', () => {
+      const html = '<h1>Solo</h1><p>Body</p>';
+      const chapters = service.splitIntoChapters(html);
+      expect(chapters[0].subchapters).toEqual([]);
     });
 
     it('pads filename index with leading zeros', () => {
@@ -160,6 +203,44 @@ describe('MarkdownService', () => {
       const chapters = service.splitIntoChapters('');
       expect(chapters).toHaveLength(1);
       expect(chapters[0].title).toBe('Content');
+    });
+  });
+
+  describe('getChapterTree()', () => {
+    it('returns empty array when no headings', () => {
+      expect(service.getChapterTree('Just some text.')).toEqual([]);
+    });
+
+    it('returns h1 chapters with empty subchapters', () => {
+      const md = '# Alpha\n\nText.\n\n# Beta\n\nText.';
+      const tree = service.getChapterTree(md);
+      expect(tree).toHaveLength(2);
+      expect(tree[0].title).toBe('Alpha');
+      expect(tree[0].subchapters).toEqual([]);
+      expect(tree[1].title).toBe('Beta');
+    });
+
+    it('nests h2 entries under their parent h1', () => {
+      const md = '# Chapter\n\n## Section One\n\n## Section Two\n\n# Next';
+      const tree = service.getChapterTree(md);
+      expect(tree[0].subchapters).toHaveLength(2);
+      expect(tree[0].subchapters[0].title).toBe('Section One');
+      expect(tree[0].subchapters[1].title).toBe('Section Two');
+      expect(tree[1].subchapters).toHaveLength(0);
+    });
+
+    it('ignores h2 that appears before any h1', () => {
+      const md = '## Orphan\n\n# Real Chapter';
+      const tree = service.getChapterTree(md);
+      expect(tree).toHaveLength(1);
+      expect(tree[0].title).toBe('Real Chapter');
+    });
+
+    it('records correct character offsets', () => {
+      const md = '# Alpha\n\n## Sub';
+      const tree = service.getChapterTree(md);
+      expect(tree[0].offset).toBe(0);
+      expect(tree[0].subchapters[0].offset).toBe(9);
     });
   });
 });

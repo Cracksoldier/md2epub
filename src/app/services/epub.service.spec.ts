@@ -147,7 +147,7 @@ describe('EpubService', () => {
     });
 
     it('splitChapters creates multiple chapter files', async () => {
-      const md = '# Chapter One\n\nContent 1\n\n## Chapter Two\n\nContent 2';
+      const md = '# Chapter One\n\nContent 1\n\n# Chapter Two\n\nContent 2';
       const blob = await service.build(md, { ...DEFAULT_META, splitChapters: true });
       const zip = await loadZip(blob);
       expect(zip.file('EPUB/chapter001.xhtml')).toBeTruthy();

@@ -17,7 +17,7 @@ export class ChapterList {
   protected readonly i18n = inject(I18nService);
 
   readonly chapters = computed(() =>
-    this.markdown.getChapterHeadings(this.editorState.content())
+    this.markdown.getChapterTree(this.editorState.content())
   );
 
   private readonly dragFromIndex = signal<number | null>(null);

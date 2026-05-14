@@ -114,7 +114,7 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       description: 'Description',
       descriptionPlaceholder: 'A short summary of the book…',
       splitChapters: 'Split into chapters',
-      splitChaptersDesc: 'Split content at each H1 and H2 heading into separate EPUB chapters.',
+      splitChaptersDesc: 'Split content at each H1 heading into separate EPUB chapters. H2 headings become subchapters within their chapter.',
     },
     toast: {
       nothingToExport: 'Nothing to export — add some content first.',
@@ -176,7 +176,7 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       description: 'Beschreibung',
       descriptionPlaceholder: 'Eine kurze Zusammenfassung des Buches…',
       splitChapters: 'In Kapitel aufteilen',
-      splitChaptersDesc: 'Inhalt an H1- und H2-Überschriften in separate EPUB-Kapitel aufteilen.',
+      splitChaptersDesc: 'Inhalt an H1-Überschriften in separate EPUB-Kapitel aufteilen. H2-Überschriften werden zu Unterkapiteln im jeweiligen Kapitel.',
     },
     toast: {
       nothingToExport: 'Nichts zum Exportieren – füge zuerst Inhalt hinzu.',
@@ -238,7 +238,7 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       description: 'Beschreibung',
       descriptionPlaceholder: 'A kurze Zsammenfassung vom Buach…',
       splitChapters: 'In Kapitel aufteilen',
-      splitChaptersDesc: 'Den Inhalt bei jedn H1- und H2-Überschrift in eigane EPUB-Kapitel aufteilen.',
+      splitChaptersDesc: 'Den Inhalt bei jedn H1-Überschrift in eigane EPUB-Kapitel aufteilen. H2-Überschriften wern zu Unterkapiteln im jeweiligen Kapitel.',
     },
     toast: {
       nothingToExport: 'Nix zum Exportiern – schreib zerscht wos.',
@@ -300,7 +300,7 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       description: 'Descripción',
       descriptionPlaceholder: 'Un breve resumen del libro…',
       splitChapters: 'Dividir en capítulos',
-      splitChaptersDesc: 'Divide el contenido en cada encabezado H1 y H2 en capítulos EPUB separados.',
+      splitChaptersDesc: 'Divide el contenido en cada encabezado H1 en capítulos EPUB separados. Los encabezados H2 se convierten en subcapítulos dentro de su capítulo.',
     },
     toast: {
       nothingToExport: 'Nada que exportar — añade contenido primero.',
@@ -362,7 +362,7 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       description: 'Beskrivelse',
       descriptionPlaceholder: 'En kort opsummering af bogen…',
       splitChapters: 'Opdel i kapitler',
-      splitChaptersDesc: 'Opdel indhold ved hvert H1- og H2-overskrift i separate EPUB-kapitler.',
+      splitChaptersDesc: 'Opdel indhold ved hvert H1-overskrift i separate EPUB-kapitler. H2-overskrifter bliver underkapitler i deres kapitel.',
     },
     toast: {
       nothingToExport: 'Intet at eksportere — tilføj noget indhold først.',
@@ -424,7 +424,7 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       description: '概要',
       descriptionPlaceholder: '本の短い説明…',
       splitChapters: 'チャプターに分割',
-      splitChaptersDesc: 'H1とH2の見出しでコンテンツを分割し、個別のEPUBチャプターを作成します。',
+      splitChaptersDesc: 'H1の見出しでコンテンツを分割し、個別のEPUBチャプターを作成します。H2の見出しは各チャプター内のサブチャプターになります。',
     },
     toast: {
       nothingToExport: '出力するコンテンツがありません — 最初にコンテンツを追加してください。',
@@ -486,7 +486,7 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       description: '簡介',
       descriptionPlaceholder: '書籍的簡短摘要…',
       splitChapters: '分割為章節',
-      splitChaptersDesc: '在每個 H1 和 H2 標題處分割內容，生成獨立的 EPUB 章節。',
+      splitChaptersDesc: '在每個 H1 標題處分割內容，生成獨立的 EPUB 章節。H2 標題成為其所在章節的子章節。',
     },
     toast: {
       nothingToExport: '沒有可匯出的內容 — 請先新增內容。',

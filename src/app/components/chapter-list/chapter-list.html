@@ -42,6 +42,17 @@
             [title]="ch.title"
           >{{ ch.title }}</button>
         </div>
+        @if (ch.subchapters.length > 0) {
+          <div class="chapter-list__subitems">
+            @for (sub of ch.subchapters; track sub.offset) {
+              <button
+                class="chapter-list__subitem"
+                (click)="chapterSelect.emit(sub.offset)"
+                [title]="sub.title"
+              >{{ sub.title }}</button>
+            }
+          </div>
+        }
       }
     }
   </div>
