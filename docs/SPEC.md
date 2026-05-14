@@ -32,6 +32,8 @@ $settings-width: 320px;
 interface BookMetadata {
   title: string;
   author: string;
+  publisher: string;
+  description: string;
   language: string;            // BCP 47 tag, e.g. 'en', 'fr'
   splitChapters: boolean;
   coverDataUrl: string | null; // base64 data URL from FileReader
@@ -96,9 +98,10 @@ class SettingsService {
 
 ```typescript
 class MarkdownService {
-  parse(markdown: string): string            // marked.parse() → HTML string
-  splitIntoChapters(html: string): Chapter[] // see algorithm below
-  getFirstHeading(html: string): string      // extract first H1/H2 text
+  parse(markdown: string): string                                    // marked.parse() → HTML string
+  getFirstHeading(html: string): string                              // extract first H1/H2 text
+  getChapterHeadings(markdown: string): { title: string; offset: number }[]  // regex scan of raw markdown
+  splitIntoChapters(html: string): Chapter[]                         // see algorithm below
 }
 ```
 
@@ -180,7 +183,7 @@ exportClick: OutputEmitterRef<void>
 **Selector:** `app-editor-pane`
 **File:** `src/app/components/editor-pane/editor-pane.ts`
 
-Injects: `EditorStateService`
+Injects: `EditorStateService`, `SettingsService`
 
 **Features:**
 - `<textarea>` bound two-way to `EditorStateService.content`
@@ -189,6 +192,27 @@ Injects: `EditorStateService`
 - Clear button resets content to empty string
 - File drag-drop: `dragover` + `drop` handlers on pane element
 - Import via hidden `<input type="file" accept=".md,.txt">`
+- `showChapterList` computed signal — true when `metadata().splitChapters` is on
+- `scrollToOffset(offset)` — scrolls textarea to a given character offset (line-height calculation)
+- Renders `<app-chapter-list>` in a flex `.editor-body` row when `showChapterList()` is true
+
+---
+
+### `ChapterList`
+**Selector:** `app-chapter-list`
+**File:** `src/app/components/chapter-list/chapter-list.ts`
+
+Injects: `EditorStateService`, `MarkdownService`
+
+```typescript
+// Output
+chapterSelect: OutputEmitterRef<number>  // character offset in markdown
+
+// Computed
+chapters: Signal<{ title: string; offset: number }[]>
+```
+
+**Template:** numbered `<button>` list of chapter headings. Emits `chapterSelect` on click; shows localised empty-state text when no headings found. 168px fixed-width sidebar styled with the dark palette.
 
 ---
 
@@ -243,9 +267,11 @@ Injects: `SettingsService`
 **Form fields:**
 - Book Title (text input)
 - Author (text input)
-- Language (select: English, French, German, Spanish, Japanese, Chinese, Arabic, Portuguese, Italian, Russian)
+- Publisher (text input)
+- Description (textarea)
+- Language (select: en, fr, de, es, pt, it, nl, ru, ja, zh, ar, ko)
 - Cover Image (file input → preview thumbnail)
-- Split at H1/H2 (checkbox toggle)
+- Split into chapters (checkbox toggle — also shows `ChapterList` sidebar in EditorPane)
 
 ---
 

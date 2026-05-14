@@ -27,12 +27,16 @@ A fully client-side Markdown-to-EPUB 3 converter built with Angular 21 (standalo
 src/app/
 ├── models/           — interfaces only, no logic
 ├── services/         — business logic, all providedIn root
+├── i18n/             — TranslationMap interface + TRANSLATIONS for all locales
 └── components/       — standalone UI components
     ├── toolbar/
     ├── editor-pane/
+    ├── chapter-list/ — sidebar shown inside EditorPane when splitChapters is on
     ├── preview-pane/
     ├── pane-divider/
     ├── settings-panel/
+    ├── flag-icon/
+    ├── welcome-modal/
     └── toast/
 ```
 
@@ -56,6 +60,12 @@ src/app/
 ### Phase 5 — Docs & Deployment Config ✓
 - This file + `SPEC.md`
 - GitHub Pages deployment instructions
+
+### Phase 6 — Post-launch features ✓
+- Publisher and Description metadata fields (`dc:publisher`, `dc:description` in OPF)
+- Internationalisation: 7 locales (en, de, de-styr, es, da, ja, zh-TW) via `I18nService`
+- WelcomeModal with language picker on first visit
+- Chapter list sidebar in EditorPane (visible when Split Chapters is enabled)
 
 ## Deployment to GitHub Pages
 

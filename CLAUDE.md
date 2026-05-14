@@ -27,11 +27,13 @@ Single-page Angular 21 app. No routing, no NgModules — all components are stan
 EditorPane (textarea)
   → EditorStateService.content (Signal<string>)
     → PreviewPane (debounced 200ms via toObservable+toSignal → DomSanitizer → [innerHTML])
+    → ChapterList (computed via MarkdownService.getChapterHeadings — shown when splitChapters is on)
     → EpubService.build() on export
 
 SettingsService.metadata (Signal<BookMetadata>)
   ← SettingsPanel (form inputs)
-  → EpubService.build() on export (title, author, lang, cover, splitChapters flag)
+  → EpubService.build() on export (title, author, publisher, description, lang, cover, splitChapters flag)
+  → EditorPane (showChapterList computed — toggles ChapterList sidebar)
 
 ToastService.toasts (Signal<Toast[]>)
   ← show() called from App (export errors/success), SettingsPanel (cover load error)
@@ -46,7 +48,7 @@ I18nService.locale (Signal<Locale>)
 
 - **`EditorStateService`** — single signal holding the raw markdown string; initialized with a sample document.
 - **`SettingsService`** — signal holding `BookMetadata`; `loadCoverFromFile(File)` reads the image as a base64 data URL.
-- **`MarkdownService`** — wraps `marked.parse()`; `splitIntoChapters(html)` uses `DOMParser` to walk `body.children` and split at `H1`/`H2` boundaries.
+- **`MarkdownService`** — wraps `marked.parse()`; `getChapterHeadings(markdown)` regex-scans raw markdown for `#`/`##` lines and returns `{ title, offset }[]`; `splitIntoChapters(html)` uses `DOMParser` to walk `body.children` and split at `H1`/`H2` boundaries.
 - **`EpubService`** — assembles a valid EPUB 3 ZIP using `jszip`. The `mimetype` file **must** be the first entry and stored uncompressed (`{ compression: 'STORE' }`). Generates `container.xml`, `package.opf`, `nav.xhtml`, per-chapter XHTML files, and optionally a cover page.
 - **`I18nService`** — signal-based UI localisation. `locale` signal holds the active `Locale` code; `t(key, ...args)` looks up dot-notation keys (e.g. `'toolbar.import'`) with `{0}` interpolation for dynamic values. Locale is persisted in `localStorage` under `epub-i18n-locale`.
 
@@ -67,6 +69,10 @@ All user-visible strings live in `src/app/i18n/translations.ts` as a typed `Tran
 **Adding a new locale:** add the code to the `Locale` union, add an entry to `LOCALES`, and add a full `TranslationMap` block to `TRANSLATIONS` in `translations.ts`. No other files need to change.
 
 **Adding a new string:** add the key to the `TranslationMap` interface and to every locale block, then call `i18n.t('section.key')` in the template or `this.i18n.t('section.key')` in TypeScript. For strings with runtime values use `{0}` placeholders: `i18n.t('toast.downloaded', filename)`.
+
+### ChapterList component
+
+`src/app/components/chapter-list/` — standalone component rendered inside `EditorPane` when `splitChapters` is enabled. Reads `EditorStateService.content()` through `MarkdownService.getChapterHeadings()` to produce a reactive list of `{ title, offset }` entries. Each item is a `<button>` that emits `chapterSelect` with the character offset; `EditorPane.scrollToOffset()` receives it and scrolls the textarea. The sidebar is 168px wide, sits left of the textarea in a `.editor-body` flex row, and hides automatically on mobile (the parent pane gets `mobile-hidden`).
 
 ### AppComponent (app.ts)
 
@@ -131,7 +137,7 @@ Test runner: **Vitest** via `@angular/build:unit-test` (jsdom environment). Run 
 
 | Spec file | Coverage |
 |---|---|
-| `services/markdown.service.spec.ts` | `parse()`, `getFirstHeading()`, `splitIntoChapters()` edge cases |
+| `services/markdown.service.spec.ts` | `parse()`, `getFirstHeading()`, `getChapterHeadings()`, `splitIntoChapters()` edge cases |
 | `services/epub.service.spec.ts` | ZIP structure, mimetype STORE + first-entry, container namespace, opf metadata, chapters, cover, XML escaping |
 | `services/i18n.service.spec.ts` | Key lookup, `{0}` interpolation, `setLocale()`, localStorage persistence, fallbacks |
 | `services/settings.service.spec.ts` | Defaults, `update()` merge, `loadCoverFromFile()` (PNG/JPEG/reject), `clearCover()` |
