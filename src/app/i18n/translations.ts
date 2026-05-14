@@ -13,10 +13,14 @@ export const LOCALES: { code: Locale; label: string }[] = [
 export interface TranslationMap {
   toolbar: {
     import: string;
+    saveProject: string;
+    loadProject: string;
     settings: string;
     exportEpub: string;
     generating: string;
     importTitle: string;
+    saveProjectTitle: string;
+    loadProjectTitle: string;
     settingsTitle: string;
     exportTitle: string;
     languageLabel: string;
@@ -58,6 +62,9 @@ export interface TranslationMap {
     downloaded: string;
     exportFailed: string;
     coverLoadError: string;
+    projectSaved: string;
+    projectLoaded: string;
+    projectLoadError: string;
   };
   welcome: {
     title: string;
@@ -76,10 +83,14 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
   en: {
     toolbar: {
       import: 'Import',
+      saveProject: 'Save Project',
+      loadProject: 'Load Project',
       settings: 'Settings',
       exportEpub: 'Export EPUB',
       generating: 'Generating…',
       importTitle: 'Import .md file (or drag and drop)',
+      saveProjectTitle: 'Save project as JSON',
+      loadProjectTitle: 'Load project from JSON',
       settingsTitle: 'Book settings (Ctrl+,)',
       exportTitle: 'Download EPUB (Ctrl+E)',
       languageLabel: 'UI Language',
@@ -121,6 +132,9 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       downloaded: '"{0}" downloaded!',
       exportFailed: 'Export failed — see console for details.',
       coverLoadError: 'Could not load image. Please use a JPEG or PNG.',
+      projectSaved: 'Project saved.',
+      projectLoaded: 'Project loaded: {0}',
+      projectLoadError: 'Invalid project file.',
     },
     welcome: {
       title: 'Welcome to MD → EPUB',
@@ -138,10 +152,14 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
   de: {
     toolbar: {
       import: 'Importieren',
+      saveProject: 'Projekt speichern',
+      loadProject: 'Projekt laden',
       settings: 'Einstellungen',
       exportEpub: 'EPUB exportieren',
       generating: 'Wird erstellt…',
       importTitle: '.md-Datei importieren (oder ablegen)',
+      saveProjectTitle: 'Projekt als JSON speichern',
+      loadProjectTitle: 'Projekt aus JSON laden',
       settingsTitle: 'Bucheinstellungen (Strg+,)',
       exportTitle: 'EPUB herunterladen (Strg+E)',
       languageLabel: 'Sprache der Oberfläche',
@@ -183,6 +201,9 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       downloaded: '„{0}" heruntergeladen!',
       exportFailed: 'Export fehlgeschlagen – Details in der Konsole.',
       coverLoadError: 'Bild konnte nicht geladen werden. Bitte JPEG oder PNG verwenden.',
+      projectSaved: 'Projekt gespeichert.',
+      projectLoaded: 'Projekt geladen: {0}',
+      projectLoadError: 'Ungültige Projektdatei.',
     },
     welcome: {
       title: 'Willkommen bei MD → EPUB',
@@ -200,10 +221,14 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
   'de-styr': {
     toolbar: {
       import: 'Einlesen',
+      saveProject: 'Projekt speichern',
+      loadProject: 'Projekt laden',
       settings: 'Einstellungen',
       exportEpub: 'EPUB exportiern',
       generating: 'Wiad gmocht…',
       importTitle: '.md-Datei einlesen (oder drogn und lossn)',
+      saveProjectTitle: 'Projekt ois JSON speichern',
+      loadProjectTitle: 'Projekt aus JSON laden',
       settingsTitle: 'Buacheinstellungen (Strg+,)',
       exportTitle: 'EPUB runterladen (Strg+E)',
       languageLabel: 'Oberflächen-Sproch',
@@ -245,6 +270,9 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       downloaded: '„{0}" runtergladen!',
       exportFailed: 'Export hob ned funktioniert – schau in d Konsol nei.',
       coverLoadError: 'Biid hot si ned laden lossn. Nimm bitte a JPEG oder PNG.',
+      projectSaved: 'Projekt gspreichert.',
+      projectLoaded: 'Projekt gladen: {0}',
+      projectLoadError: 'Ungütige Projektdatei.',
     },
     welcome: {
       title: 'Willkumm bei MD → EPUB',
@@ -262,10 +290,14 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
   es: {
     toolbar: {
       import: 'Importar',
+      saveProject: 'Guardar proyecto',
+      loadProject: 'Cargar proyecto',
       settings: 'Ajustes',
       exportEpub: 'Exportar EPUB',
       generating: 'Generando…',
       importTitle: 'Importar archivo .md (o arrastrar y soltar)',
+      saveProjectTitle: 'Guardar proyecto como JSON',
+      loadProjectTitle: 'Cargar proyecto desde JSON',
       settingsTitle: 'Ajustes del libro (Ctrl+,)',
       exportTitle: 'Descargar EPUB (Ctrl+E)',
       languageLabel: 'Idioma de la interfaz',
@@ -307,6 +339,9 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       downloaded: '"{0}" descargado!',
       exportFailed: 'Error al exportar — ver consola para más detalles.',
       coverLoadError: 'No se pudo cargar la imagen. Por favor usa JPEG o PNG.',
+      projectSaved: 'Proyecto guardado.',
+      projectLoaded: 'Proyecto cargado: {0}',
+      projectLoadError: 'Archivo de proyecto inválido.',
     },
     welcome: {
       title: 'Bienvenido a MD → EPUB',
@@ -324,10 +359,14 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
   da: {
     toolbar: {
       import: 'Importer',
+      saveProject: 'Gem projekt',
+      loadProject: 'Indlæs projekt',
       settings: 'Indstillinger',
       exportEpub: 'Eksporter EPUB',
       generating: 'Genererer…',
       importTitle: 'Importer .md-fil (eller træk og slip)',
+      saveProjectTitle: 'Gem projekt som JSON',
+      loadProjectTitle: 'Indlæs projekt fra JSON',
       settingsTitle: 'Bogindstillinger (Ctrl+,)',
       exportTitle: 'Download EPUB (Ctrl+E)',
       languageLabel: 'Grænsefladesprog',
@@ -369,6 +408,9 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       downloaded: '"{0}" downloadet!',
       exportFailed: 'Eksport fejlede — se konsollen for detaljer.',
       coverLoadError: 'Kunne ikke indlæse billede. Brug venligst JPEG eller PNG.',
+      projectSaved: 'Projekt gemt.',
+      projectLoaded: 'Projekt indlæst: {0}',
+      projectLoadError: 'Ugyldig projektfil.',
     },
     welcome: {
       title: 'Velkommen til MD → EPUB',
@@ -386,10 +428,14 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
   ja: {
     toolbar: {
       import: 'インポート',
+      saveProject: 'プロジェクトを保存',
+      loadProject: 'プロジェクトを読込',
       settings: '設定',
       exportEpub: 'EPUBを出力',
       generating: '生成中…',
       importTitle: '.mdファイルをインポート（またはドラッグ＆ドロップ）',
+      saveProjectTitle: 'プロジェクトをJSONで保存',
+      loadProjectTitle: 'JSONからプロジェクトを読込',
       settingsTitle: '本の設定 (Ctrl+,)',
       exportTitle: 'EPUBをダウンロード (Ctrl+E)',
       languageLabel: '表示言語',
@@ -431,6 +477,9 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       downloaded: '「{0}」をダウンロードしました！',
       exportFailed: '出力に失敗しました — 詳細はコンソールを確認してください。',
       coverLoadError: '画像を読み込めませんでした。JPEGまたはPNGを使用してください。',
+      projectSaved: 'プロジェクトを保存しました。',
+      projectLoaded: 'プロジェクトを読み込みました：{0}',
+      projectLoadError: '無効なプロジェクトファイルです。',
     },
     welcome: {
       title: 'MD → EPUB へようこそ',
@@ -448,10 +497,14 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
   'zh-TW': {
     toolbar: {
       import: '匯入',
+      saveProject: '儲存專案',
+      loadProject: '載入專案',
       settings: '設定',
       exportEpub: '匯出 EPUB',
       generating: '產生中…',
       importTitle: '匯入 .md 檔案（或拖放）',
+      saveProjectTitle: '將專案儲存為 JSON',
+      loadProjectTitle: '從 JSON 載入專案',
       settingsTitle: '書籍設定 (Ctrl+,)',
       exportTitle: '下載 EPUB (Ctrl+E)',
       languageLabel: '介面語言',
@@ -493,6 +546,9 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       downloaded: '「{0}」已下載！',
       exportFailed: '匯出失敗 — 請查看控制台以了解詳情。',
       coverLoadError: '無法載入圖片，請使用 JPEG 或 PNG。',
+      projectSaved: '專案已儲存。',
+      projectLoaded: '專案已載入：{0}',
+      projectLoadError: '無效的專案檔案。',
     },
     welcome: {
       title: '歡迎使用 MD → EPUB',

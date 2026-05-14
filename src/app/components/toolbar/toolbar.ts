@@ -16,6 +16,8 @@ export class Toolbar {
   readonly exportLoading = input(false);
 
   readonly importClick = output<void>();
+  readonly saveProjectClick = output<void>();
+  readonly loadProjectClick = output<void>();
   readonly settingsClick = output<void>();
   readonly exportClick = output<void>();
 

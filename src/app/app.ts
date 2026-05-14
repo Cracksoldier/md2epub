@@ -1,4 +1,4 @@
-import { Component, HostListener, inject, signal } from '@angular/core';
+import { Component, ElementRef, HostListener, inject, signal, ViewChild } from '@angular/core';
 import { Toolbar } from './components/toolbar/toolbar';
 import { EditorPane } from './components/editor-pane/editor-pane';
 import { PreviewPane } from './components/preview-pane/preview-pane';
@@ -24,6 +24,8 @@ export class App {
   private readonly epub = inject(EpubService);
   private readonly toast = inject(ToastService);
   protected readonly i18n = inject(I18nService);
+
+  @ViewChild('projectFileInput') private projectFileInput!: ElementRef<HTMLInputElement>;
 
   readonly settingsOpen = signal(false);
   readonly exportLoading = signal(false);
@@ -77,6 +79,46 @@ export class App {
     } finally {
       this.exportLoading.set(false);
     }
+  }
+
+  onSaveProject(): void {
+    const payload = JSON.stringify({
+      version: 1,
+      content: this.editorState.content(),
+      metadata: this.settings.metadata(),
+    });
+    const blob = new Blob([payload], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    const title = this.settings.metadata().title.trim() || 'untitled';
+    anchor.href = url;
+    anchor.download = `${this.slugify(title)}.epub-project.json`;
+    anchor.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    this.toast.show(this.i18n.t('toast.projectSaved'), 'success');
+  }
+
+  onLoadProject(): void {
+    this.projectFileInput.nativeElement.click();
+  }
+
+  onProjectFileSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(reader.result as string);
+        if (!data.version || !data.content || !data.metadata) throw new Error();
+        this.editorState.setContent(data.content);
+        this.settings.update(data.metadata);
+        this.toast.show(this.i18n.t('toast.projectLoaded', file.name), 'success');
+      } catch {
+        this.toast.show(this.i18n.t('toast.projectLoadError'), 'error');
+      }
+      (event.target as HTMLInputElement).value = '';
+    };
+    reader.readAsText(file);
   }
 
   private initColumns(): string {

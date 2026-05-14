@@ -2,9 +2,14 @@
   <app-toolbar
     [exportLoading]="exportLoading()"
     (importClick)="editorPaneRef.openFileDialog()"
+    (saveProjectClick)="onSaveProject()"
+    (loadProjectClick)="onLoadProject()"
     (settingsClick)="toggleSettings()"
     (exportClick)="onExport()"
   ></app-toolbar>
+
+  <input #projectFileInput type="file" accept=".json,application/json"
+    style="display:none" (change)="onProjectFileSelected($event)">
 
   <main class="workspace" [style.grid-template-columns]="gridColumns()">
     <app-editor-pane #editorPaneRef [class.mobile-hidden]="mobileView() !== 'editor'"></app-editor-pane>
