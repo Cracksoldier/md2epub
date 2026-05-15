@@ -196,5 +196,22 @@
         <span class="toggle__track"></span>
       </label>
     </label>
+
+    <details class="settings-advanced">
+      <summary>{{ i18n.t('settings.advanced') }}</summary>
+      <div class="form-group">
+        <label for="meta-css">{{ i18n.t('settings.customCss') }}</label>
+        <textarea
+          id="meta-css"
+          class="form-input form-input--code"
+          rows="8"
+          [value]="settings.metadata().customCss"
+          (input)="onCustomCssChange($event)"
+          [placeholder]="i18n.t('settings.customCssPlaceholder')"
+          spellcheck="false"
+        ></textarea>
+        <p class="form-hint">{{ i18n.t('settings.customCssHint') }}</p>
+      </div>
+    </details>
   </div>
 </aside>

@@ -1,4 +1,4 @@
-import { Component, computed, effect, ElementRef, inject, input, output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, computed, effect, ElementRef, inject, input, output, Renderer2, ViewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { debounceTime, map } from 'rxjs';
@@ -7,6 +7,7 @@ import { EditorStateService } from '../../services/editor-state.service';
 import { MarkdownService } from '../../services/markdown.service';
 import { SettingsService } from '../../services/settings.service';
 import { I18nService } from '../../services/i18n.service';
+import { sanitizeCss } from '../../utils/sanitize-css';
 
 @Component({
   selector: 'app-preview-pane',
@@ -14,7 +15,7 @@ import { I18nService } from '../../services/i18n.service';
   templateUrl: './preview-pane.html',
   styleUrl: './preview-pane.scss',
 })
-export class PreviewPane {
+export class PreviewPane implements AfterViewInit {
   @ViewChild('scrollContainer') private scrollContainerRef!: ElementRef<HTMLElement>;
 
   readonly syncScrollRatio = input<number>(NaN);
@@ -22,11 +23,13 @@ export class PreviewPane {
 
   private scrolling = false;
   private scrollRafId = 0;
+  private customCssEl: HTMLStyleElement | null = null;
 
   private readonly editorState = inject(EditorStateService);
   private readonly markdownService = inject(MarkdownService);
   private readonly settingsService = inject(SettingsService);
   private readonly sanitizer = inject(DomSanitizer);
+  private readonly renderer = inject(Renderer2);
   protected readonly i18n = inject(I18nService);
 
   constructor() {
@@ -39,6 +42,17 @@ export class PreviewPane {
       el.scrollTop = ratio * (el.scrollHeight - el.clientHeight);
       setTimeout(() => { this.scrolling = false; }, 50);
     });
+
+    effect(() => {
+      const css = this.settingsService.metadata().customCss;
+      if (this.customCssEl) this.customCssEl.textContent = sanitizeCss(css);
+    });
+  }
+
+  ngAfterViewInit(): void {
+    this.customCssEl = this.renderer.createElement('style') as HTMLStyleElement;
+    this.customCssEl.textContent = sanitizeCss(this.settingsService.metadata().customCss);
+    this.renderer.appendChild(this.scrollContainerRef.nativeElement, this.customCssEl);
   }
 
   onPreviewScroll(event: Event): void {
@@ -62,7 +76,7 @@ export class PreviewPane {
 
   readonly safeHtml = computed(() =>
     this.sanitizer.bypassSecurityTrustHtml(
-      DOMPurify.sanitize(this.rawHtml(), { USE_PROFILES: { html: true } }),
+      DOMPurify.sanitize(this.rawHtml(), { USE_PROFILES: { html: true, mathMl: true } }),
     )
   );
 

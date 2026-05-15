@@ -13,6 +13,7 @@ const DEFAULT: BookMetadata = {
   chapterNumbering: 'none',
   dropCaps: false,
   splitChapters: false,
+  customCss: '',
   coverDataUrl: null,
   coverMimeType: null,
 };

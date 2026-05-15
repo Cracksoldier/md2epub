@@ -2,6 +2,7 @@
 @use 'styles/variables' as *;
 @use 'styles/reset';
 @use 'styles/typography';
+@use 'highlight.js/styles/github.css';
 
 // Shared button styles
 .btn {
@@ -118,6 +119,56 @@ select.form-input {
   cursor: pointer;
 
   option { background: $bg-surface; }
+}
+
+textarea.form-input--code {
+  font-family: 'SF Mono', 'Consolas', 'Liberation Mono', Menlo, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: pre;
+  resize: vertical;
+}
+
+.form-hint {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: $text-muted;
+  line-height: 1.4;
+}
+
+.settings-advanced {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid $border-subtle;
+
+  > summary {
+    list-style: none;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    color: $text-secondary;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 4px 0;
+    user-select: none;
+
+    &::-webkit-details-marker { display: none; }
+
+    &::before {
+      content: '▸';
+      display: inline-block;
+      margin-right: 6px;
+      transition: transform $transition-fast;
+    }
+  }
+
+  &[open] > summary::before {
+    transform: rotate(90deg);
+  }
+
+  > .form-group {
+    margin-top: 12px;
+  }
 }
 
 // Backdrop

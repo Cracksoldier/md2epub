@@ -4,6 +4,7 @@ import { BookMetadata, ChapterNumbering, EpubFont } from '../models/book-metadat
 import { Chapter } from '../models/chapter.model';
 import { MarkdownService } from './markdown.service';
 import { ImagesService } from './images.service';
+import { sanitizeCss } from '../utils/sanitize-css';
 
 @Injectable({ providedIn: 'root' })
 export class EpubService {
@@ -115,7 +116,7 @@ export class EpubService {
       manifestItems, spineItems,
     }));
     zip.file('EPUB/nav.xhtml', this.navXhtml({ lang, title: 'Table of Contents', tocItems }));
-    zip.file('EPUB/style.css', this.themeCss(meta.epubTheme, meta.epubFont, meta.dropCaps));
+    zip.file('EPUB/style.css', this.themeCss(meta.epubTheme, meta.epubFont, meta.dropCaps, meta.customCss));
 
     for (const ch of chapters) {
       zip.file(`EPUB/${ch.filename}`, this.chapterXhtml({ lang, title: ch.title, body: this.toXhtml(ch.htmlContent) }));
@@ -219,12 +220,13 @@ ${p.body}
 </html>`;
   }
 
-  themeCss(theme: BookMetadata['epubTheme'], font: EpubFont = 'serif', dropCaps = false): string {
+  themeCss(theme: BookMetadata['epubTheme'], font: EpubFont = 'serif', dropCaps = false, customCss = ''): string {
     const base =
       theme === 'modern'  ? this.modernCss()  :
       theme === 'minimal' ? this.minimalCss() :
       this.epubCss();
-    return base + this.extrasCss(font, dropCaps);
+    const sanitizedUser = customCss ? `\n${sanitizeCss(customCss)}` : '';
+    return base + this.extrasCss(font, dropCaps) + this.hljsCss() + sanitizedUser;
   }
 
   private extrasCss(font: EpubFont, dropCaps: boolean): string {
@@ -235,6 +237,10 @@ ${p.body}
       css += `\nbody > p:first-of-type::first-letter{font-size:3.2em;line-height:1;float:left;padding-right:0.08em;margin-top:0.05em;font-weight:600}`;
     }
     return css;
+  }
+
+  private hljsCss(): string {
+    return `\npre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#24292e;background:#fff}.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-template-tag,.hljs-template-variable,.hljs-type,.hljs-variable.language_{color:#d73a49}.hljs-title,.hljs-title.class_,.hljs-title.class_.inherited__,.hljs-title.function_{color:#6f42c1}.hljs-attr,.hljs-attribute,.hljs-literal,.hljs-meta,.hljs-number,.hljs-operator,.hljs-variable,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-id{color:#005cc5}.hljs-regexp,.hljs-string,.hljs-meta .hljs-string{color:#032f62}.hljs-built_in,.hljs-symbol{color:#e36209}.hljs-comment,.hljs-code,.hljs-formula{color:#6a737d}.hljs-name,.hljs-quote,.hljs-selector-tag,.hljs-selector-pseudo{color:#22863a}.hljs-subst{color:#24292e}.hljs-section{color:#005cc5;font-weight:bold}.hljs-bullet{color:#735c0f}.hljs-emphasis{color:#24292e;font-style:italic}.hljs-strong{color:#24292e;font-weight:bold}.hljs-addition{color:#22863a;background-color:#f0fff4}.hljs-deletion{color:#b31d28;background-color:#ffeef0}`;
   }
 
   private fontStack(font: EpubFont): string {

@@ -13,6 +13,7 @@ export interface BookMetadata {
   chapterNumbering: ChapterNumbering;
   dropCaps: boolean;
   splitChapters: boolean;
+  customCss: string;
   coverDataUrl: string | null;
   coverMimeType: 'image/jpeg' | 'image/png' | 'image/webp' | null;
 }

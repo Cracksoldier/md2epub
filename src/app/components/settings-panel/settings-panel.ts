@@ -73,6 +73,10 @@ export class SettingsPanel {
     this.settings.update({ splitChapters: (event.target as HTMLInputElement).checked });
   }
 
+  onCustomCssChange(event: Event): void {
+    this.settings.update({ customCss: (event.target as HTMLTextAreaElement).value });
+  }
+
   async onCoverSelected(event: Event): Promise<void> {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;

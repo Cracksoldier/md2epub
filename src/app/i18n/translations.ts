@@ -78,6 +78,10 @@ export interface TranslationMap {
     dropCapsDesc: string;
     splitChapters: string;
     splitChaptersDesc: string;
+    advanced: string;
+    customCss: string;
+    customCssPlaceholder: string;
+    customCssHint: string;
   };
   epub: {
     chapterPrefix: string;
@@ -205,6 +209,10 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       dropCapsDesc: 'Style the first letter of each chapter as a large drop cap.',
       splitChapters: 'Split into chapters',
       splitChaptersDesc: 'Split content at each H1 heading into separate EPUB chapters. H2 headings become subchapters within their chapter.',
+      advanced: 'Advanced',
+      customCss: 'Custom CSS',
+      customCssPlaceholder: '/* Your CSS here, e.g.\\n   h1 { letter-spacing: 0.05em; } */',
+      customCssHint: 'Appended to the EPUB stylesheet and live preview. Inline styles only — no @import.',
     },
     epub: {
       chapterPrefix: 'Chapter',
@@ -331,6 +339,10 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       dropCapsDesc: 'Den ersten Buchstaben jedes Kapitels als große Initiale gestalten.',
       splitChapters: 'In Kapitel aufteilen',
       splitChaptersDesc: 'Inhalt an H1-Überschriften in separate EPUB-Kapitel aufteilen. H2-Überschriften werden zu Unterkapiteln im jeweiligen Kapitel.',
+      advanced: 'Erweitert',
+      customCss: 'Eigenes CSS',
+      customCssPlaceholder: '/* Dein CSS hier, z.B.\\n   h1 { letter-spacing: 0.05em; } */',
+      customCssHint: 'Wird ans EPUB-Stylesheet und die Live-Vorschau angehängt. Nur Inline-Styles – kein @import.',
     },
     epub: {
       chapterPrefix: 'Kapitel',
@@ -457,6 +469,10 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       dropCapsDesc: 'Den erschten Buachstom vo jedm Kapitel ois große Initiale stüln.',
       splitChapters: 'In Kapitel aufteilen',
       splitChaptersDesc: 'Den Inhalt bei jedn H1-Überschrift in eigane EPUB-Kapitel aufteilen. H2-Überschriften wern zu Unterkapiteln im jeweiligen Kapitel.',
+      advanced: 'Für die Profis',
+      customCss: 'Eigenes CSS',
+      customCssPlaceholder: '/* Dei CSS do hin, z.B.\\n   h1 { letter-spacing: 0.05em; } */',
+      customCssHint: 'Wiad ans EPUB-Stylesheet und d Live-Vorschau drogehängt. Nua Inline-Styles – ka @import.',
     },
     epub: {
       chapterPrefix: 'Kapitel',
@@ -583,6 +599,10 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       dropCapsDesc: 'Estiliza la primera letra de cada capítulo como una capitular grande.',
       splitChapters: 'Dividir en capítulos',
       splitChaptersDesc: 'Divide el contenido en cada encabezado H1 en capítulos EPUB separados. Los encabezados H2 se convierten en subcapítulos dentro de su capítulo.',
+      advanced: 'Avanzado',
+      customCss: 'CSS personalizado',
+      customCssPlaceholder: '/* Tu CSS aquí, p.ej.\\n   h1 { letter-spacing: 0.05em; } */',
+      customCssHint: 'Se añade a la hoja de estilos del EPUB y a la vista previa. Solo estilos inline — sin @import.',
     },
     epub: {
       chapterPrefix: 'Capítulo',
@@ -709,6 +729,10 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       dropCapsDesc: 'Vis det første bogstav i hvert kapitel som et stort anfangsbogstav.',
       splitChapters: 'Opdel i kapitler',
       splitChaptersDesc: 'Opdel indhold ved hvert H1-overskrift i separate EPUB-kapitler. H2-overskrifter bliver underkapitler i deres kapitel.',
+      advanced: 'Avanceret',
+      customCss: 'Brugerdefineret CSS',
+      customCssPlaceholder: '/* Din CSS her, fx\\n   h1 { letter-spacing: 0.05em; } */',
+      customCssHint: 'Tilføjes til EPUB-stylesheet og live-forhåndsvisning. Kun inline-typografi — ingen @import.',
     },
     epub: {
       chapterPrefix: 'Kapitel',
@@ -835,6 +859,10 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       dropCapsDesc: '各チャプターの先頭文字を大きなドロップキャップとして表示します。',
       splitChapters: 'チャプターに分割',
       splitChaptersDesc: 'H1の見出しでコンテンツを分割し、個別のEPUBチャプターを作成します。H2の見出しは各チャプター内のサブチャプターになります。',
+      advanced: '詳細設定',
+      customCss: 'カスタムCSS',
+      customCssPlaceholder: '/* CSSをここに、例：\\n   h1 { letter-spacing: 0.05em; } */',
+      customCssHint: 'EPUBのスタイルシートとライブプレビューに追加されます。インラインスタイルのみ — @importは使えません。',
     },
     epub: {
       chapterPrefix: '第',
@@ -961,6 +989,10 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       dropCapsDesc: '將每章的第一個字母設為大型首字下沉樣式。',
       splitChapters: '分割為章節',
       splitChaptersDesc: '在每個 H1 標題處分割內容，生成獨立的 EPUB 章節。H2 標題成為其所在章節的子章節。',
+      advanced: '進階設定',
+      customCss: '自訂 CSS',
+      customCssPlaceholder: '/* 在此輸入 CSS，例如：\\n   h1 { letter-spacing: 0.05em; } */',
+      customCssHint: '會附加到 EPUB 樣式表和即時預覽。僅支援內嵌樣式 — 不支援 @import。',
     },
     epub: {
       chapterPrefix: '第',

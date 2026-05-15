@@ -87,7 +87,7 @@ export class EpubPreviewModal implements AfterViewInit {
   readonly srcdoc = computed<SafeHtml>(() => {
     const page = this.current();
     const meta = this.meta();
-    const css = page.isCover ? COVER_CSS : this.epub.themeCss(meta.epubTheme, meta.epubFont, meta.dropCaps);
+    const css = page.isCover ? COVER_CSS : this.epub.themeCss(meta.epubTheme, meta.epubFont, meta.dropCaps, meta.customCss);
     const lang = meta.language || 'en';
     const doc =
       `<!DOCTYPE html>` +

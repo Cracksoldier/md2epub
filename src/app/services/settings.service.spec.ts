@@ -41,6 +41,10 @@ describe('SettingsService', () => {
       expect(service.metadata().dropCaps).toBe(false);
     });
 
+    it('defaults customCss to empty string', () => {
+      expect(service.metadata().customCss).toBe('');
+    });
+
     it('defaults cover to null', () => {
       expect(service.metadata().coverDataUrl).toBeNull();
       expect(service.metadata().coverMimeType).toBeNull();

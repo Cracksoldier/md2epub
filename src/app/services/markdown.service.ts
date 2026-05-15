@@ -1,9 +1,20 @@
 import { Injectable, inject } from '@angular/core';
 import { marked } from 'marked';
+import { markedHighlight } from 'marked-highlight';
+import markedKatex from 'marked-katex-extension';
+import hljs from 'highlight.js/lib/common';
 import { Chapter, Subchapter } from '../models/chapter.model';
 import { ImagesService } from './images.service';
 
 marked.use({ gfm: true });
+marked.use(markedHighlight({
+  langPrefix: 'hljs language-',
+  highlight(code, lang) {
+    const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+    return hljs.highlight(code, { language }).value;
+  },
+}));
+marked.use(markedKatex({ output: 'mathml', throwOnError: false, nonStandard: false }));
 
 @Injectable({ providedIn: 'root' })
 export class MarkdownService {

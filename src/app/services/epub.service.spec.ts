@@ -15,6 +15,7 @@ const DEFAULT_META: BookMetadata = {
   chapterNumbering: 'none',
   dropCaps: false,
   splitChapters: false,
+  customCss: '',
   coverDataUrl: null,
   coverMimeType: null,
 };
@@ -314,6 +315,39 @@ describe('EpubService', () => {
       const zip = await loadZip(blob);
       const css = await fileText(zip, 'EPUB/style.css');
       expect(css).toContain('::first-letter');
+    });
+
+    it('always inlines the highlight.js theme CSS', async () => {
+      const blob = await service.build('# Hello', DEFAULT_META);
+      const zip = await loadZip(blob);
+      const css = await fileText(zip, 'EPUB/style.css');
+      expect(css).toContain('.hljs-keyword');
+    });
+
+    it('appends customCss verbatim into the EPUB stylesheet', async () => {
+      const blob = await service.build('# Hello', { ...DEFAULT_META, customCss: 'body{color:rebeccapurple}' });
+      const zip = await loadZip(blob);
+      const css = await fileText(zip, 'EPUB/style.css');
+      expect(css).toContain('color:rebeccapurple');
+    });
+
+    it('strips <script> tags and javascript: URLs from customCss before embedding', async () => {
+      const malicious = '</style><script>alert(1)</script>body{background:url(javascript:alert(2))}';
+      const blob = await service.build('# Hello', { ...DEFAULT_META, customCss: malicious });
+      const zip = await loadZip(blob);
+      const css = await fileText(zip, 'EPUB/style.css');
+      expect(css).not.toContain('<script>');
+      expect(css).not.toContain('javascript:');
+    });
+  });
+
+  describe('KaTeX math in EPUB', () => {
+    it('chapter XHTML carries the MathML namespace when the source has math', async () => {
+      const blob = await service.build('# Ch\n\nMass-energy: $E = mc^2$', DEFAULT_META);
+      const zip = await loadZip(blob);
+      const ch = await fileText(zip, 'EPUB/chapter001.xhtml');
+      expect(ch).toContain('<math');
+      expect(ch).toContain('xmlns="http://www.w3.org/1998/Math/MathML"');
     });
   });
 

@@ -98,6 +98,36 @@ describe('MarkdownService', () => {
       expect(html).toMatch(/checked(="")?[^>]*disabled|disabled[^>]*checked/);
     });
 
+    it('syntax-highlights fenced code blocks with a known language', () => {
+      const html = service.parse('```ts\nconst x = 1;\n```');
+      expect(html).toContain('class="hljs language-ts"');
+      expect(html).toContain('hljs-keyword');
+    });
+
+    it('falls back to plaintext for an unknown language', () => {
+      const html = service.parse('```bogus\nplain text\n```');
+      expect(html).toContain('class="hljs');
+      expect(html).toContain('plain text');
+    });
+
+    it('renders inline math as MathML', () => {
+      const html = service.parse('Mass: $E = mc^2$');
+      expect(html).toContain('<math');
+      expect(html).toContain('xmlns="http://www.w3.org/1998/Math/MathML"');
+    });
+
+    it('renders block math as MathML with display="block"', () => {
+      const html = service.parse('$$\\int_0^1 x \\, dx$$');
+      expect(html).toContain('<math');
+      expect(html).toContain('display="block"');
+    });
+
+    it('does not turn MathML brackets into footnote refs', () => {
+      const html = service.parse('Equation $\\left[a, b\\right]$ here.');
+      expect(html).not.toContain('class="footnote-ref"');
+      expect(html).not.toContain('class="footnotes"');
+    });
+
     it('rewrites epub-img:// references to data URLs when an image is registered', async () => {
       const bytes = new Uint8Array([0x89, 0x50, 0x4e, 0x47]);
       const { id } = await images.addImage(new File([bytes.buffer as ArrayBuffer], 'x.png', { type: 'image/png' }));
