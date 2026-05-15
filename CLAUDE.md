@@ -48,8 +48,14 @@ SettingsService.metadata (Signal<BookMetadata>)  [autosaved to localStorage, cov
   → PreviewPane (Renderer2-managed <style> tag mirroring metadata().customCss)
 
 ToastService.toasts (Signal<Toast[]>)
-  ← show() called from App (export errors/success), SettingsPanel (cover load error)
+  ← show() called from App (export errors/success, SW update prompt),
+                       SettingsPanel (cover load error)
   → Toast component renders them, auto-dismisses after 3.5s
+                       (skipped when toast is persistent; renders an
+                        action button when toast.action is set)
+
+SwUpdate.versionUpdates  →  App.promptReload()  →  persistent action toast
+                       → click → swUpdate.activateUpdate() + location.reload()
 
 I18nService.locale (Signal<Locale>)
   ← WelcomeModal language picker (first visit), Toolbar language switcher
@@ -141,6 +147,10 @@ Toolbar button text is wrapped in `<span class="btn__label">` so it can be hidde
 
 `src/app/utils/sanitize-css.ts` — single function `sanitizeCss(css)` strips `</?...>` tags (escape from `<style>`), `javascript:` and `vbscript:` URLs, `expression(`, `behavior:`, and `@import` rules. Used by both `EpubService.themeCss()` (EPUB output + EPUB Preview modal) and `PreviewPane`'s Renderer2-managed `<style>` element.
 
+### Toast model + action toasts
+
+`Toast` (`src/app/models/toast.model.ts`) carries optional `action?: { label, onClick }` and `persistent?: boolean`. `ToastService.show(message, type, opts?)` skips its 3.5 s auto-dismiss `setTimeout` when `opts.persistent` is true. The Toast component renders an accent-blue `.toast__action` button when `toast.action` is set; clicking invokes the handler then dismisses the toast. Backwards compatible: existing `show(message, type)` callsites are unchanged.
+
 ### SCSS design system
 
 All color tokens and layout constants live in `src/styles/_variables.scss` and are imported with `@use 'variables' as *` in component stylesheets (path is relative, e.g. `../../../styles/variables`). Shared button (`.btn`) and form input (`.form-input`) classes are defined in `src/styles.scss`. Use `@use 'sass:color'` for color functions — the deprecated global `darken()`/`mix()` functions will error.
@@ -151,9 +161,16 @@ Button variants: `btn--primary` (blue), `btn--ghost` (bordered), `btn--icon` (ic
 
 All localStorage keys are namespaced under the `epub:v1:` prefix via `src/app/utils/storage.ts` (`readStorage` / `writeStorage`). `readStorage('foo', 'legacy-foo')` returns the value at `epub:v1:foo`, falling back to a legacy bare key on first call and migrating its value into the namespaced slot. Current suffixes: `autosave-content`, `autosave-meta`, `locale`, `pane-ratio`, `welcomed`. Bump the prefix to `epub:v2:` when a stored schema changes incompatibly.
 
-### PWA
+### PWA + service worker
 
-`public/manifest.webmanifest` declares the app as installable (standalone display, theme color matching the toolbar). No service worker yet — offline caching is a possible follow-up via `@angular/pwa`.
+`public/manifest.webmanifest` declares the app as installable (standalone display, theme color matching the toolbar). The Angular service worker (`@angular/service-worker`) is wired via `provideServiceWorker('ngsw-worker.js', { enabled: !isDevMode(), registrationStrategy: 'registerWhenStable:30000' })` in `app.config.ts` — only registers in production builds, and waits 30 s after app stabilises before installing so it never fights first paint.
+
+`ngsw-config.json` defines a minimal asset graph:
+- `app` group, **prefetch** — `index.html`, `*.css`, `*.js`, `manifest.webmanifest`, both favicons.
+- `assets` group, **lazy + updateMode prefetch** — any other static `svg/png/jpg/etc.` assets.
+- No `dataGroups` (the app makes zero network requests after first load).
+
+**Update flow:** `App` constructor subscribes to `swUpdate.versionUpdates` and on `VERSION_READY` calls `promptReload()`, which shows a persistent action-toast ("A new version is available — Reload"). Click runs `swUpdate.activateUpdate()` (try/catch — falls back to a plain reload if it rejects) and then `document.location.reload()`. The schematic also drops a `public/icons/` directory of placeholder Angular-logo PNGs; we don't track them — the SVG favicon is the canonical icon.
 
 ### EPUB output structure
 
@@ -186,12 +203,12 @@ Test runner: **Vitest** via `@angular/build:unit-test` (jsdom environment). Run 
 | `services/images.service.spec.ts` | `addImage()` validation (size, type), dedup by content hash, `replaceUrls()` data/epub-path modes, `collectReferenced()` dedup + unknown-id filtering, `serialize`/`restore` round-trip + mime sanitisation |
 | `services/i18n.service.spec.ts` | Key lookup, `{0}` interpolation, `setLocale()`, localStorage persistence, fallbacks |
 | `services/settings.service.spec.ts` | Defaults (including `epubTheme: 'classic'`, `epubFont: 'serif'`, `chapterNumbering: 'none'`, `dropCaps: false`, `customCss: ''`), `update()` merge, `loadCoverFromFile()` (PNG/JPEG/reject), `clearCover()` |
-| `services/toast.service.spec.ts` | `show()`, `dismiss()`, auto-dismiss via fake timers (`vi.useFakeTimers`), unique IDs |
+| `services/toast.service.spec.ts` | `show()`, `dismiss()`, auto-dismiss via fake timers (`vi.useFakeTimers`), unique IDs, persistent toast skips auto-dismiss, action carries through to the toast object |
 | `services/editor-state.service.spec.ts` | Initial sample content, `setContent()` |
 | `components/pane-divider/pane-divider.spec.ts` | Static `loadSavedRatio()`/`saveRatio()`, clamping, ArrowLeft/ArrowRight keyboard resize |
 | `components/toolbar/toolbar.spec.ts` | Dropdown open/close, `selectLocale()`, `currentLocaleLabel()`, Escape/outside-click |
 
-Total: **181 tests across 10 files**.
+Total: **183 tests across 10 files**.
 
 **Testing patterns:**
 - Services are obtained via `TestBed.inject()` after `TestBed.configureTestingModule({})`.
@@ -199,3 +216,4 @@ Total: **181 tests across 10 files**.
 - Mock `window.FileReader` by replacing it with a class: `(window as any).FileReader = class FakeReader { ... }`. Arrow-function implementations don't work as constructors.
 - Use `vi.useFakeTimers()` / `vi.useRealTimers()` from `'vitest'` to control `setTimeout`-based behaviour (toast auto-dismiss).
 - `splitIntoChapters()` discards content that appears before the first `H1` heading; this is by design and is tested explicitly.
+- `app.spec.ts` provides a disabled `provideServiceWorker('', { enabled: false })` so the `SwUpdate` injection in `App` resolves under JSDOM.

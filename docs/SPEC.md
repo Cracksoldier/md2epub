@@ -72,10 +72,17 @@ interface Chapter {
 ```typescript
 type ToastType = 'success' | 'error' | 'info';
 
+interface ToastAction {
+  label: string;
+  onClick: () => void;
+}
+
 interface Toast {
   id: string;
   message: string;
   type: ToastType;
+  action?: ToastAction;   // when set, the toast renders an action button
+  persistent?: boolean;   // when true, ToastService skips the 3.5s auto-dismiss
 }
 ```
 
@@ -196,12 +203,19 @@ EPUB/images/<hash>.{jpg|png|webp}     ← inline images dropped/pasted into the 
 **File:** `src/app/services/toast.service.ts`
 
 ```typescript
+interface ToastOptions {
+  action?: ToastAction;
+  persistent?: boolean;
+}
+
 class ToastService {
   readonly toasts: Signal<Toast[]>
-  show(message: string, type?: ToastType): void  // auto-dismiss after 3s
+  show(message: string, type?: ToastType, opts?: ToastOptions): void  // auto-dismiss after 3.5s unless persistent
   dismiss(id: string): void
 }
 ```
+
+When `opts.persistent` is true, the service skips its `setTimeout`-based dismissal — the toast stays until clicked or `dismiss()` is called explicitly. When `opts.action` is set, the Toast component renders an action button; clicking it invokes the handler then dismisses the toast. The two are typically combined for the SW update prompt.
 
 ---
 

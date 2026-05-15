@@ -98,6 +98,13 @@ src/app/
 - **Bundle budget** — production initial-bundle warning bumped to 1 MB / error 1.5 MB to absorb the ~115 KB gzipped library cost
 - **Splash screen** — inlined logo + spinner inside `<app-root>` in `src/index.html`; vanishes when Angular bootstrap replaces the contents
 
+### Phase 11 — True offline (service worker) ✓
+- **Service worker** — `@angular/service-worker` wired via `provideServiceWorker('ngsw-worker.js', { enabled: !isDevMode(), registrationStrategy: 'registerWhenStable:30000' })`; production-only, registers 30 s after stability so it doesn't compete with first paint
+- **`ngsw-config.json`** — single prefetch group for the app shell (`index.html`, `*.css`, `*.js`, manifest, favicons) + single lazy group for other static assets; no `dataGroups` (zero API calls)
+- **Update notification** — App constructor subscribes to `SwUpdate.versionUpdates`; on `VERSION_READY` shows a **persistent action-toast** with a "Reload" button that calls `activateUpdate()` then reloads
+- **Toast model extension** — optional `action: { label, onClick }` and `persistent: boolean` fields; existing `show(msg, type)` callsites unchanged
+- **Test bed** — `app.spec.ts` provides a disabled `provideServiceWorker('', { enabled: false })` so `SwUpdate` injection works under JSDOM
+
 ## Deployment to GitHub Pages
 
 Pushing to `main` triggers `.github/workflows/deploy.yml`, which runs the unit test suite, builds with `--base-href /md2epub/`, and publishes to GitHub Pages via the official `actions/deploy-pages` action. Live site: https://cracksoldier.github.io/md2epub/

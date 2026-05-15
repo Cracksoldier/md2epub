@@ -21,7 +21,8 @@ A browser-based Markdown → EPUB 3 converter. Write or paste Markdown on the le
 - 7 UI locales: English, Deutsch, Steirisch, Español, Dansk, 日本語, 繁體中文
 - Splash loading screen on first paint, draggable pane divider, mobile tab bar
 - Keyboard shortcuts: `Ctrl+E` export, `Ctrl+,` settings, `Ctrl+?` help, `Ctrl+Shift+P` preview
-- PWA-installable, deployable as a static site (GitHub Pages)
+- **PWA-installable with true offline support** — Angular service worker caches the app shell so it loads + works without a network connection after first visit; a non-intrusive toast offers a one-click reload when a new version ships
+- Deployable as a static site (GitHub Pages)
 
 ## Getting started
 
@@ -60,8 +61,9 @@ Validate generated EPUB files at <https://www.w3.org/publishing/epubcheck/>.
 | Math | [KaTeX](https://katex.org/) (MathML output) |
 | HTML sanitization | [DOMPurify](https://github.com/cure53/DOMPurify) |
 | ZIP / EPUB assembly | [jszip](https://stuk.github.io/jszip/) |
+| Service worker | `@angular/service-worker` (offline + auto-update prompt) |
 | Styling | Custom SCSS with cold-blue design tokens |
-| Tests | Vitest (181 tests across 10 spec files) |
+| Tests | Vitest (183 tests across 10 spec files) |
 | Package manager | npm |
 
 ## Project structure
