@@ -20,6 +20,9 @@
         }
       </span>
       <span class="toast__message">{{ toast.message }}</span>
+      @if (toast.action) {
+        <button class="toast__action" (click)="invokeAction(toast)">{{ toast.action.label }}</button>
+      }
       <button class="toast__close" (click)="toastService.dismiss(toast.id)" [title]="i18n.t('toast.dismissTitle')">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>

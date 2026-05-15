@@ -99,6 +99,8 @@ export interface TranslationMap {
     coverWrongType: string;
     imageTooLarge: string;
     imageWrongType: string;
+    updateAvailable: string;
+    updateAction: string;
   };
   welcome: {
     title: string;
@@ -230,6 +232,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       coverWrongType: 'Cover must be PNG, JPEG, or WebP.',
       imageTooLarge: 'Image is too large (max 5 MB).',
       imageWrongType: 'Image must be PNG, JPEG, or WebP.',
+      updateAvailable: 'A new version is available.',
+      updateAction: 'Reload',
     },
     welcome: {
       title: 'Welcome to MD → EPUB',
@@ -360,6 +364,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       coverWrongType: 'Titelbild muss PNG, JPEG oder WebP sein.',
       imageTooLarge: 'Bild ist zu groß (max. 5 MB).',
       imageWrongType: 'Bild muss PNG, JPEG oder WebP sein.',
+      updateAvailable: 'Eine neue Version ist verfügbar.',
+      updateAction: 'Neu laden',
     },
     welcome: {
       title: 'Willkommen bei MD → EPUB',
@@ -490,6 +496,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       coverWrongType: 'S Titelbiid muass PNG, JPEG oder WebP sein.',
       imageTooLarge: 'S Buid is z groß (max. 5 MB).',
       imageWrongType: 'S Buid muass PNG, JPEG oder WebP sein.',
+      updateAvailable: 'A neie Version is do.',
+      updateAction: 'Neu lodn',
     },
     welcome: {
       title: 'Willkumm bei MD → EPUB',
@@ -620,6 +628,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       coverWrongType: 'La portada debe ser PNG, JPEG o WebP.',
       imageTooLarge: 'La imagen es demasiado grande (máx. 5 MB).',
       imageWrongType: 'La imagen debe ser PNG, JPEG o WebP.',
+      updateAvailable: 'Hay una nueva versión disponible.',
+      updateAction: 'Recargar',
     },
     welcome: {
       title: 'Bienvenido a MD → EPUB',
@@ -750,6 +760,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       coverWrongType: 'Omslag skal være PNG, JPEG eller WebP.',
       imageTooLarge: 'Billede er for stort (maks. 5 MB).',
       imageWrongType: 'Billede skal være PNG, JPEG eller WebP.',
+      updateAvailable: 'En ny version er tilgængelig.',
+      updateAction: 'Genindlæs',
     },
     welcome: {
       title: 'Velkommen til MD → EPUB',
@@ -880,6 +892,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       coverWrongType: '表紙はPNG、JPEG、またはWebPである必要があります。',
       imageTooLarge: '画像が大きすぎます（最大5MB）。',
       imageWrongType: '画像はPNG、JPEG、またはWebPである必要があります。',
+      updateAvailable: '新しいバージョンが利用可能です。',
+      updateAction: '再読み込み',
     },
     welcome: {
       title: 'MD → EPUB へようこそ',
@@ -1010,6 +1024,8 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       coverWrongType: '封面必須是 PNG、JPEG 或 WebP。',
       imageTooLarge: '圖片太大（最大 5 MB）。',
       imageWrongType: '圖片必須是 PNG、JPEG 或 WebP。',
+      updateAvailable: '有新版本可用。',
+      updateAction: '重新載入',
     },
     welcome: {
       title: '歡迎使用 MD → EPUB',

@@ -79,4 +79,21 @@ describe('ToastService', () => {
     expect(service.toasts()).toHaveLength(1);
     vi.useRealTimers();
   });
+
+  it('persistent toast does NOT auto-dismiss', () => {
+    vi.useFakeTimers();
+    service.show('Stay', 'info', { persistent: true });
+    vi.advanceTimersByTime(10_000);
+    expect(service.toasts()).toHaveLength(1);
+    vi.useRealTimers();
+  });
+
+  it('action toast carries the action through to the toast object', () => {
+    const onClick = vi.fn();
+    service.show('With button', 'info', { action: { label: 'Do it', onClick } });
+    const t = service.toasts()[0];
+    expect(t.action?.label).toBe('Do it');
+    t.action?.onClick();
+    expect(onClick).toHaveBeenCalledOnce();
+  });
 });

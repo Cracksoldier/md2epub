@@ -1,4 +1,5 @@
 import { Component, ElementRef, HostListener, inject, signal, ViewChild } from '@angular/core';
+import { SwUpdate } from '@angular/service-worker';
 import { Toolbar } from './components/toolbar/toolbar';
 import { EditorPane } from './components/editor-pane/editor-pane';
 import { PreviewPane } from './components/preview-pane/preview-pane';
@@ -29,8 +30,30 @@ export class App {
   private readonly toast = inject(ToastService);
   protected readonly i18n = inject(I18nService);
   private readonly images = inject(ImagesService);
+  private readonly swUpdate = inject(SwUpdate);
 
   @ViewChild('projectFileInput') private projectFileInput!: ElementRef<HTMLInputElement>;
+
+  constructor() {
+    if (this.swUpdate.isEnabled) {
+      this.swUpdate.versionUpdates.subscribe(event => {
+        if (event.type === 'VERSION_READY') this.promptReload();
+      });
+    }
+  }
+
+  private promptReload(): void {
+    this.toast.show(this.i18n.t('toast.updateAvailable'), 'info', {
+      persistent: true,
+      action: {
+        label: this.i18n.t('toast.updateAction'),
+        onClick: async () => {
+          try { await this.swUpdate.activateUpdate(); } catch { /* fall through to reload */ }
+          document.location.reload();
+        },
+      },
+    });
+  }
 
   readonly settingsOpen = signal(false);
   readonly editorScrollRatio = signal(NaN);
