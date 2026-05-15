@@ -29,6 +29,18 @@ describe('SettingsService', () => {
       expect(service.metadata().epubTheme).toBe('classic');
     });
 
+    it('defaults epubFont to "serif"', () => {
+      expect(service.metadata().epubFont).toBe('serif');
+    });
+
+    it('defaults chapterNumbering to "none"', () => {
+      expect(service.metadata().chapterNumbering).toBe('none');
+    });
+
+    it('defaults dropCaps to false', () => {
+      expect(service.metadata().dropCaps).toBe(false);
+    });
+
     it('defaults cover to null', () => {
       expect(service.metadata().coverDataUrl).toBeNull();
       expect(service.metadata().coverMimeType).toBeNull();

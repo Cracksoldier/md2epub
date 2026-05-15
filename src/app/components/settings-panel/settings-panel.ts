@@ -2,7 +2,7 @@ import { Component, inject, input, output } from '@angular/core';
 import { SettingsService, CoverRejectedError } from '../../services/settings.service';
 import { ToastService } from '../../services/toast.service';
 import { I18nService } from '../../services/i18n.service';
-import { EpubTheme } from '../../models/book-metadata.model';
+import { EpubTheme, EpubFont, ChapterNumbering } from '../../models/book-metadata.model';
 
 @Component({
   selector: 'app-settings-panel',
@@ -55,6 +55,18 @@ export class SettingsPanel {
 
   onEpubThemeChange(event: Event): void {
     this.settings.update({ epubTheme: (event.target as HTMLSelectElement).value as EpubTheme });
+  }
+
+  onEpubFontChange(event: Event): void {
+    this.settings.update({ epubFont: (event.target as HTMLSelectElement).value as EpubFont });
+  }
+
+  onChapterNumberingChange(event: Event): void {
+    this.settings.update({ chapterNumbering: (event.target as HTMLSelectElement).value as ChapterNumbering });
+  }
+
+  onDropCapsChange(event: Event): void {
+    this.settings.update({ dropCaps: (event.target as HTMLInputElement).checked });
   }
 
   onSplitChaptersChange(event: Event): void {

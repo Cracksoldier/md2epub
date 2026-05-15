@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import JSZip from 'jszip';
-import { BookMetadata } from '../models/book-metadata.model';
+import { BookMetadata, ChapterNumbering, EpubFont } from '../models/book-metadata.model';
 import { Chapter } from '../models/chapter.model';
 import { MarkdownService } from './markdown.service';
 import { ImagesService } from './images.service';
@@ -10,7 +10,7 @@ export class EpubService {
   private readonly markdown = inject(MarkdownService);
   private readonly images = inject(ImagesService);
 
-  async build(markdownText: string, meta: BookMetadata): Promise<Blob> {
+  async build(markdownText: string, meta: BookMetadata, chapterPrefix = 'Chapter'): Promise<Blob> {
     const zip = new JSZip();
     const uuid = this.uuid();
     const lang = meta.language || 'en';
@@ -20,9 +20,11 @@ export class EpubService {
     const imageRefs = this.images.collectReferenced(markdownText);
     const markdownForEpub = this.images.replaceUrls(markdownText, 'epub-path');
     const html = this.markdown.parse(markdownForEpub);
-    const chapters: Chapter[] = meta.splitChapters
+    let chapters: Chapter[] = meta.splitChapters
       ? this.markdown.splitIntoChapters(html)
       : [{ title: this.markdown.getFirstHeading(html) || title, filename: 'chapter001.xhtml', htmlContent: html, subchapters: [] }];
+
+    chapters = this.applyChapterNumbering(chapters, meta.chapterNumbering, chapterPrefix);
 
     if (chapters.length > 1) {
       const lastFile = chapters[chapters.length - 1].filename;
@@ -113,7 +115,7 @@ export class EpubService {
       manifestItems, spineItems,
     }));
     zip.file('EPUB/nav.xhtml', this.navXhtml({ lang, title: 'Table of Contents', tocItems }));
-    zip.file('EPUB/style.css', this.themeCss(meta.epubTheme));
+    zip.file('EPUB/style.css', this.themeCss(meta.epubTheme, meta.epubFont, meta.dropCaps));
 
     for (const ch of chapters) {
       zip.file(`EPUB/${ch.filename}`, this.chapterXhtml({ lang, title: ch.title, body: this.toXhtml(ch.htmlContent) }));
@@ -217,10 +219,75 @@ ${p.body}
 </html>`;
   }
 
-  themeCss(theme: BookMetadata['epubTheme']): string {
-    if (theme === 'modern')  return this.modernCss();
-    if (theme === 'minimal') return this.minimalCss();
-    return this.epubCss();
+  themeCss(theme: BookMetadata['epubTheme'], font: EpubFont = 'serif', dropCaps = false): string {
+    const base =
+      theme === 'modern'  ? this.modernCss()  :
+      theme === 'minimal' ? this.minimalCss() :
+      this.epubCss();
+    return base + this.extrasCss(font, dropCaps);
+  }
+
+  private extrasCss(font: EpubFont, dropCaps: boolean): string {
+    const stack = this.fontStack(font);
+    let css = `\nbody{font-family:${stack}}`;
+    css += `\nli:has(> input[type="checkbox"]){list-style:none;margin-left:-1.4em}li > input[type="checkbox"]{margin-right:.4em}`;
+    if (dropCaps) {
+      css += `\nbody > p:first-of-type::first-letter{font-size:3.2em;line-height:1;float:left;padding-right:0.08em;margin-top:0.05em;font-weight:600}`;
+    }
+    return css;
+  }
+
+  private fontStack(font: EpubFont): string {
+    switch (font) {
+      case 'sans':        return `-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif`;
+      case 'modern-sans': return `'Inter','Helvetica Neue',Arial,sans-serif`;
+      case 'mono':        return `'SF Mono','Consolas','Liberation Mono',Menlo,monospace`;
+      case 'georgia':     return `Georgia,'Times New Roman',serif`;
+      case 'serif':
+      default:            return `Cambria,Georgia,'Times New Roman',serif`;
+    }
+  }
+
+  private applyChapterNumbering(chapters: Chapter[], mode: ChapterNumbering, prefix: string): Chapter[] {
+    if (mode === 'none') return chapters;
+    return chapters.map((ch, i) => {
+      const numeral = this.formatNumber(i + 1, mode);
+      const newTitle = `${prefix} ${numeral}: ${ch.title}`;
+      const newHtml = ch.htmlContent.replace(/<h1([^>]*)>([\s\S]*?)<\/h1>/, (_, attrs, inner) =>
+        `<h1${attrs}>${this.esc(prefix)} ${numeral}: ${inner}</h1>`
+      );
+      return { ...ch, title: newTitle, htmlContent: newHtml };
+    });
+  }
+
+  private formatNumber(n: number, mode: ChapterNumbering): string {
+    if (mode === 'roman') return this.toRoman(n);
+    if (mode === 'word')  return this.toWord(n);
+    return String(n);
+  }
+
+  private toRoman(n: number): string {
+    if (n <= 0 || n > 3999) return String(n);
+    const map: [number, string][] = [
+      [1000, 'M'], [900, 'CM'], [500, 'D'], [400, 'CD'],
+      [100,  'C'], [90,  'XC'], [50,  'L'], [40,  'XL'],
+      [10,   'X'], [9,   'IX'], [5,   'V'], [4,   'IV'], [1, 'I'],
+    ];
+    let out = '';
+    let r = n;
+    for (const [v, s] of map) {
+      while (r >= v) { out += s; r -= v; }
+    }
+    return out;
+  }
+
+  private toWord(n: number): string {
+    const words = [
+      'Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine',
+      'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen',
+      'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen', 'Twenty',
+    ];
+    return words[n] ?? String(n);
   }
 
   private modernCss(): string {

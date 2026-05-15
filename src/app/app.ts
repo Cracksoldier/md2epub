@@ -88,7 +88,7 @@ export class App {
     this.exportLoading.set(true);
     try {
       const meta = this.settings.metadata();
-      const blob = await this.epub.build(content, meta);
+      const blob = await this.epub.build(content, meta, this.i18n.t('epub.chapterPrefix'));
       const filename = this.slugify(meta.title || 'untitled') + '.epub';
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement('a');

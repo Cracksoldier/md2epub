@@ -83,6 +83,21 @@ describe('MarkdownService', () => {
       expect(html).toContain('literal [^a] inside code');
     });
 
+    it('renders a GFM table to a <table> element', () => {
+      const md = '| a | b |\n|---|---|\n| 1 | 2 |\n';
+      const html = service.parse(md);
+      expect(html).toContain('<table>');
+      expect(html).toContain('<th>a</th>');
+      expect(html).toContain('<td>1</td>');
+    });
+
+    it('renders a GFM task list with disabled checkboxes', () => {
+      const md = '- [x] done\n- [ ] todo\n';
+      const html = service.parse(md);
+      expect(html).toContain('type="checkbox"');
+      expect(html).toMatch(/checked(="")?[^>]*disabled|disabled[^>]*checked/);
+    });
+
     it('rewrites epub-img:// references to data URLs when an image is registered', async () => {
       const bytes = new Uint8Array([0x89, 0x50, 0x4e, 0x47]);
       const { id } = await images.addImage(new File([bytes.buffer as ArrayBuffer], 'x.png', { type: 'image/png' }));

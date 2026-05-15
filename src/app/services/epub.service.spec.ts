@@ -11,6 +11,9 @@ const DEFAULT_META: BookMetadata = {
   description: '',
   language: 'en',
   epubTheme: 'classic',
+  epubFont: 'serif',
+  chapterNumbering: 'none',
+  dropCaps: false,
   splitChapters: false,
   coverDataUrl: null,
   coverMimeType: null,
@@ -220,6 +223,97 @@ describe('EpubService', () => {
       });
       const zip = await loadZip(blob);
       expect(zip.file('EPUB/images/cover.jpg')).toBeTruthy();
+    });
+  });
+
+  describe('chapter numbering', () => {
+    it('leaves chapter titles untouched when chapterNumbering is "none"', async () => {
+      const blob = await service.build('# Intro\n\nText.', DEFAULT_META);
+      const zip = await loadZip(blob);
+      const ch = await fileText(zip, 'EPUB/chapter001.xhtml');
+      expect(ch).toContain('<h1>Intro</h1>');
+      expect(ch).not.toMatch(/Chapter\s+\d/);
+    });
+
+    it('prepends arabic numerals to chapter H1s', async () => {
+      const md = '# Intro\n\nA.\n\n# Next\n\nB.';
+      const blob = await service.build(md, { ...DEFAULT_META, splitChapters: true, chapterNumbering: 'arabic' });
+      const zip = await loadZip(blob);
+      const ch1 = await fileText(zip, 'EPUB/chapter001.xhtml');
+      const ch2 = await fileText(zip, 'EPUB/chapter002.xhtml');
+      expect(ch1).toContain('<h1>Chapter 1: Intro</h1>');
+      expect(ch2).toContain('<h1>Chapter 2: Next</h1>');
+    });
+
+    it('prepends roman numerals to chapter H1s', async () => {
+      const blob = await service.build('# Intro\n\nA.', { ...DEFAULT_META, chapterNumbering: 'roman' });
+      const zip = await loadZip(blob);
+      const ch = await fileText(zip, 'EPUB/chapter001.xhtml');
+      expect(ch).toContain('<h1>Chapter I: Intro</h1>');
+    });
+
+    it('prepends spelled-out numbers to chapter H1s', async () => {
+      const blob = await service.build('# Intro\n\nA.', { ...DEFAULT_META, chapterNumbering: 'word' });
+      const zip = await loadZip(blob);
+      const ch = await fileText(zip, 'EPUB/chapter001.xhtml');
+      expect(ch).toContain('<h1>Chapter One: Intro</h1>');
+    });
+
+    it('uses a custom prefix when supplied', async () => {
+      const blob = await service.build('# Intro\n\nA.', { ...DEFAULT_META, chapterNumbering: 'arabic' }, 'Kapitel');
+      const zip = await loadZip(blob);
+      const ch = await fileText(zip, 'EPUB/chapter001.xhtml');
+      expect(ch).toContain('<h1>Kapitel 1: Intro</h1>');
+    });
+
+    it('reflects numbered titles in the nav.xhtml TOC', async () => {
+      const md = '# Intro\n\nA.\n\n# Next\n\nB.';
+      const blob = await service.build(md, { ...DEFAULT_META, splitChapters: true, chapterNumbering: 'roman' });
+      const zip = await loadZip(blob);
+      const nav = await fileText(zip, 'EPUB/nav.xhtml');
+      expect(nav).toContain('Chapter I: Intro');
+      expect(nav).toContain('Chapter II: Next');
+    });
+  });
+
+  describe('themeCss font + drop caps', () => {
+    it('injects a sans-serif font stack when font is "sans"', () => {
+      const css = service.themeCss('classic', 'sans');
+      expect(css).toContain('Segoe UI');
+    });
+
+    it('injects Georgia stack when font is "georgia"', () => {
+      const css = service.themeCss('modern', 'georgia');
+      expect(css).toContain('Georgia');
+    });
+
+    it('omits drop-cap rule when dropCaps is false', () => {
+      const css = service.themeCss('classic', 'serif', false);
+      expect(css).not.toContain('::first-letter');
+    });
+
+    it('includes drop-cap rule when dropCaps is true', () => {
+      const css = service.themeCss('classic', 'serif', true);
+      expect(css).toContain('::first-letter');
+    });
+
+    it('always includes the task-list checkbox CSS', () => {
+      const css = service.themeCss('minimal', 'serif', false);
+      expect(css).toContain('input[type="checkbox"]');
+    });
+
+    it('built EPUB style.css picks up the configured font', async () => {
+      const blob = await service.build('# Hello', { ...DEFAULT_META, epubFont: 'mono' });
+      const zip = await loadZip(blob);
+      const css = await fileText(zip, 'EPUB/style.css');
+      expect(css).toContain('SF Mono');
+    });
+
+    it('built EPUB style.css contains drop-cap rule when dropCaps is true', async () => {
+      const blob = await service.build('# Hello', { ...DEFAULT_META, dropCaps: true });
+      const zip = await loadZip(blob);
+      const css = await fileText(zip, 'EPUB/style.css');
+      expect(css).toContain('::first-letter');
     });
   });
 

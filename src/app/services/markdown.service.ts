@@ -3,6 +3,8 @@ import { marked } from 'marked';
 import { Chapter, Subchapter } from '../models/chapter.model';
 import { ImagesService } from './images.service';
 
+marked.use({ gfm: true });
+
 @Injectable({ providedIn: 'root' })
 export class MarkdownService {
   private readonly images = inject(ImagesService);

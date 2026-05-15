@@ -96,6 +96,56 @@
       </select>
     </div>
 
+    <!-- EPUB Body Font -->
+    <div class="form-group">
+      <label for="meta-font">{{ i18n.t('settings.epubFont') }}</label>
+      <select
+        id="meta-font"
+        class="form-input"
+        [value]="settings.metadata().epubFont"
+        (change)="onEpubFontChange($event)"
+      >
+        <option value="serif">{{ i18n.t('settings.fontSerif') }}</option>
+        <option value="georgia">{{ i18n.t('settings.fontGeorgia') }}</option>
+        <option value="sans">{{ i18n.t('settings.fontSans') }}</option>
+        <option value="modern-sans">{{ i18n.t('settings.fontModernSans') }}</option>
+        <option value="mono">{{ i18n.t('settings.fontMono') }}</option>
+      </select>
+    </div>
+
+    <!-- Chapter Numbering -->
+    <div class="form-group">
+      <label for="meta-numbering">{{ i18n.t('settings.chapterNumbering') }}</label>
+      <select
+        id="meta-numbering"
+        class="form-input"
+        [value]="settings.metadata().chapterNumbering"
+        (change)="onChapterNumberingChange($event)"
+      >
+        <option value="none">{{ i18n.t('settings.numberingNone') }}</option>
+        <option value="arabic">{{ i18n.t('settings.numberingArabic') }}</option>
+        <option value="roman">{{ i18n.t('settings.numberingRoman') }}</option>
+        <option value="word">{{ i18n.t('settings.numberingWord') }}</option>
+      </select>
+    </div>
+
+    <!-- Drop caps -->
+    <label class="toggle-row">
+      <div class="toggle-row__text">
+        <span class="toggle-row__label">{{ i18n.t('settings.dropCaps') }}</span>
+        <span class="toggle-row__desc">{{ i18n.t('settings.dropCapsDesc') }}</span>
+      </div>
+      <label class="toggle" for="drop-caps">
+        <input
+          id="drop-caps"
+          type="checkbox"
+          [checked]="settings.metadata().dropCaps"
+          (change)="onDropCapsChange($event)"
+        />
+        <span class="toggle__track"></span>
+      </label>
+    </label>
+
     <div class="settings-divider"></div>
 
     <!-- Cover image -->

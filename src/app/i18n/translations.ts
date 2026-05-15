@@ -63,8 +63,24 @@ export interface TranslationMap {
     themeClassic: string;
     themeModern: string;
     themeMinimal: string;
+    epubFont: string;
+    fontSerif: string;
+    fontSans: string;
+    fontModernSans: string;
+    fontMono: string;
+    fontGeorgia: string;
+    chapterNumbering: string;
+    numberingNone: string;
+    numberingArabic: string;
+    numberingRoman: string;
+    numberingWord: string;
+    dropCaps: string;
+    dropCapsDesc: string;
     splitChapters: string;
     splitChaptersDesc: string;
+  };
+  epub: {
+    chapterPrefix: string;
   };
   toast: {
     nothingToExport: string;
@@ -174,8 +190,24 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       themeClassic: 'Classic (serif)',
       themeModern: 'Modern (sans-serif)',
       themeMinimal: 'Minimal',
+      epubFont: 'Body Font',
+      fontSerif: 'Classic serif',
+      fontSans: 'System sans-serif',
+      fontModernSans: 'Modern sans-serif',
+      fontMono: 'Monospace',
+      fontGeorgia: 'Georgia',
+      chapterNumbering: 'Chapter Numbering',
+      numberingNone: 'None',
+      numberingArabic: 'Arabic (Chapter 1)',
+      numberingRoman: 'Roman (Chapter I)',
+      numberingWord: 'Spelled out (Chapter One)',
+      dropCaps: 'Drop caps',
+      dropCapsDesc: 'Style the first letter of each chapter as a large drop cap.',
       splitChapters: 'Split into chapters',
       splitChaptersDesc: 'Split content at each H1 heading into separate EPUB chapters. H2 headings become subchapters within their chapter.',
+    },
+    epub: {
+      chapterPrefix: 'Chapter',
     },
     toast: {
       nothingToExport: 'Nothing to export — add some content first.',
@@ -284,8 +316,24 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       themeClassic: 'Klassisch (Serifenschrift)',
       themeModern: 'Modern (serifenlos)',
       themeMinimal: 'Minimal',
+      epubFont: 'Schriftart',
+      fontSerif: 'Klassische Serifenschrift',
+      fontSans: 'System-Sans-Serif',
+      fontModernSans: 'Moderne Sans-Serif',
+      fontMono: 'Festbreitenschrift',
+      fontGeorgia: 'Georgia',
+      chapterNumbering: 'Kapitelnummerierung',
+      numberingNone: 'Keine',
+      numberingArabic: 'Arabisch (Kapitel 1)',
+      numberingRoman: 'Römisch (Kapitel I)',
+      numberingWord: 'Ausgeschrieben (Kapitel Eins)',
+      dropCaps: 'Initialen',
+      dropCapsDesc: 'Den ersten Buchstaben jedes Kapitels als große Initiale gestalten.',
       splitChapters: 'In Kapitel aufteilen',
       splitChaptersDesc: 'Inhalt an H1-Überschriften in separate EPUB-Kapitel aufteilen. H2-Überschriften werden zu Unterkapiteln im jeweiligen Kapitel.',
+    },
+    epub: {
+      chapterPrefix: 'Kapitel',
     },
     toast: {
       nothingToExport: 'Nichts zum Exportieren – füge zuerst Inhalt hinzu.',
@@ -394,8 +442,24 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       themeClassic: 'Klassisch (Serifenschrift)',
       themeModern: 'Modern (serifenlos)',
       themeMinimal: 'Minimal',
+      epubFont: 'Schriftoart',
+      fontSerif: 'Klassische Serifenschrift',
+      fontSans: 'System-Sans-Serif',
+      fontModernSans: 'Moderne Sans-Serif',
+      fontMono: 'Festbreitenschrift',
+      fontGeorgia: 'Georgia',
+      chapterNumbering: 'Kapitelnummerierung',
+      numberingNone: 'Kane',
+      numberingArabic: 'Arabisch (Kapitel 1)',
+      numberingRoman: 'Römisch (Kapitel I)',
+      numberingWord: 'Ausgschriebn (Kapitel Oans)',
+      dropCaps: 'Initialn',
+      dropCapsDesc: 'Den erschten Buachstom vo jedm Kapitel ois große Initiale stüln.',
       splitChapters: 'In Kapitel aufteilen',
       splitChaptersDesc: 'Den Inhalt bei jedn H1-Überschrift in eigane EPUB-Kapitel aufteilen. H2-Überschriften wern zu Unterkapiteln im jeweiligen Kapitel.',
+    },
+    epub: {
+      chapterPrefix: 'Kapitel',
     },
     toast: {
       nothingToExport: 'Nix zum Exportiern – schreib zerscht wos.',
@@ -504,8 +568,24 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       themeClassic: 'Clásico (con serifa)',
       themeModern: 'Moderno (sin serifa)',
       themeMinimal: 'Mínimal',
+      epubFont: 'Tipografía',
+      fontSerif: 'Serifa clásica',
+      fontSans: 'Sans-serif del sistema',
+      fontModernSans: 'Sans-serif moderna',
+      fontMono: 'Monoespaciada',
+      fontGeorgia: 'Georgia',
+      chapterNumbering: 'Numeración de capítulos',
+      numberingNone: 'Ninguna',
+      numberingArabic: 'Arábiga (Capítulo 1)',
+      numberingRoman: 'Romana (Capítulo I)',
+      numberingWord: 'En palabras (Capítulo Uno)',
+      dropCaps: 'Capitulares',
+      dropCapsDesc: 'Estiliza la primera letra de cada capítulo como una capitular grande.',
       splitChapters: 'Dividir en capítulos',
       splitChaptersDesc: 'Divide el contenido en cada encabezado H1 en capítulos EPUB separados. Los encabezados H2 se convierten en subcapítulos dentro de su capítulo.',
+    },
+    epub: {
+      chapterPrefix: 'Capítulo',
     },
     toast: {
       nothingToExport: 'Nada que exportar — añade contenido primero.',
@@ -614,8 +694,24 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       themeClassic: 'Klassisk (serif)',
       themeModern: 'Moderne (sans-serif)',
       themeMinimal: 'Minimal',
+      epubFont: 'Tekstskrifttype',
+      fontSerif: 'Klassisk serif',
+      fontSans: 'System sans-serif',
+      fontModernSans: 'Moderne sans-serif',
+      fontMono: 'Monospace',
+      fontGeorgia: 'Georgia',
+      chapterNumbering: 'Kapitelnummerering',
+      numberingNone: 'Ingen',
+      numberingArabic: 'Arabisk (Kapitel 1)',
+      numberingRoman: 'Romersk (Kapitel I)',
+      numberingWord: 'Skrevet ud (Kapitel Et)',
+      dropCaps: 'Anfangsbogstaver',
+      dropCapsDesc: 'Vis det første bogstav i hvert kapitel som et stort anfangsbogstav.',
       splitChapters: 'Opdel i kapitler',
       splitChaptersDesc: 'Opdel indhold ved hvert H1-overskrift i separate EPUB-kapitler. H2-overskrifter bliver underkapitler i deres kapitel.',
+    },
+    epub: {
+      chapterPrefix: 'Kapitel',
     },
     toast: {
       nothingToExport: 'Intet at eksportere — tilføj noget indhold først.',
@@ -724,8 +820,24 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       themeClassic: 'クラシック（セリフ体）',
       themeModern: 'モダン（サンセリフ体）',
       themeMinimal: 'ミニマル',
+      epubFont: '本文フォント',
+      fontSerif: 'クラシック・セリフ',
+      fontSans: 'システム・サンセリフ',
+      fontModernSans: 'モダン・サンセリフ',
+      fontMono: '等幅',
+      fontGeorgia: 'Georgia',
+      chapterNumbering: 'チャプター番号',
+      numberingNone: 'なし',
+      numberingArabic: 'アラビア数字（第1章）',
+      numberingRoman: 'ローマ数字（第I章）',
+      numberingWord: '英語表記（Chapter One）',
+      dropCaps: 'ドロップキャップ',
+      dropCapsDesc: '各チャプターの先頭文字を大きなドロップキャップとして表示します。',
       splitChapters: 'チャプターに分割',
       splitChaptersDesc: 'H1の見出しでコンテンツを分割し、個別のEPUBチャプターを作成します。H2の見出しは各チャプター内のサブチャプターになります。',
+    },
+    epub: {
+      chapterPrefix: '第',
     },
     toast: {
       nothingToExport: '出力するコンテンツがありません — 最初にコンテンツを追加してください。',
@@ -834,8 +946,24 @@ export const TRANSLATIONS: Record<Locale, TranslationMap> = {
       themeClassic: '經典（襯線字體）',
       themeModern: '現代（無襯線字體）',
       themeMinimal: '極簡',
+      epubFont: '內文字體',
+      fontSerif: '經典襯線',
+      fontSans: '系統無襯線',
+      fontModernSans: '現代無襯線',
+      fontMono: '等寬字體',
+      fontGeorgia: 'Georgia',
+      chapterNumbering: '章節編號',
+      numberingNone: '無',
+      numberingArabic: '阿拉伯數字（第 1 章）',
+      numberingRoman: '羅馬數字（第 I 章）',
+      numberingWord: '英文拼寫（Chapter One）',
+      dropCaps: '首字下沉',
+      dropCapsDesc: '將每章的第一個字母設為大型首字下沉樣式。',
       splitChapters: '分割為章節',
       splitChaptersDesc: '在每個 H1 標題處分割內容，生成獨立的 EPUB 章節。H2 標題成為其所在章節的子章節。',
+    },
+    epub: {
+      chapterPrefix: '第',
     },
     toast: {
       nothingToExport: '沒有可匯出的內容 — 請先新增內容。',
