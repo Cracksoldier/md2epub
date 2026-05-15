@@ -29,18 +29,24 @@ $settings-width: 320px;
 
 ### `BookMetadata`
 ```typescript
-type EpubTheme = 'classic' | 'modern' | 'minimal';
+type EpubTheme       = 'classic' | 'modern' | 'minimal';
+type EpubFont        = 'serif' | 'sans' | 'modern-sans' | 'mono' | 'georgia';
+type ChapterNumbering = 'none' | 'arabic' | 'roman' | 'word';
 
 interface BookMetadata {
   title: string;
   author: string;
   publisher: string;
   description: string;
-  language: string;            // BCP 47 tag, e.g. 'en', 'fr'
-  epubTheme: EpubTheme;        // selects embedded CSS preset
+  language: string;                // BCP 47 tag, e.g. 'en', 'fr'
+  epubTheme: EpubTheme;            // base CSS preset
+  epubFont: EpubFont;              // body font-family override appended to theme CSS
+  chapterNumbering: ChapterNumbering; // applied at build time; source markdown stays untouched
+  dropCaps: boolean;               // adds body > p:first-of-type::first-letter rule
   splitChapters: boolean;
-  coverDataUrl: string | null; // base64 data URL from FileReader
-  coverMimeType: 'image/jpeg' | 'image/png' | null;
+  customCss: string;               // appended to EPUB style.css and live preview, sanitised
+  coverDataUrl: string | null;     // base64 data URL from FileReader
+  coverMimeType: 'image/jpeg' | 'image/png' | 'image/webp' | null;
 }
 ```
 
@@ -144,30 +150,38 @@ class MarkdownService {
 
 ```typescript
 class EpubService {
-  build(markdown: string, meta: BookMetadata): Promise<Blob>
+  build(markdown: string, meta: BookMetadata, chapterPrefix?: string): Promise<Blob>
+  themeCss(theme: EpubTheme, font?: EpubFont, dropCaps?: boolean, customCss?: string): string  // public for EpubPreviewModal
 }
 ```
 
+`chapterPrefix` defaults to `'Chapter'`; `App.onExport()` passes `i18n.t('epub.chapterPrefix')` so the numbering label is localised.
+
 **EPUB 3 ZIP Layout:**
 ```
-mimetype                         ← STORE (uncompressed), MUST be first
+mimetype                              ← STORE (uncompressed), MUST be first
 META-INF/container.xml
 EPUB/package.opf
 EPUB/nav.xhtml
-EPUB/style.css                   ← one of three theme presets
-EPUB/chapter001.xhtml            ← one or more
-EPUB/cover.xhtml                 ← only if cover uploaded
-EPUB/images/cover.{jpg|png}      ← only if cover uploaded
+EPUB/style.css                        ← theme + font + drop-cap + hljs + sanitised customCss
+EPUB/chapter001.xhtml                 ← one or more; carries inline MathML when present
+EPUB/cover.xhtml                      ← only if cover uploaded
+EPUB/images/cover.{jpg|png|webp}      ← only if cover uploaded
+EPUB/images/<hash>.{jpg|png|webp}     ← inline images dropped/pasted into the editor
 ```
 
 **package.opf must:** list every file in `<manifest>`, list reading order in `<spine>`.
 **nav.xhtml must:** have `<nav epub:type="toc">` element with nested `<ol>` entries for subchapters (fragment `#slug` hrefs linking into the chapter XHTML).
 
-**EPUB themes** (`meta.epubTheme`):
-- `classic` — serif body, H1 underline border (default)
-- `modern` — system sans-serif stack, `max-width: 36em`, generous line-height
-- `minimal` — near-bare CSS; maximises reader-override compatibility
-All three themes include `.footnote-ref` and `.footnotes` rules.
+**`themeCss(theme, font, dropCaps, customCss)`** composes the embedded stylesheet in this order:
+1. Theme base — `classic` (serif), `modern` (system sans, `max-width: 36em`), or `minimal` (near-bare).
+2. Font override — `body { font-family: <stack> }` from `fontStack(font)`.
+3. Task-list checkbox CSS (always).
+4. Drop-cap rule (`body > p:first-of-type::first-letter`) if `dropCaps`.
+5. Inlined hljs GitHub-Light theme CSS (always; harmless when there are no code blocks).
+6. `sanitizeCss(customCss)` if non-empty — last in the cascade so user rules win on equal specificity.
+
+**Chapter numbering:** `applyChapterNumbering(chapters, mode, prefix)` runs after `splitIntoChapters()`. For `arabic` / `roman` / `word`, it rewrites the first `<h1>` of each chapter and the `chapter.title` field (so the nav.xhtml TOC matches). Romans cap at 3999, words cap at 20 (fall back to arabic above).
 
 **Footnote cross-chapter rewriting** (split mode only): after splitting into chapters, `EpubService.build()` rewrites `href="#fn1"` in early chapters to `href="chapterN.xhtml#fn1"`, and rewrites back-links in the footnote section to `href="chapterM.xhtml#fnref1"`.
 

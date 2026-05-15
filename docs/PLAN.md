@@ -78,6 +78,26 @@ src/app/
 - **Scroll sync** — proportional scroll sync between editor and preview via `scrollRatio` output / `syncScrollRatio` input; `requestAnimationFrame` throttling; feedback-loop guard
 - **Keyboard shortcuts modal** — `Ctrl+?` opens a modal listing all shortcuts; Mac-aware (`⌘` vs `Ctrl`); full i18n across 7 locales
 
+### Phase 8 — EPUB Preview, PWA, inline images ✓
+- **EPUB Preview modal** — `Ctrl+Shift+P` paginated chapter-by-chapter view in a sandboxed iframe themed with the exact EPUB stylesheet
+- **PWA manifest** — installable, dark theme-color matching the toolbar
+- **localStorage namespacing** — all keys live under `epub:v1:` via `src/app/utils/storage.ts` with one-shot legacy migration
+- **Inline image embedding** — drag-and-drop or paste images into the editor; stored hashed under `ImagesService`; rewritten to data URLs for preview and `images/<id>.<ext>` for export
+- **Cover validation** — type (PNG/JPEG/WebP only) + size (≤ 5 MB) checks with `CoverRejectedError` reason codes for precise toasts
+
+### Phase 9 — Typography polish ✓
+- **GFM** — explicit `marked.use({ gfm: true })`; tables, task lists, strikethrough render in preview and EPUB
+- **Chapter numbering** — `none` / `arabic` / `roman` / `word`, applied at build time so source markdown is untouched; prefix is i18n-aware
+- **Body font picker** — five family choices (`serif`, `Georgia`, system sans, modern sans, mono) injected after the theme CSS
+- **Drop caps** — opt-in `:first-letter` rule with conservative cross-reader styling
+
+### Phase 10 — Code, math, custom CSS ✓
+- **Code syntax highlighting** — `highlight.js/lib/common` via `marked-highlight`; GitHub Light theme inlined into both the app SCSS and the EPUB stylesheet
+- **KaTeX math** — `marked-katex-extension` with `output: 'mathml'` so `$inline$` and `$$block$$` render as MathML in both preview and reader. DOMPurify USE_PROFILES extended with `mathMl`
+- **Custom CSS pane** — Settings → Advanced disclosure → monospace textarea; sanitised via `src/app/utils/sanitize-css.ts` (strips HTML tags, `javascript:`/`vbscript:` URLs, `expression()`, `behavior:`, `@import`); appended to EPUB stylesheet, EPUB Preview modal, and live PreviewPane (via Renderer2-managed `<style>` element)
+- **Bundle budget** — production initial-bundle warning bumped to 1 MB / error 1.5 MB to absorb the ~115 KB gzipped library cost
+- **Splash screen** — inlined logo + spinner inside `<app-root>` in `src/index.html`; vanishes when Angular bootstrap replaces the contents
+
 ## Deployment to GitHub Pages
 
 Pushing to `main` triggers `.github/workflows/deploy.yml`, which runs the unit test suite, builds with `--base-href /md2epub/`, and publishes to GitHub Pages via the official `actions/deploy-pages` action. Live site: https://cracksoldier.github.io/md2epub/

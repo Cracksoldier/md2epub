@@ -41,9 +41,11 @@ PreviewPane scroll →  App.previewScrollRatio (Signal<number>) →  EditorPane.
   (proportional scroll sync; NaN = no-op sentinel)
 
 SettingsService.metadata (Signal<BookMetadata>)  [autosaved to localStorage, cover excluded]
-  ← SettingsPanel (form inputs: title, author, publisher, description, language, epubTheme, cover, splitChapters)
+  ← SettingsPanel (title, author, publisher, description, language, epubTheme, epubFont,
+                   chapterNumbering, dropCaps, cover, splitChapters; Advanced: customCss)
   → EpubService.build() on export
   → EditorPane (showChapterList computed — toggles ChapterList sidebar)
+  → PreviewPane (Renderer2-managed <style> tag mirroring metadata().customCss)
 
 ToastService.toasts (Signal<Toast[]>)
   ← show() called from App (export errors/success), SettingsPanel (cover load error)
@@ -57,9 +59,9 @@ I18nService.locale (Signal<Locale>)
 ### Key services
 
 - **`EditorStateService`** — single signal holding the raw markdown string; initialized with a sample document. Autosaves to `localStorage` key `epub:v1:autosave-content` on every `setContent()` call; restores on init.
-- **`SettingsService`** — signal holding `BookMetadata`; `loadCoverFromFile(File)` validates type (PNG/JPEG/WebP only) and size (≤ 5 MB), rejecting with `CoverRejectedError` (reason: `too-large` | `wrong-type`) so the UI can surface a precise toast. Autosaves to `localStorage` key `epub:v1:autosave-meta` (cover excluded due to size).
-- **`MarkdownService`** — wraps `marked.parse()` with a **three-pass footnote processor** inside `parse()`: (1) strips `[^label]: text` definition lines, (2) calls `marked.parse()`, (3) replaces `[^label]` inline markers with `<sup>` footnote refs and appends a `<section class="footnotes" epub:type="footnotes">` block. `getChapterHeadings(markdown)` regex-scans raw markdown for `#` (H1 only) lines and returns `{ title, offset }[]` — used for drag-and-drop reordering; `getChapterTree(markdown)` returns a two-level `{ title, offset, subchapters[] }[]` hierarchy (H1 chapters + H2 subchapters) used by the sidebar; `splitIntoChapters(html)` uses `DOMParser` to walk `body.children` and splits only at `H1` boundaries — `H2` elements stay inside their parent chapter and get a slug `id` attribute injected; each `Chapter` carries a `subchapters: Subchapter[]` array populated from the H2 slugs. The footnote `<section>` element lands naturally at the end of the last chapter.
-- **`EpubService`** — assembles a valid EPUB 3 ZIP using `jszip`. The `mimetype` file **must** be the first entry and stored uncompressed (`{ compression: 'STORE' }`). Generates `container.xml`, `package.opf`, `nav.xhtml`, per-chapter XHTML files, and optionally a cover page. Selects embedded CSS via `themeCss(meta.epubTheme)` — three built-in themes: `classic` (serif), `modern` (system sans-serif, centred), `minimal` (near-bare). In split-chapter mode, rewrites footnote cross-file hrefs so `href="#fn1"` in early chapters becomes `href="chapterN.xhtml#fn1"` and back-links in the footnote section point to the originating chapter file.
+- **`SettingsService`** — signal holding `BookMetadata` (title, author, publisher, description, language, epubTheme, epubFont, chapterNumbering, dropCaps, splitChapters, customCss, cover). `loadCoverFromFile(File)` validates type (PNG/JPEG/WebP only) and size (≤ 5 MB), rejecting with `CoverRejectedError` (reason: `too-large` | `wrong-type`) so the UI can surface a precise toast. Autosaves to `localStorage` key `epub:v1:autosave-meta` (cover excluded due to size; `customCss` is included).
+- **`MarkdownService`** — wraps `marked.parse()` with a **three-pass footnote processor** inside `parse()`: (1) strips `[^label]: text` definition lines, (2) calls `marked.parse()`, (3) replaces `[^label]` inline markers with `<sup>` footnote refs and appends a `<section class="footnotes" epub:type="footnotes">` block. At module load, registers GFM (`marked.use({ gfm: true })`), `marked-highlight` with `highlight.js/lib/common` (~36 languages, GitHub-Light spans), and `marked-katex-extension` with `output: 'mathml'` so `$x^2$` and `$$…$$` render as MathML in both preview and EPUB. `throwOnError: false` on KaTeX so bad LaTeX shows a red span instead of crashing the preview. `getChapterHeadings(markdown)` regex-scans raw markdown for `#` (H1 only) lines and returns `{ title, offset }[]` — used for drag-and-drop reordering; `getChapterTree(markdown)` returns a two-level `{ title, offset, subchapters[] }[]` hierarchy (H1 chapters + H2 subchapters) used by the sidebar; `splitIntoChapters(html)` uses `DOMParser` to walk `body.children` and splits only at `H1` boundaries — `H2` elements stay inside their parent chapter and get a slug `id` attribute injected; each `Chapter` carries a `subchapters: Subchapter[]` array populated from the H2 slugs. The footnote `<section>` element lands naturally at the end of the last chapter.
+- **`EpubService`** — assembles a valid EPUB 3 ZIP using `jszip`. `build(markdown, meta, chapterPrefix?)` accepts an optional translated chapter-numbering prefix (defaults to `'Chapter'`) — `App.onExport()` passes `i18n.t('epub.chapterPrefix')`. The `mimetype` file **must** be the first entry and stored uncompressed (`{ compression: 'STORE' }`). Generates `container.xml`, `package.opf`, `nav.xhtml`, per-chapter XHTML files, and optionally a cover page. `themeCss(theme, font, dropCaps, customCss)` composes the embedded stylesheet: theme base (`classic` serif, `modern` sans, `minimal` bare), font-family override from `fontStack(font)` (`serif`/`sans`/`modern-sans`/`mono`/`georgia`), task-list checkbox CSS, optional drop-cap rule (`body > p:first-of-type::first-letter`), inlined hljs GitHub-Light theme (~2 KB string constant), and finally the user's `customCss` after passing through `sanitizeCss()`. `applyChapterNumbering(chapters, mode, prefix)` rewrites the first `<h1>` of each chapter (and `chapter.title` so the TOC matches) when `chapterNumbering` is `arabic` / `roman` / `word`; helpers `toRoman()` (≤ 3999) and `toWord()` (≤ 20) live in the same service. In split-chapter mode, rewrites footnote cross-file hrefs so `href="#fn1"` in early chapters becomes `href="chapterN.xhtml#fn1"` and back-links in the footnote section point to the originating chapter file.
 - **`I18nService`** — signal-based UI localisation. `locale` signal holds the active `Locale` code; `t(key, ...args)` looks up dot-notation keys (e.g. `'toolbar.import'`) with `{0}` interpolation for dynamic values. Locale is persisted in `localStorage` under `epub:v1:locale`. In dev mode, `t()` warns on the console if a `{N}` placeholder has no matching argument.
 - **`ImagesService`** — manages inline image embeds keyed by content hash. Markdown stores short references `![](epub-img://<8-hex-id>)`; the service rewrites those to data URLs (live preview) or `images/<id>.<ext>` (EPUB export), and exposes `collectReferenced()` for `EpubService` to write image bytes into the zip. PNG / JPEG / WebP only, ≤ 5 MB each. Autosaves to `epub:v1:images` opportunistically — large image collections that exceed `localStorage` quota silently fail to autosave; the user must Save Project to persist. Project files include the image map at schema `version: 2` (v1 files load with empty images map).
 
@@ -103,7 +105,7 @@ Shown on first visit only. Displays a client-side privacy notice and a language 
 
 ### EpubPreviewModal component
 
-`src/app/components/epub-preview-modal/` — opened via the toolbar **Preview** button or `Ctrl+Shift+P`; toggled by `App.showEpubPreview` signal. Renders the document chapter-by-chapter in a sandboxed iframe (`sandbox=""` + `[srcdoc]`) themed with the exact CSS the EPUB build uses (`EpubService.themeCss(theme)` — now public for this reason). If a cover image is set, it's shown as page 0 with a black-background contain layout. Pages are derived from `MarkdownService.parse()` + `splitIntoChapters()` so footnote markup carries through. Prev/Next buttons + Left/Right arrow keys navigate; Escape closes; Tab focus is trapped — same modal pattern as `WelcomeModal`/`ShortcutsModal`. The Download button emits an output the App routes back into the existing `onExport()` flow (no duplicate EPUB build).
+`src/app/components/epub-preview-modal/` — opened via the toolbar **Preview** button or `Ctrl+Shift+P`; toggled by `App.showEpubPreview` signal. Renders the document chapter-by-chapter in a sandboxed iframe (`sandbox=""` + `[srcdoc]`) themed with the exact CSS the EPUB build uses by passing `meta.epubTheme`, `meta.epubFont`, `meta.dropCaps`, and `meta.customCss` through `EpubService.themeCss()` (public for this reason). If a cover image is set, it's shown as page 0 with a black-background contain layout. Pages are derived from `MarkdownService.parse()` + `splitIntoChapters()` so footnote markup, code highlighting, and MathML carry through. Prev/Next buttons + Left/Right arrow keys navigate; Escape closes; Tab focus is trapped — same modal pattern as `WelcomeModal`/`ShortcutsModal`. The Download button emits an output the App routes back into the existing `onExport()` flow (no duplicate EPUB build).
 
 ### Responsive layout
 
@@ -131,6 +133,14 @@ Toolbar button text is wrapped in `<span class="btn__label">` so it can be hidde
 
 `public/favicon.svg` — matches the toolbar logo exactly (dark book with blue text lines and arrow, `#050d1a` rounded background). Referenced in `src/index.html` as `<link rel="icon" type="image/svg+xml">` with the existing `favicon.ico` as fallback for older browsers.
 
+### Splash loading screen
+
+`src/index.html` ships a self-contained splash inside `<app-root>`: an inlined `<style>` block in `<head>` (dark background, centred 64 px logo SVG, 28 px spinner with a namespaced `@keyframes app-loading-spin`) plus a `<div class="app-loading">` containing the favicon SVG and a spinner div. Angular replaces the `<app-root>` contents during bootstrap, so the splash disappears automatically — no JS removal needed. The CSS must stay inlined in `<head>` because the bundled `styles-*.css` arrives only after Angular boots, defeating the whole point.
+
+### Custom CSS sanitizer
+
+`src/app/utils/sanitize-css.ts` — single function `sanitizeCss(css)` strips `</?...>` tags (escape from `<style>`), `javascript:` and `vbscript:` URLs, `expression(`, `behavior:`, and `@import` rules. Used by both `EpubService.themeCss()` (EPUB output + EPUB Preview modal) and `PreviewPane`'s Renderer2-managed `<style>` element.
+
 ### SCSS design system
 
 All color tokens and layout constants live in `src/styles/_variables.scss` and are imported with `@use 'variables' as *` in component stylesheets (path is relative, e.g. `../../../styles/variables`). Shared button (`.btn`) and form input (`.form-input`) classes are defined in `src/styles.scss`. Use `@use 'sass:color'` for color functions — the deprecated global `darken()`/`mix()` functions will error.
@@ -152,13 +162,18 @@ mimetype                   ← STORE, first entry
 META-INF/container.xml
 EPUB/package.opf           ← manifest + spine
 EPUB/nav.xhtml             ← epub:type="toc" nav
-EPUB/style.css
-EPUB/chapter001.xhtml      ← one per chapter
+EPUB/style.css             ← theme + font + drop-cap + hljs + sanitized customCss
+EPUB/chapter001.xhtml      ← one per chapter; carries MathML inline when present
 EPUB/cover.xhtml           ← only when cover uploaded
-EPUB/images/cover.{jpg|png}
+EPUB/images/cover.{jpg|png|webp}
+EPUB/images/<hash>.{ext}   ← inline images embedded via drag-drop / paste
 ```
 
 Validate generated EPUBs at https://www.w3.org/publishing/epubcheck/
+
+### Bundle size
+
+Initial production bundle is ~882 kB raw / ~222 kB gzipped, dominated by `highlight.js/lib/common` (~150 kB raw) and `katex` (~280 kB raw). The production budget in `angular.json` is set to **1 MB warning / 1.5 MB error** to absorb this; tightening either threshold will require splitting these libs out behind a lazy-load.
 
 ### Unit tests
 
@@ -166,15 +181,17 @@ Test runner: **Vitest** via `@angular/build:unit-test` (jsdom environment). Run 
 
 | Spec file | Coverage |
 |---|---|
-| `services/markdown.service.spec.ts` | `parse()` (headings, bold, footnote refs, footnote section, numbering order, missing defs, fence-aware definition strip, fence-aware ref skip, image URL substitution), `getFirstHeading()`, `reorderMarkdownChapters()`, `splitIntoChapters()` (H1-only split, H2 ID injection, subchapter deduplication), `getChapterTree()` |
-| `services/epub.service.spec.ts` | ZIP structure, mimetype STORE + first-entry, container namespace, opf metadata, chapters, cover, XML escaping, footnotes in chapter XHTML, cross-chapter footnote href rewriting in split mode, inline image bytes + manifest entries |
+| `services/markdown.service.spec.ts` | `parse()` (headings, bold, footnote refs, footnote section, numbering order, missing defs, fence-aware definition strip, fence-aware ref skip, image URL substitution, GFM tables + task lists, hljs span output + plaintext fallback, KaTeX inline + block MathML, math/footnote-ref non-interaction), `getFirstHeading()`, `reorderMarkdownChapters()`, `splitIntoChapters()` (H1-only split, H2 ID injection, subchapter deduplication), `getChapterTree()` |
+| `services/epub.service.spec.ts` | ZIP structure, mimetype STORE + first-entry, container namespace, opf metadata, chapters, cover, XML escaping, footnotes in chapter XHTML, cross-chapter footnote href rewriting in split mode, inline image bytes + manifest entries, chapter numbering (none/arabic/roman/word/custom prefix; TOC reflects numbering), `themeCss` font stack injection + drop-cap toggle + hljs CSS + customCss verbatim + sanitization, MathML namespace in chapter XHTML |
 | `services/images.service.spec.ts` | `addImage()` validation (size, type), dedup by content hash, `replaceUrls()` data/epub-path modes, `collectReferenced()` dedup + unknown-id filtering, `serialize`/`restore` round-trip + mime sanitisation |
 | `services/i18n.service.spec.ts` | Key lookup, `{0}` interpolation, `setLocale()`, localStorage persistence, fallbacks |
-| `services/settings.service.spec.ts` | Defaults (including `epubTheme: 'classic'`), `update()` merge, `loadCoverFromFile()` (PNG/JPEG/reject), `clearCover()` |
+| `services/settings.service.spec.ts` | Defaults (including `epubTheme: 'classic'`, `epubFont: 'serif'`, `chapterNumbering: 'none'`, `dropCaps: false`, `customCss: ''`), `update()` merge, `loadCoverFromFile()` (PNG/JPEG/reject), `clearCover()` |
 | `services/toast.service.spec.ts` | `show()`, `dismiss()`, auto-dismiss via fake timers (`vi.useFakeTimers`), unique IDs |
 | `services/editor-state.service.spec.ts` | Initial sample content, `setContent()` |
 | `components/pane-divider/pane-divider.spec.ts` | Static `loadSavedRatio()`/`saveRatio()`, clamping, ArrowLeft/ArrowRight keyboard resize |
 | `components/toolbar/toolbar.spec.ts` | Dropdown open/close, `selectLocale()`, `currentLocaleLabel()`, Escape/outside-click |
+
+Total: **181 tests across 10 files**.
 
 **Testing patterns:**
 - Services are obtained via `TestBed.inject()` after `TestBed.configureTestingModule({})`.
