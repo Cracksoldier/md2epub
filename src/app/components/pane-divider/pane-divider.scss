@@ -2,7 +2,7 @@
 
 .pane-divider {
   width: $divider-width;
-  background: $border-subtle;
+  background: transparent;
   cursor: col-resize;
   flex-shrink: 0;
   transition: background $transition-fast;
